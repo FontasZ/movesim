@@ -15,7 +15,11 @@ SPINE = (["pelvis"] + [f"L{i}" for i in range(5, 0, -1)] + [f"T{i}" for i in ran
 
 
 def load():
+    """The model, with its ligaments switched on."""
+    from movesim import ligaments
+
     model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
+    ligaments.install(model)
     return model, mujoco.MjData(model)
 
 

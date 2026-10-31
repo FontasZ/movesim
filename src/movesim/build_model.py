@@ -80,6 +80,16 @@ REGION_SPRINGS = {
     "cervical": (4, 4, 3, 0.4),
 }
 
+# Ligaments: the moment (N·m) they resist with at the end of the range of motion, for bend,
+# side-bend and twist, by region. Toward the end of each range the resistance grows steeply
+# (see movesim/ligaments.py). Rough in-vivo values for one spinal level.
+REGION_END_MOMENT = {
+    "lumbar": (12, 10, 10),
+    "thoracolumbar": (12, 10, 10),
+    "thoracic": (8, 8, 8),
+    "cervical": (2, 2, 2),
+}
+
 # Ribs, one pair per thoracic vertebra: half-width, depth to the front, how far the front end
 # drops below the back end (m), and kind. True ribs reach the sternum, false ribs the costal arch.
 RIBS = {
@@ -149,7 +159,8 @@ class Xml:
         return "\n".join(self.lines)
 
 
-def hinge(x, name, axis, lo, hi, cls=None, stiffness=None, damping=None, springref=None, pos=None):
+def hinge(x, name, axis, lo, hi, cls=None, stiffness=None, damping=None, springref=None, pos=None,
+          end_moment=None):
     attrs = [f'name="{name}"']
     if cls:
         attrs.append(f'class="{cls}"')
@@ -162,6 +173,8 @@ def hinge(x, name, axis, lo, hi, cls=None, stiffness=None, damping=None, springr
         attrs.append(f'damping="{damping}"')
     if springref is not None:
         attrs.append(f'springref="{springref:.4g}"')
+    if end_moment is not None:
+        attrs.append(f'user="{end_moment}"')
     x.add(f"<joint {' '.join(attrs)}/>")
 
 
@@ -183,14 +196,15 @@ def spine_poses():
 
 def vertebra(x, lv, i):
     k_bend, k_side, k_twist, damp = REGION_SPRINGS[lv.region]
+    m_bend, m_side, m_twist = REGION_END_MOMENT[lv.region]
     tilt = lv.curve + (SACRAL_SLOPE if i == 0 else 0)
     prev_h = LEVELS[i - 1].height if i > 0 else 0.0
     rg = lv.region
     x.open(f'<body name="{lv.name}" pos="0 0 {prev_h:.4g}" quat="{v(quat(rot_y(tilt)))}">')
     j = f"{lv.name}_{lv.below}"
-    hinge(x, f"{j}_bend", (0, 1, 0), -lv.ext, lv.flex, stiffness=k_bend, damping=damp)
-    hinge(x, f"{j}_side", (1, 0, 0), -lv.side, lv.side, stiffness=k_side, damping=damp)
-    hinge(x, f"{j}_twist", (0, 0, 1), -lv.twist, lv.twist, stiffness=k_twist, damping=damp)
+    hinge(x, f"{j}_bend", (0, 1, 0), -lv.ext, lv.flex, stiffness=k_bend, damping=damp, end_moment=m_bend)
+    hinge(x, f"{j}_side", (1, 0, 0), -lv.side, lv.side, stiffness=k_side, damping=damp, end_moment=m_side)
+    hinge(x, f"{j}_twist", (0, 0, 1), -lv.twist, lv.twist, stiffness=k_twist, damping=damp, end_moment=m_twist)
 
     h = lv.height
     zc = 0.45 * h
@@ -255,10 +269,11 @@ def ribs(x, lv):
 def skull(x):
     lv = SKULL
     k_bend, k_side, k_twist, damp = REGION_SPRINGS["cervical"]
+    m_bend, m_side, m_twist = REGION_END_MOMENT["cervical"]
     x.open(f'<body name="skull" pos="0 0 {LEVELS[-1].height:.4g}" quat="{v(quat(rot_y(lv.curve)))}">')
-    hinge(x, "C0_C1_bend", (0, 1, 0), -lv.ext, lv.flex, stiffness=k_bend, damping=damp)
-    hinge(x, "C0_C1_side", (1, 0, 0), -lv.side, lv.side, stiffness=k_side, damping=damp)
-    hinge(x, "C0_C1_twist", (0, 0, 1), -lv.twist, lv.twist, stiffness=k_twist, damping=damp)
+    hinge(x, "C0_C1_bend", (0, 1, 0), -lv.ext, lv.flex, stiffness=k_bend, damping=damp, end_moment=m_bend)
+    hinge(x, "C0_C1_side", (1, 0, 0), -lv.side, lv.side, stiffness=k_side, damping=damp, end_moment=m_side)
+    hinge(x, "C0_C1_twist", (0, 0, 1), -lv.twist, lv.twist, stiffness=k_twist, damping=damp, end_moment=m_twist)
     x.add(f"""
 <geom class="mass" type="ellipsoid" pos="0.02 0 0.04" size="0.095 0.075 0.10" mass="{lv.mass}"/>
 <geom class="bone" type="ellipsoid" pos="0.01 0 0.05" size="0.095 0.075 0.09"/>
@@ -399,6 +414,8 @@ HEADER = """<!--
 PREAMBLE = """
 <mujoco model="movesim-skeleton">
   <compiler angle="degree" autolimits="true"/>
+  <!-- Each joint's user value: the moment (N·m) its ligaments resist with at the end of its range. -->
+  <size nuser_jnt="1"/>
   <!-- noslip stops the slow creep that soft contacts otherwise allow under constant load. -->
   <option timestep="0.001" integrator="implicitfast" gravity="0 0 -9.81" cone="elliptic" impratio="10"
           noslip_iterations="5"/>
@@ -443,17 +460,17 @@ PREAMBLE = """
     <default class="mass">
       <geom group="3" rgba="0.5 0.5 0.5 0.1"/>
     </default>
-    <default class="hip"><joint stiffness="60" damping="5"/></default>
-    <default class="knee"><joint stiffness="30" damping="3"/></default>
-    <default class="tibia_rot"><joint stiffness="10" damping="1"/></default>
-    <default class="ankle"><joint stiffness="10" damping="1"/></default>
-    <default class="toes"><joint stiffness="2" damping="0.2"/></default>
-    <default class="girdle"><joint stiffness="20" damping="1"/></default>
-    <default class="girdle_ac"><joint stiffness="30" damping="1"/></default>
-    <default class="shoulder"><joint stiffness="5" damping="1"/></default>
-    <default class="elbow"><joint stiffness="2" damping="0.5"/></default>
-    <default class="forearm"><joint stiffness="1" damping="0.2"/></default>
-    <default class="wrist"><joint stiffness="1" damping="0.2"/></default>
+    <default class="hip"><joint stiffness="60" damping="5" user="30"/></default>
+    <default class="knee"><joint stiffness="30" damping="3" user="20"/></default>
+    <default class="tibia_rot"><joint stiffness="10" damping="1" user="8"/></default>
+    <default class="ankle"><joint stiffness="10" damping="1" user="15"/></default>
+    <default class="toes"><joint stiffness="2" damping="0.2" user="3"/></default>
+    <default class="girdle"><joint stiffness="20" damping="1" user="8"/></default>
+    <default class="girdle_ac"><joint stiffness="30" damping="1" user="8"/></default>
+    <default class="shoulder"><joint stiffness="5" damping="1" user="10"/></default>
+    <default class="elbow"><joint stiffness="2" damping="0.5" user="8"/></default>
+    <default class="forearm"><joint stiffness="1" damping="0.2" user="3"/></default>
+    <default class="wrist"><joint stiffness="1" damping="0.2" user="4"/></default>
   </default>
 
   <worldbody>

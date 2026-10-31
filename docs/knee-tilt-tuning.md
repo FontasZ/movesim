@@ -70,3 +70,18 @@ L1 56%, T12 44%, T11 32%, T10 16%, then it stops at T9, where the floor holds th
 ribs. The left buttock lifts 2 cm and the left lower back 0.5–1.2 cm; the left ribs unload a
 little and the right lower ribs take more. The feet roll onto their edges and slip at most
 0.5 mm. The head and arms stay still. Everything returns to where it started.
+
+## Ligaments that stiffen toward the end of range
+
+Joints used to have an even spring plus a fairly sudden limit. Now each joint is loose around
+its resting angle and, from halfway to the end of its range, resistance grows exponentially to
+an end moment (`src/movesim/ligaments.py`; end moments in the tables in `build_model.py`).
+For L4-L5 twist: 0.9 N·m at 1°, 4.8 N·m at 1.7°, 11.7 N·m at the 2° limit.
+
+At 20° of knee tilt this barely matters: each lumbar level twists 0.6–0.8°, below where its
+ligaments start to tighten. The twist reaches a little further (T10 16% → 22% of the pelvis
+roll, T9 2% → 5%); everything else is within a newton or a millimetre.
+
+At 45° it shows. Levels near their limits now hand the twist on gradually instead of stopping
+it at a wall, so more of it reaches the chest (roll in degrees, ligaments off → on):
+pelvis 31.7 → 30.9, T10 15.6 → 17.6, T8 8.9 → 11.6, T6 4.7 → 7.5, T4 3.2 → 5.1.
