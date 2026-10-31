@@ -1,0 +1,39 @@
+:root {
+  --bg: #f4f1ea; --panel: #fbf9f4; --ink: #2b2a27; --muted: #6f6b62; --line: #ddd7ca;
+  --accent: #3f7d58; --accent-soft: #e3efe6; --warn: #9a5b1f; --warn-soft: #f6ead9;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1c1d1f; --panel: #242528; --ink: #ecebe7; --muted: #a29e95; --line: #3a3b3f;
+    --accent: #7fc29a; --accent-soft: #24352b; --warn: #e0a868; --warn-soft: #3a2f22;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+       font: 16px/1.6 -apple-system, "Segoe UI", system-ui, sans-serif; }
+.site-nav { display: flex; align-items: center; gap: 18px; padding: 10px 16px;
+            border-bottom: 1px solid var(--line); background: var(--panel); }
+.site-nav .brand { font-weight: 600; font-size: 15px; color: var(--ink); text-decoration: none; }
+.site-nav a { color: var(--muted); text-decoration: none; font-size: 14px; }
+.site-nav a:hover, .site-nav a[aria-current] { color: var(--accent); }
+main.page { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+main.page h1 { font-size: 30px; line-height: 1.2; margin: 0 0 8px; }
+main.page .lede { color: var(--muted); font-size: 18px; margin: 0 0 28px; }
+main.page h2 { font-size: 21px; margin: 40px 0 10px; padding-top: 8px; border-top: 1px solid var(--line); }
+main.page h3 { font-size: 17px; margin: 24px 0 6px; }
+main.page a { color: var(--accent); }
+.note { background: var(--warn-soft); border-left: 3px solid var(--warn); padding: 10px 14px; border-radius: 4px;
+        margin: 16px 0; font-size: 15px; }
+.table-wrap { overflow-x: auto; margin: 12px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tag { display: inline-block; font-size: 12px; padding: 1px 7px; border-radius: 10px; white-space: nowrap; }
+.tag.measured { background: var(--accent-soft); color: var(--accent); }
+.tag.assumed { background: var(--warn-soft); color: var(--warn); }
+.ok { color: var(--accent); font-weight: 600; }
+.off { color: var(--warn); font-weight: 600; }
+ol.refs { padding-left: 22px; font-size: 15px; }
+ol.refs li { margin-bottom: 8px; }
+.placeholder { border: 1px dashed var(--warn); background: var(--warn-soft); padding: 12px 14px; border-radius: 6px; }

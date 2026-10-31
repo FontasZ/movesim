@@ -1,0 +1,107 @@
+[
+ {
+  "name": "lumbar flexion, quartile 1 of range",
+  "measured": "0.34 N\u00b7m/\u00b0 (95% CI 0.00-0.68)",
+  "model": "0.34 N\u00b7m/\u00b0",
+  "ok": true,
+  "source": "Watt, Callaway & Williams 2022, in-vivo lumbar passive stiffness meta-analysis (Tables 5-7)"
+ },
+ {
+  "name": "lumbar flexion, quartile 2 of range",
+  "measured": "0.65 N\u00b7m/\u00b0 (95% CI 0.29-1.02)",
+  "model": "0.66 N\u00b7m/\u00b0",
+  "ok": true,
+  "source": "Watt, Callaway & Williams 2022, in-vivo lumbar passive stiffness meta-analysis (Tables 5-7)"
+ },
+ {
+  "name": "lumbar flexion, quartile 3 of range",
+  "measured": "1.28 N\u00b7m/\u00b0 (95% CI 0.69-1.87)",
+  "model": "1.26 N\u00b7m/\u00b0",
+  "ok": true,
+  "source": "Watt, Callaway & Williams 2022, in-vivo lumbar passive stiffness meta-analysis (Tables 5-7)"
+ },
+ {
+  "name": "lumbar flexion, quartile 4 of range",
+  "measured": "2.36 N\u00b7m/\u00b0 (95% CI 1.88-2.84)",
+  "model": "2.41 N\u00b7m/\u00b0",
+  "ok": true,
+  "source": "Watt, Callaway & Williams 2022, in-vivo lumbar passive stiffness meta-analysis (Tables 5-7)"
+ },
+ {
+  "name": "lumbar side-bending, quartile 1 of range",
+  "measured": "0.32 N\u00b7m/\u00b0 (95% CI 0.17-0.47)",
+  "model": "0.32 N\u00b7m/\u00b0",
+  "ok": true,
+  "source": "Watt, Callaway & Williams 2022, in-vivo lumbar passive stiffness meta-analysis (Tables 5-7)"
+ },
+ {
+  "name": "lumbar side-bending, quartile 2 of range",
+  "measured": "0.83 N\u00b7m/\u00b0 (95% CI 0.46-1.20)",
+  "model": "0.81 N\u00b7m/\u00b0",
+  "ok": true,
+  "source": "Watt, Callaway & Williams 2022, in-vivo lumbar passive stiffness meta-analysis (Tables 5-7)"
+ },
+ {
+  "name": "lumbar side-bending, quartile 3 of range",
+  "measured": "2.03 N\u00b7m/\u00b0 (95% CI 1.48-2.58)",
+  "model": "2.03 N\u00b7m/\u00b0",
+  "ok": true,
+  "source": "Watt, Callaway & Williams 2022, in-vivo lumbar passive stiffness meta-analysis (Tables 5-7)"
+ },
+ {
+  "name": "lumbar side-bending, quartile 4 of range",
+  "measured": "5.03 N\u00b7m/\u00b0 (95% CI 4.62-5.43)",
+  "model": "5.09 N\u00b7m/\u00b0",
+  "ok": true,
+  "source": "Watt, Callaway & Williams 2022, in-vivo lumbar passive stiffness meta-analysis (Tables 5-7)"
+ },
+ {
+  "name": "lumbar axial rotation, quartile 1 of range",
+  "measured": "0.21 N\u00b7m/\u00b0 (95% CI 0.10-0.32)",
+  "model": "0.19 N\u00b7m/\u00b0",
+  "ok": true,
+  "source": "Watt, Callaway & Williams 2022, in-vivo lumbar passive stiffness meta-analysis (Tables 5-7)"
+ },
+ {
+  "name": "lumbar axial rotation, quartile 2 of range",
+  "measured": "0.34 N\u00b7m/\u00b0 (95% CI 0.32-0.36)",
+  "model": "0.34 N\u00b7m/\u00b0",
+  "ok": true,
+  "source": "Watt, Callaway & Williams 2022, in-vivo lumbar passive stiffness meta-analysis (Tables 5-7)"
+ },
+ {
+  "name": "lumbar axial rotation, quartile 3 of range",
+  "measured": "0.71 N\u00b7m/\u00b0 (\u00b150%, one study 0.36-1.07)",
+  "model": "0.61 N\u00b7m/\u00b0",
+  "ok": true,
+  "source": "Watt, Callaway & Williams 2022, in-vivo lumbar passive stiffness meta-analysis (Tables 5-7)"
+ },
+ {
+  "name": "lumbar axial rotation, quartile 4 of range",
+  "measured": "1.33 N\u00b7m/\u00b0 (\u00b150%, one study 0.67-2.00)",
+  "model": "1.09 N\u00b7m/\u00b0",
+  "ok": true,
+  "source": "Watt, Callaway & Williams 2022, in-vivo lumbar passive stiffness meta-analysis (Tables 5-7)"
+ },
+ {
+  "name": "neck axial rotation, average over the range",
+  "measured": "0.07 N\u00b7m/\u00b0 (SD 0.02)",
+  "model": "0.070 N\u00b7m/\u00b0",
+  "ok": true,
+  "source": "De Boe et al. 2016, Mains Libres; passive cervical axial rotation stiffness in 74 healthy adults (torque meter)"
+ },
+ {
+  "name": "hip rotation stiffness over the first 20\u00b0 (tissue only)",
+  "measured": "5.6-10.1 N\u00b7m/rad",
+  "model": "8.0 N\u00b7m/rad (+8 tone in hook lying)",
+  "ok": true,
+  "source": "Leite et al. 2012 (10.1 N\u00b7m/rad) and the Manual Therapy hip passive stiffness validity study (5.6 N\u00b7m/rad); isokinetic dynamometer, first 20\u00b0 of rotation"
+ },
+ {
+  "name": "lumbar twist per level, trunk turned 45\u00b0 on a held pelvis",
+  "measured": "1.2-1.7\u00b0 at each level",
+  "model": "1.5-1.5\u00b0 (1.5, 1.5, 1.5, 1.5, 1.5 from L5-S1 up; lumbar total 7.4\u00b0)",
+  "ok": true,
+  "source": "Fujii, Sakaura, Mukai et al. 2007, Eur Spine J 16:1867; MRI of 10 volunteers, supine, pelvis fixed"
+ }
+]

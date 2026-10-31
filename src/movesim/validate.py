@@ -18,9 +18,10 @@ LUMBAR = ["L5_S1", "L4_L5", "L3_L4", "L2_L3", "L1_L2"]
 CERVICAL = ["C0_C1", "C1_C2", "C2_C3", "C3_C4", "C4_C5", "C5_C6", "C6_C7", "C7_T1"]
 
 WATT_2022 = "Watt, Callaway & Williams 2022, in-vivo lumbar passive stiffness meta-analysis (Tables 5-7)"
-FUJII_2007 = "Fujii et al. 2007, Eur Spine J 16:1867; MRI of 10 volunteers, supine, pelvis fixed"
-DE_BOE = "De Boe et al., passive cervical axial rotation stiffness in 74 healthy adults (torque meter)"
-HIP_STUDIES = "Two in-vivo hip rotation studies (isokinetic dynamometer, first 20°): 5.6 and 10.1 N·m/rad"
+FUJII_2007 = "Fujii, Sakaura, Mukai et al. 2007, Eur Spine J 16:1867; MRI of 10 volunteers, supine, pelvis fixed"
+DE_BOE = "De Boe et al. 2016, Mains Libres; passive cervical axial rotation stiffness in 74 healthy adults (torque meter)"
+HIP_STUDIES = ("Leite et al. 2012 (10.1 N·m/rad) and the Manual Therapy hip passive stiffness validity study "
+               "(5.6 N·m/rad); isokinetic dynamometer, first 20° of rotation")
 
 
 @dataclass
@@ -162,9 +163,14 @@ def report(results):
 
 
 def main():
+    import json
+    from dataclasses import asdict
+
     results = run()
     text = report(results)
     (ROOT / "docs" / "validation.md").write_text(text)
+    # The science page in the web player shows these.
+    (ROOT / "web" / "validation.json").write_text(json.dumps([asdict(r) for r in results], indent=1))
     print(text)
 
 
