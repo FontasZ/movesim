@@ -111,3 +111,19 @@ to the right now move in the hips first and the pelvis follows later, the twist 
 higher as the movement grows: knees 20° → pelvis 0.7°; 30° → 5° (twist to T10); 45° → 15° (T8);
 60° → 28° (T6, head turning slightly the other way). With the old, six-times-stiffer hips,
 20° already rolled the pelvis 8°.
+
+## Positions and building blocks
+
+- **Tone per position.** Lying with the knees standing needs hip tone of about 7 N·m/rad or
+  the knees fall open (8 used). Side-lying needs some hip-flexion tone to keep the knees bent.
+  Sitting upright needs about 3000 N·m/rad per spinal level: below that the trunk folds forward
+  over the knees, because 17 levels in series divide the stiffness.
+- **The tone follows the intention.** Turning the head or chest while sitting first reached
+  only half the asked angle: the posture's tone pulled back toward neutral. A person intending
+  to turn lets that tone go in the direction of the turn, so while a joint is turned on purpose
+  its tone now holds the new angle. Head turn 50° → 46°; chest and head together → the head
+  turns about 65° and the upper chest 28°, while the pelvis stays on the chair.
+- **Joint intentions** pull toward the wanted angle with the joint's own (implicit) damping.
+  Adding explicit damping made the light spinal segments unstable.
+- **Holding the head** takes three points (forehead, chin, temple); one point leaves it free to
+  turn about that point.

@@ -1,10 +1,22 @@
 [
  {
-  "slug": "test-moves",
-  "title": "Test of every move"
+  "slug": "test-building-blocks",
+  "title": "Test of the building blocks"
  },
  {
   "slug": "knees-and-head",
   "title": "Knees and head"
+ },
+ {
+  "slug": "top-arm-slides",
+  "title": "The top arm slides"
+ },
+ {
+  "slug": "elbow-to-knee",
+  "title": "Elbow to knee"
+ },
+ {
+  "slug": "looking-behind",
+  "title": "Turning to look behind"
  }
 ]

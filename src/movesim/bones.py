@@ -206,7 +206,7 @@ def standing_model():
     from movesim import build_model
 
     xml = build_model.build(meshes=False)
-    model = mujoco.MjModel.from_xml_string(xml, {"hook_lying_key.xml": b"<mujoco><keyframe/></mujoco>"})
+    model = mujoco.MjModel.from_xml_string(xml, {"keyframes.xml": b"<mujoco><keyframe/></mujoco>"})
     data = mujoco.MjData(model)
     data.qpos[:] = 0
     data.qpos[3] = 1  # pelvis upright, as if standing

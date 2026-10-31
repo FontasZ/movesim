@@ -1,0 +1,10 @@
+{"title": "Test of the building blocks", "start": "hook_lying",
+ "steps": [
+  {"say": "Turn the head to the right in the neck.", "moves": [{"move": "head_turn", "side": "right", "amount": 40}]},
+  {"say": "Twist the chest to the left on the pelvis.", "moves": [{"move": "spine_twist", "side": "left", "amount": 20}]},
+  {"say": "Turn the right leg in at the hip.", "moves": [{"move": "hip_turn_in", "side": "right", "amount": 20}]},
+  {"say": "Bring the right elbow toward the left knee.", "moves": [{"move": "reach", "point": "elbow_R", "toward": "knee_L", "amount": 0}]},
+  {"say": "Slide the left hand along the floor toward the feet.", "moves": [{"move": "reach", "point": "palm_L", "toward": "feet", "amount": 12}]},
+  {"say": "Raise the left arm overhead.", "moves": [{"move": "arm_raise", "side": "left", "amount": 150}]},
+  {"say": "Bend the right knee to the chest and straighten it toward the ceiling.", "moves": [{"move": "hip_bend", "side": "right", "amount": 50}, {"move": "knee_straighten", "side": "right", "amount": 60}]}
+ ]}

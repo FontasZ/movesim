@@ -155,12 +155,16 @@ TONE_DEG = {
 # Site, stiffness (N/m), damping (N·s/m).
 HANDLES = [
     ("knee_L", 2500, 120), ("knee_R", 2500, 120),
-    ("forehead", 1500, 60),
+    ("forehead", 3000, 100),
     ("asis_L", 15000, 500), ("asis_R", 15000, 500),  # the front hip bones
     ("sternum", 5000, 200),
     ("palm_L", 800, 40), ("palm_R", 800, 40),
     ("shoulder_L", 2500, 100), ("shoulder_R", 2500, 100),
     ("ankle_L", 3000, 120), ("ankle_R", 3000, 120),
+    ("elbow_L", 800, 40), ("elbow_R", 800, 40),
+    ("chin", 3000, 100), ("temple", 3000, 100),
+    ("pubis", 15000, 500),
+    ("toes_L", 1500, 60), ("toes_R", 1500, 60),
 ]
 
 
@@ -313,6 +317,15 @@ def vertebra(x, lv, i):
             x.add(f'<geom name="{lv.name}_back_{side_name(s)}" class="flesh" material="flesh_{side_name(s).lower()}" '
                   f'type="ellipsoid" pos="{v(cx, s * cy, h / 2)}" size="{v(sx, sy, h / 2 + 0.002)}"/>')
 
+    if lv.name in RIBS and RIBS[lv.name][0] >= 0.1:
+        # The sides of the chest, for lying on the side.
+        w, d, _, _ = RIBS[lv.name]
+        dd = max(d, 0.10)
+        for s in (1, -1):
+            x.add(f'<geom name="{lv.name}_side_{side_name(s)}" class="flesh" material="flesh_{side_name(s).lower()}" '
+                  f'type="ellipsoid" pos="{v(0.3 * dd - 0.02, s * (w - 0.02), h / 2)}" '
+                  f'size="{v(0.45 * dd, 0.04, h / 2 + 0.002)}"/>')
+
     if lv.name in RIBS:
         ribs(x, lv)
 
@@ -351,7 +364,9 @@ def skull(x):
 <geom class="bone" type="sphere" pos="0.085 -0.03 0.04" size="0.012" rgba="0.2 0.2 0.2 1"/>
 <!-- The back of the head as a sphere centred on the head's mass, so it rolls like a real head. -->
 <geom name="occiput" class="flesh" type="sphere" pos="0.02 0 0.04" size="0.11"/>
-<site name="forehead" pos="0.1 0 0.08" size="0.012"/>""")
+<site name="forehead" pos="0.1 0 0.08" size="0.012"/>
+<site name="chin" pos="0.085 0 -0.05" size="0.012"/>
+<site name="temple" pos="0.06 0.07 0.07" size="0.012"/>""")
     x.close()
 
 
@@ -392,11 +407,13 @@ def shoulder_and_arm(x, s, t2_pose):
 <geom class="bone" type="capsule" fromto="0 0 0  0 0 -0.29" size="0.011"/>
 <geom class="mass" type="capsule" fromto="0 0 -0.02  0 0 -0.27" size="0.045" mass="1.9"/>
 <geom name="arm_{n}" class="flesh" material="flesh_{n.lower()}" type="ellipsoid" pos="-0.01 0 -0.15" size="0.045 0.045 0.13"/>
-<geom name="elbow_{n}" class="flesh" type="sphere" pos="-0.02 0 -0.29" size="0.025"/>""")
+<geom name="elbow_{n}" class="flesh" type="sphere" pos="-0.02 0 -0.29" size="0.025"/>
+<geom name="deltoid_{n}" class="flesh" material="flesh_{n.lower()}" type="sphere" pos="{v(0, s * 0.02, -0.03)}" size="0.045"/>""")
 
     x.open('<body name="forearm_{0}" pos="0 0 -0.29">'.format(n))
     hinge(x, f"elbow_{n}", mirror((0, -1, 0), s), 0, 145, cls="elbow", springref=TONE_DEG["elbow"])
     hinge(x, f"pronation_{n}", mirror((0, 0, -1), s), -10, 150, cls="forearm")
+    x.add(f'<site name="elbow_{n}" pos="-0.02 0 0" size="0.012"/>')
     x.add(f"""
 <geom class="bone" type="capsule" fromto="0 {s * 0.012:.3g} 0  0 {s * 0.02:.3g} -0.245" size="0.008"/>
 <geom class="bone" type="capsule" fromto="0 {-s * 0.012:.3g} 0  0 {-s * 0.005:.3g} -0.245" size="0.008"/>
@@ -427,7 +444,8 @@ def leg(x, s):
 <geom class="bone" type="capsule" fromto="0 0 0  0 0 -0.46" size="0.015"/>
 <geom class="bone" type="capsule" fromto="0 -0.025 -0.45  0 0.025 -0.45" size="0.02"/>
 <geom class="mass" type="capsule" fromto="0 0 -0.03  0 0 -0.43" size="0.07" mass="10"/>
-<site name="knee_{n}" pos="0.03 0 -0.46" size="0.015"/>""")
+<site name="knee_{n}" pos="0.03 0 -0.46" size="0.015"/>
+<geom name="thigh_{n}" class="flesh" material="flesh_{n.lower()}" type="ellipsoid" pos="0 0 -0.23" size="0.075 0.075 0.21"/>""")
 
     x.open(f'<body name="shin_{n}" pos="0 0 -0.46">')
     hinge(x, f"knee_{n}", (0, 1, 0), 0, 150, cls="knee", springref=TONE_DEG["knee"])
@@ -437,7 +455,9 @@ def leg(x, s):
 <geom class="bone" type="capsule" fromto="0 0 0  0 0 -0.40" size="0.014"/>
 <geom class="bone" type="capsule" fromto="0 {s * 0.03:.3g} -0.02  0 {s * 0.03:.3g} -0.39" size="0.006"/>
 <geom class="bone" type="sphere" pos="0.035 0 0.01" size="0.02"/>
-<geom class="mass" type="capsule" fromto="0 0 -0.03  0 0 -0.36" size="0.05" mass="3.0"/>""")
+<geom class="mass" type="capsule" fromto="0 0 -0.03  0 0 -0.36" size="0.05" mass="3.0"/>
+<geom name="calf_{n}" class="flesh" material="flesh_{n.lower()}" type="ellipsoid" pos="-0.015 0 -0.15" size="0.05 0.05 0.15"/>
+<geom name="malleolus_{n}" class="flesh" type="sphere" pos="{v(0, s * 0.03, -0.40)}" size="0.025"/>""")
 
     x.open(f'<body name="foot_{n}" pos="0 0 -0.40">')
     # Ankle (talocrural) axis runs slightly down and back toward the outer ankle bone;
@@ -459,6 +479,7 @@ def leg(x, s):
 <geom class="bone" type="box" pos="0.025 0 -0.01" size="0.03 0.035 0.008"/>
 <geom class="mass" type="box" pos="0.025 0 -0.01" size="0.03 0.04 0.012" mass="0.1"/>
 <geom name="bigtoe_{n}" class="sole" type="sphere" pos="{v(0.05, m * 0.02, -0.015)}" size="0.01"/>
+<site name="toes_{n}" pos="0.04 0 0" size="0.012"/>
 <geom name="smalltoes_{n}" class="sole" type="sphere" pos="{v(0.035, s * 0.02, -0.015)}" size="0.01"/>""")
     for _ in range(4):
         x.close()
@@ -559,6 +580,21 @@ PREAMBLE = """
     <geom name="floor" type="plane" size="3 3 0.05" material="floor" contype="0" conaffinity="1"
           condim="3" friction="0.9 0.01 0.001"/>
 
+    <!-- Props, parked under the floor until a starting position places them. -->
+    <body name="pillow" mocap="true" pos="0 0 -2">
+      <geom type="box" size="0.2 0.13 0.05" contype="0" conaffinity="1" condim="3" friction="0.9 0.01 0.001"
+            rgba="0.78 0.74 0.66 1"/>
+    </body>
+    <body name="chair" mocap="true" pos="0 0 -2">
+      <!-- body origin at the middle of the seat's top surface -->
+      <geom type="box" pos="0 0 -0.02" size="0.22 0.22 0.02" contype="0" conaffinity="1" condim="3"
+            friction="0.9 0.01 0.001" rgba="0.55 0.42 0.3 1"/>
+      <geom type="box" pos="0.19 0.19 -0.24" size="0.02 0.02 0.22" rgba="0.55 0.42 0.3 1"/>
+      <geom type="box" pos="0.19 -0.19 -0.24" size="0.02 0.02 0.22" rgba="0.55 0.42 0.3 1"/>
+      <geom type="box" pos="-0.19 0.19 -0.24" size="0.02 0.02 0.22" rgba="0.55 0.42 0.3 1"/>
+      <geom type="box" pos="-0.19 -0.19 -0.24" size="0.02 0.02 0.22" rgba="0.55 0.42 0.3 1"/>
+    </body>
+
     <!-- The guide's hands: mocap targets, each tied to one point of the body by a soft spring. -->
 HANDLE_BODIES
 """
@@ -581,15 +617,25 @@ PELVIS = """
   <geom name="glute_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.04 -0.07 -0.10" size="0.065 0.07 0.085"/>
   <site name="asis_L" pos="0.07 0.11 -0.03" size="0.012"/>
   <site name="asis_R" pos="0.07 -0.11 -0.03" size="0.012"/>
+  <site name="pubis" pos="0.075 0 -0.14" size="0.012"/>
 """
 
 TENDONS = """
+  <!-- Body parts that can rest on each other (body parts otherwise only touch the floor and props). -->
+  <contact>
+    <pair geom1="thigh_L" geom2="thigh_R"/>
+    <pair geom1="calf_L" geom2="calf_R"/>
+    <pair geom1="malleolus_L" geom2="malleolus_R"/>
+    <pair geom1="thigh_L" geom2="calf_R"/>
+    <pair geom1="calf_L" geom2="thigh_R"/>
+  </contact>
+
   <!-- The guide's hands: a soft spring from each hand to its point on the body. -->
   <tendon>
 HANDLE_TENDONS
   </tendon>
 
-  <include file="hook_lying_key.xml"/>
+  <include file="keyframes.xml"/>
 </mujoco>
 """
 
@@ -639,7 +685,7 @@ def build(meshes=True):
 
 def main():
     MODEL_PATH.write_text(build())
-    KEY_PATH.write_text("<mujoco>\n  <keyframe/>\n</mujoco>\n")  # replaced by the settle below
+    KEY_PATH.write_text("<mujoco>\n  <keyframe/>\n</mujoco>\n")  # replaced by the settles below
     model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
     segments = sum(1 for b in range(1, model.nbody) if model.body_mocapid[b] < 0)
     print(f"Wrote {MODEL_PATH.name}: {segments} body segments, {model.njnt} joints, "

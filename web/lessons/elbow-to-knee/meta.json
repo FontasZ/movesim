@@ -1,0 +1,112 @@
+{
+ "title": "Elbow to knee",
+ "start": "hook_lying",
+ "fps": 30,
+ "frames": 2266,
+ "bodies": [
+  "pelvis",
+  "L5",
+  "L4",
+  "L3",
+  "L2",
+  "L1",
+  "T12",
+  "T11",
+  "T10",
+  "T9",
+  "T8",
+  "T7",
+  "T6",
+  "T5",
+  "T4",
+  "T3",
+  "T2",
+  "T1",
+  "C7",
+  "C6",
+  "C5",
+  "C4",
+  "C3",
+  "C2",
+  "C1",
+  "skull",
+  "thigh_L",
+  "shin_L",
+  "foot_L",
+  "toes_L",
+  "clavicle_L",
+  "scapula_L",
+  "humerus_L",
+  "forearm_L",
+  "hand_L",
+  "thigh_R",
+  "shin_R",
+  "foot_R",
+  "toes_R",
+  "clavicle_R",
+  "scapula_R",
+  "humerus_R",
+  "forearm_R",
+  "hand_R"
+ ],
+ "handles": [
+  "knee_L",
+  "knee_R",
+  "forehead",
+  "asis_L",
+  "asis_R",
+  "sternum",
+  "palm_L",
+  "palm_R",
+  "shoulder_L",
+  "shoulder_R",
+  "ankle_L",
+  "ankle_R",
+  "elbow_L",
+  "elbow_R",
+  "chin",
+  "temple",
+  "pubis",
+  "toes_L",
+  "toes_R"
+ ],
+ "captions": [
+  {
+   "start": 0.5,
+   "end": 3.5,
+   "text": "Lie on your back, knees bent, feet standing, arms long."
+  },
+  {
+   "start": 3.5,
+   "end": 16.01,
+   "text": "Lift the left knee a little toward you, so the foot leaves the floor, and put it back."
+  },
+  {
+   "start": 16.01,
+   "end": 39.01,
+   "text": "Bring the right elbow toward the left knee as the knee comes toward you. Let the head lift a little with it."
+  },
+  {
+   "start": 39.01,
+   "end": 44.01,
+   "text": "Rest."
+  },
+  {
+   "start": 44.01,
+   "end": 59.52,
+   "text": "The same, but leave the head on the floor: only the elbow and the knee come toward each other."
+  },
+  {
+   "start": 59.52,
+   "end": 64.52,
+   "text": "Rest."
+  },
+  {
+   "start": 64.52,
+   "end": 75.52,
+   "text": "The whole diagonal once more, with the head. Notice how far the elbow and the knee come now."
+  }
+ ],
+ "props": [],
+ "seconds": 75.52
+}

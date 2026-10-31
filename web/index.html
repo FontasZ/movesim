@@ -125,16 +125,19 @@ grid.rotation.x = Math.PI / 2;
 grid.position.z = 0.0005;
 scene.add(grid);
 
+// Camera offsets from the middle of the body (world: head toward +x, the person's right +y when lying on the back).
 const VIEWS = {
-  side:  { pos: [0.1, -2.2, 0.55], target: [0.05, 0, 0.15] },
-  above: { pos: [0.0, -0.01, 2.6], target: [0.0, 0, 0.1] },
-  feet:  { pos: [-1.9, 0, 0.55], target: [0.0, 0, 0.2] },
-  head:  { pos: [1.9, 0, 0.6], target: [0.0, 0, 0.15] },
+  side:  [0.05, -2.3, 0.4],
+  above: [0.0, -0.01, 2.6],
+  feet:  [-2.0, 0, 0.4],
+  head:  [2.0, 0, 0.45],
 };
+let center = [0, 0, 0.15], view = "side";
 function setView(name) {
-  const v = VIEWS[name];
-  camera.position.set(...v.pos);
-  controls.target.set(...v.target);
+  view = name;
+  const o = VIEWS[name];
+  camera.position.set(center[0] + o[0], center[1] + o[1], center[2] + o[2]);
+  controls.target.set(...center);
   controls.update();
 }
 document.querySelectorAll("#views button").forEach(b => b.onclick = () => setView(b.dataset.view));
@@ -165,7 +168,8 @@ async function loadBody(names) {
     segments[n] = g;
   }));
 }
-let handleDots = [];
+let handleDots = [], propMeshes = [];
+const propMat = c => new THREE.MeshStandardMaterial({ color: new THREE.Color(...c), roughness: 0.9 });
 
 // ---- lessons
 let lesson = null, t = 0, playing = false, speed = 1;
@@ -181,6 +185,16 @@ async function openLesson(slug) {
   lesson = { meta, slug,
     frames: new Float32Array(buf, 0, nf * nb * 7),
     handles: new Float32Array(buf, nf * nb * 7 * 4, nf * nh * 4) };
+  propMeshes.forEach(p => scene.remove(p));
+  propMeshes = (meta.props || []).map(p => {
+    const box = new THREE.Mesh(new THREE.BoxGeometry(2 * p.size[0], 2 * p.size[1], 2 * p.size[2]), propMat(p.color));
+    box.position.set(...p.pos); box.castShadow = box.receiveShadow = true;
+    scene.add(box); return box;
+  });
+  // Aim the views at the middle of the body as it starts.
+  const pts = meta.bodies.map((n, i) => [lesson.frames[i * 7], lesson.frames[i * 7 + 1], lesson.frames[i * 7 + 2]]);
+  center = [0, 1, 2].map(k => pts.reduce((a, p) => a + p[k], 0) / pts.length);
+  setView(view);
   handleDots.forEach(d => scene.remove(d));
   handleDots = meta.handles.map(() => {
     const d = new THREE.Mesh(new THREE.SphereGeometry(0.022, 16, 12), handMat);

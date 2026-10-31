@@ -1,0 +1,20 @@
+{
+  "title": "The top arm slides",
+  "start": "side_lying_left",
+  "steps": [
+    {"say": "Lie on your left side, knees bent, head on a pillow; right hand on the floor in front of the chest.", "moves": [], "hold": [], "seconds": 0, "stay": 0, "return": true, "repeat": 1, "rest_after": 2, "release": false},
+    {"say": "Slide the right hand forward along the floor, so that the right shoulder blade comes forward. Come back.",
+     "moves": [{"move": "reach", "side": "none", "amount": 15, "point": "palm_R", "toward": "front"}],
+     "hold": [], "seconds": 3, "stay": 1, "return": true, "repeat": 3, "rest_after": 1, "release": false},
+    {"say": "Lift the right arm and take it back, open, toward the ceiling and behind you, letting the chest turn. Come back.",
+     "moves": [{"move": "arm_raise", "side": "right", "amount": 60, "point": "none", "toward": "none"},
+               {"move": "arm_out", "side": "right", "amount": 60, "point": "none", "toward": "none"},
+               {"move": "spine_twist", "side": "right", "amount": 15, "point": "none", "toward": "none"}],
+     "hold": [], "seconds": 3.5, "stay": 1, "return": true, "repeat": 2, "rest_after": 1, "release": false},
+    {"say": "Rest on your side.", "moves": [], "hold": [], "seconds": 0, "stay": 0, "return": true, "repeat": 1, "rest_after": 5, "release": false},
+    {"say": "Slide the right hand forward again, and notice whether it goes further now.",
+     "moves": [{"move": "reach", "side": "none", "amount": 15, "point": "palm_R", "toward": "front"}],
+     "hold": [], "seconds": 3, "stay": 1, "return": true, "repeat": 1, "rest_after": 3, "release": false}
+  ],
+  "not_shown": ["Noticing whether the hand goes further (attention only)"]
+}

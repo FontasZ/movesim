@@ -1,11 +1,46 @@
 {
-  "title": "Test of every move",
+  "title": "Test of the building blocks",
+  "start": "hook_lying",
   "steps": [
     {
-      "say": "Let both knees go to the right, and come back.",
+      "say": "Turn the head to the right in the neck.",
       "moves": [
         {
-          "move": "knees_tilt",
+          "move": "head_turn",
+          "side": "right",
+          "amount": 40
+        }
+      ],
+      "hold": [],
+      "seconds": 3.0,
+      "stay": 1.0,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 1.0,
+      "release": false
+    },
+    {
+      "say": "Twist the chest to the left on the pelvis.",
+      "moves": [
+        {
+          "move": "spine_twist",
+          "side": "left",
+          "amount": 20
+        }
+      ],
+      "hold": [],
+      "seconds": 3.0,
+      "stay": 1.0,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 1.0,
+      "release": false
+    },
+    {
+      "say": "Turn the right leg in at the hip.",
+      "moves": [
+        {
+          "move": "hip_turn_in",
           "side": "right",
           "amount": 20
         }
@@ -19,12 +54,14 @@
       "release": false
     },
     {
-      "say": "Roll the head to the left.",
+      "say": "Bring the right elbow toward the left knee.",
       "moves": [
         {
-          "move": "head_roll",
-          "side": "left",
-          "amount": 30
+          "move": "reach",
+          "point": "elbow_R",
+          "toward": "knee_L",
+          "amount": 0,
+          "side": "none"
         }
       ],
       "hold": [],
@@ -36,114 +73,53 @@
       "release": false
     },
     {
-      "say": "Lift the right arm toward the ceiling.",
+      "say": "Slide the left hand along the floor toward the feet.",
       "moves": [
         {
-          "move": "arm_lift",
+          "move": "reach",
+          "point": "palm_L",
+          "toward": "feet",
+          "amount": 12,
+          "side": "none"
+        }
+      ],
+      "hold": [],
+      "seconds": 3.0,
+      "stay": 1.0,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 1.0,
+      "release": false
+    },
+    {
+      "say": "Raise the left arm overhead.",
+      "moves": [
+        {
+          "move": "arm_raise",
+          "side": "left",
+          "amount": 150
+        }
+      ],
+      "hold": [],
+      "seconds": 3.0,
+      "stay": 1.0,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 1.0,
+      "release": false
+    },
+    {
+      "say": "Bend the right knee to the chest and straighten it toward the ceiling.",
+      "moves": [
+        {
+          "move": "hip_bend",
           "side": "right",
-          "amount": 90
-        }
-      ],
-      "hold": [],
-      "seconds": 3.0,
-      "stay": 1.0,
-      "return": true,
-      "repeat": 1,
-      "rest_after": 1.0,
-      "release": false
-    },
-    {
-      "say": "Tilt the pelvis to flatten the lower back.",
-      "moves": [
+          "amount": 50
+        },
         {
-          "move": "pelvis_flatten",
-          "side": "none",
-          "amount": 8
-        }
-      ],
-      "hold": [],
-      "seconds": 3.0,
-      "stay": 1.0,
-      "return": true,
-      "repeat": 1,
-      "rest_after": 1.0,
-      "release": false
-    },
-    {
-      "say": "Lift the pelvis a little.",
-      "moves": [
-        {
-          "move": "pelvis_lift",
-          "side": "none",
-          "amount": 5
-        }
-      ],
-      "hold": [],
-      "seconds": 3.0,
-      "stay": 1.0,
-      "return": true,
-      "repeat": 1,
-      "rest_after": 1.0,
-      "release": false
-    },
-    {
-      "say": "Push through the right foot.",
-      "moves": [
-        {
-          "move": "foot_press",
+          "move": "knee_straighten",
           "side": "right",
-          "amount": 3
-        }
-      ],
-      "hold": [],
-      "seconds": 3.0,
-      "stay": 1.0,
-      "return": true,
-      "repeat": 1,
-      "rest_after": 1.0,
-      "release": false
-    },
-    {
-      "say": "Bring the left knee toward the chest.",
-      "moves": [
-        {
-          "move": "knee_to_chest",
-          "side": "left",
-          "amount": 30
-        }
-      ],
-      "hold": [],
-      "seconds": 3.0,
-      "stay": 1.0,
-      "return": true,
-      "repeat": 1,
-      "rest_after": 1.0,
-      "release": false
-    },
-    {
-      "say": "Lift the head.",
-      "moves": [
-        {
-          "move": "head_lift",
-          "side": "none",
-          "amount": 20
-        }
-      ],
-      "hold": [],
-      "seconds": 3.0,
-      "stay": 1.0,
-      "return": true,
-      "repeat": 1,
-      "rest_after": 1.0,
-      "release": false
-    },
-    {
-      "say": "Lift the left shoulder.",
-      "moves": [
-        {
-          "move": "shoulder_lift",
-          "side": "left",
-          "amount": 4
+          "amount": 60
         }
       ],
       "hold": [],

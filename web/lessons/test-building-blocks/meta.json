@@ -1,7 +1,8 @@
 {
- "title": "Test of every move",
+ "title": "Test of the building blocks",
+ "start": "hook_lying",
  "fps": 30,
- "frames": 2176,
+ "frames": 1696,
  "bodies": [
   "pelvis",
   "L5",
@@ -60,54 +61,52 @@
   "shoulder_L",
   "shoulder_R",
   "ankle_L",
-  "ankle_R"
+  "ankle_R",
+  "elbow_L",
+  "elbow_R",
+  "chin",
+  "temple",
+  "pubis",
+  "toes_L",
+  "toes_R"
  ],
  "captions": [
   {
    "start": 0.5,
    "end": 8.5,
-   "text": "Let both knees go to the right, and come back."
+   "text": "Turn the head to the right in the neck."
   },
   {
    "start": 8.5,
    "end": 16.5,
-   "text": "Roll the head to the left."
+   "text": "Twist the chest to the left on the pelvis."
   },
   {
    "start": 16.5,
    "end": 24.51,
-   "text": "Lift the right arm toward the ceiling."
+   "text": "Turn the right leg in at the hip."
   },
   {
    "start": 24.51,
    "end": 32.51,
-   "text": "Tilt the pelvis to flatten the lower back."
+   "text": "Bring the right elbow toward the left knee."
   },
   {
    "start": 32.51,
    "end": 40.51,
-   "text": "Lift the pelvis a little."
+   "text": "Slide the left hand along the floor toward the feet."
   },
   {
    "start": 40.51,
    "end": 48.51,
-   "text": "Push through the right foot."
+   "text": "Raise the left arm overhead."
   },
   {
    "start": 48.51,
    "end": 56.52,
-   "text": "Bring the left knee toward the chest."
-  },
-  {
-   "start": 56.52,
-   "end": 64.52,
-   "text": "Lift the head."
-  },
-  {
-   "start": 64.52,
-   "end": 72.52,
-   "text": "Lift the left shoulder."
+   "text": "Bend the right knee to the chest and straighten it toward the ceiling."
   }
  ],
- "seconds": 72.52
+ "props": [],
+ "seconds": 56.52
 }

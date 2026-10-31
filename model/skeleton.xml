@@ -136,6 +136,21 @@
     <geom name="floor" type="plane" size="3 3 0.05" material="floor" contype="0" conaffinity="1"
           condim="3" friction="0.9 0.01 0.001"/>
 
+    <!-- Props, parked under the floor until a starting position places them. -->
+    <body name="pillow" mocap="true" pos="0 0 -2">
+      <geom type="box" size="0.2 0.13 0.05" contype="0" conaffinity="1" condim="3" friction="0.9 0.01 0.001"
+            rgba="0.78 0.74 0.66 1"/>
+    </body>
+    <body name="chair" mocap="true" pos="0 0 -2">
+      <!-- body origin at the middle of the seat's top surface -->
+      <geom type="box" pos="0 0 -0.02" size="0.22 0.22 0.02" contype="0" conaffinity="1" condim="3"
+            friction="0.9 0.01 0.001" rgba="0.55 0.42 0.3 1"/>
+      <geom type="box" pos="0.19 0.19 -0.24" size="0.02 0.02 0.22" rgba="0.55 0.42 0.3 1"/>
+      <geom type="box" pos="0.19 -0.19 -0.24" size="0.02 0.02 0.22" rgba="0.55 0.42 0.3 1"/>
+      <geom type="box" pos="-0.19 0.19 -0.24" size="0.02 0.02 0.22" rgba="0.55 0.42 0.3 1"/>
+      <geom type="box" pos="-0.19 -0.19 -0.24" size="0.02 0.02 0.22" rgba="0.55 0.42 0.3 1"/>
+    </body>
+
     <!-- The guide's hands: mocap targets, each tied to one point of the body by a soft spring. -->
     <body name="guide_knee_L" mocap="true">
       <site name="guide_knee_L" type="sphere" size="0.02" material="hand"/>
@@ -185,6 +200,34 @@
       <site name="guide_ankle_R" type="sphere" size="0.02" material="hand"/>
       <geom type="sphere" size="0.025" material="hand" group="2"/>
     </body>
+    <body name="guide_elbow_L" mocap="true">
+      <site name="guide_elbow_L" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
+    </body>
+    <body name="guide_elbow_R" mocap="true">
+      <site name="guide_elbow_R" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
+    </body>
+    <body name="guide_chin" mocap="true">
+      <site name="guide_chin" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
+    </body>
+    <body name="guide_temple" mocap="true">
+      <site name="guide_temple" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
+    </body>
+    <body name="guide_pubis" mocap="true">
+      <site name="guide_pubis" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
+    </body>
+    <body name="guide_toes_L" mocap="true">
+      <site name="guide_toes_L" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
+    </body>
+    <body name="guide_toes_R" mocap="true">
+      <site name="guide_toes_R" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
+    </body>
     <body name="pelvis" pos="0 0 0.12" quat="0 0.7071068 0 0.7071068">
       <geom class="bonemesh" mesh="pelvis"/>
     <freejoint name="pelvis"/>
@@ -203,6 +246,7 @@
     <geom name="glute_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.04 -0.07 -0.10" size="0.065 0.07 0.085"/>
     <site name="asis_L" pos="0.07 0.11 -0.03" size="0.012"/>
     <site name="asis_R" pos="0.07 -0.11 -0.03" size="0.012"/>
+    <site name="pubis" pos="0.075 0 -0.14" size="0.012"/>
       <body name="thigh_L" pos="0.01 0.08 -0.1">
         <geom class="bonemesh" mesh="thigh_L"/>
         <joint name="hip_flex_L" class="hip" axis="0 -1 0" range="-20 125" springref="49.4"/>
@@ -213,6 +257,7 @@
         <geom class="bone" type="capsule" fromto="0 -0.025 -0.45  0 0.025 -0.45" size="0.02"/>
         <geom class="mass" type="capsule" fromto="0 0 -0.03  0 0 -0.43" size="0.07" mass="10"/>
         <site name="knee_L" pos="0.03 0 -0.46" size="0.015"/>
+        <geom name="thigh_L" class="flesh" material="flesh_l" type="ellipsoid" pos="0 0 -0.23" size="0.075 0.075 0.21"/>
         <body name="shin_L" pos="0 0 -0.46">
           <geom class="bonemesh" mesh="shin_L"/>
           <joint name="knee_L" class="knee" axis="0 1 0" range="0 150" springref="112.5"/>
@@ -221,6 +266,8 @@
           <geom class="bone" type="capsule" fromto="0 0.03 -0.02  0 0.03 -0.39" size="0.006"/>
           <geom class="bone" type="sphere" pos="0.035 0 0.01" size="0.02"/>
           <geom class="mass" type="capsule" fromto="0 0 -0.03  0 0 -0.36" size="0.05" mass="3.0"/>
+          <geom name="calf_L" class="flesh" material="flesh_l" type="ellipsoid" pos="-0.015 0 -0.15" size="0.05 0.05 0.15"/>
+          <geom name="malleolus_L" class="flesh" type="sphere" pos="0 0.03 -0.4" size="0.025"/>
           <body name="foot_L" pos="0 0 -0.40">
             <geom class="bonemesh" mesh="foot_L"/>
             <joint name="ankle_L" class="ankle" axis="-0.1 0.985 -0.14" range="-25 50" springref="40"/>
@@ -238,6 +285,7 @@
               <geom class="bone" type="box" pos="0.025 0 -0.01" size="0.03 0.035 0.008"/>
               <geom class="mass" type="box" pos="0.025 0 -0.01" size="0.03 0.04 0.012" mass="0.1"/>
               <geom name="bigtoe_L" class="sole" type="sphere" pos="0.05 -0.02 -0.015" size="0.01"/>
+              <site name="toes_L" pos="0.04 0 0" size="0.012"/>
               <geom name="smalltoes_L" class="sole" type="sphere" pos="0.035 0.02 -0.015" size="0.01"/>
             </body>
           </body>
@@ -253,6 +301,7 @@
         <geom class="bone" type="capsule" fromto="0 -0.025 -0.45  0 0.025 -0.45" size="0.02"/>
         <geom class="mass" type="capsule" fromto="0 0 -0.03  0 0 -0.43" size="0.07" mass="10"/>
         <site name="knee_R" pos="0.03 0 -0.46" size="0.015"/>
+        <geom name="thigh_R" class="flesh" material="flesh_r" type="ellipsoid" pos="0 0 -0.23" size="0.075 0.075 0.21"/>
         <body name="shin_R" pos="0 0 -0.46">
           <geom class="bonemesh" mesh="shin_R"/>
           <joint name="knee_R" class="knee" axis="0 1 0" range="0 150" springref="112.5"/>
@@ -261,6 +310,8 @@
           <geom class="bone" type="capsule" fromto="0 -0.03 -0.02  0 -0.03 -0.39" size="0.006"/>
           <geom class="bone" type="sphere" pos="0.035 0 0.01" size="0.02"/>
           <geom class="mass" type="capsule" fromto="0 0 -0.03  0 0 -0.36" size="0.05" mass="3.0"/>
+          <geom name="calf_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.015 0 -0.15" size="0.05 0.05 0.15"/>
+          <geom name="malleolus_R" class="flesh" type="sphere" pos="0 -0.03 -0.4" size="0.025"/>
           <body name="foot_R" pos="0 0 -0.40">
             <geom class="bonemesh" mesh="foot_R"/>
             <joint name="ankle_R" class="ankle" axis="0.1 0.985 0.14" range="-25 50" springref="40"/>
@@ -278,6 +329,7 @@
               <geom class="bone" type="box" pos="0.025 0 -0.01" size="0.03 0.035 0.008"/>
               <geom class="mass" type="box" pos="0.025 0 -0.01" size="0.03 0.04 0.012" mass="0.1"/>
               <geom name="bigtoe_R" class="sole" type="sphere" pos="0.05 0.02 -0.015" size="0.01"/>
+              <site name="toes_R" pos="0.04 0 0" size="0.012"/>
               <geom name="smalltoes_R" class="sole" type="sphere" pos="0.035 -0.02 -0.015" size="0.01"/>
             </body>
           </body>
@@ -364,6 +416,8 @@
                     <geom class="mass" type="ellipsoid" pos="0.04 0 0.015" size="0.075 0.108 0.015" mass="1.4"/>
                     <geom name="T11_back_L" class="flesh" material="flesh_l" type="ellipsoid" pos="-0.06 0.05 0.015" size="0.042 0.05 0.017"/>
                     <geom name="T11_back_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.06 -0.05 0.015" size="0.042 0.05 0.017"/>
+                    <geom name="T11_side_L" class="flesh" material="flesh_l" type="ellipsoid" pos="0.01 0.1 0.015" size="0.045 0.04 0.017"/>
+                    <geom name="T11_side_R" class="flesh" material="flesh_r" type="ellipsoid" pos="0.01 -0.1 0.015" size="0.045 0.04 0.017"/>
                     <geom class="rib" fromto="-0.005 0.02 0.018 -0.045 0.074 0.013"/>
                     <geom class="rib" fromto="-0.045 0.074 0.013 -0.01 0.12 -0.022"/>
                     <geom class="rib" fromto="-0.005 -0.02 0.018 -0.045 -0.074 0.013"/>
@@ -379,6 +433,8 @@
                       <geom class="mass" type="ellipsoid" pos="0.042 0 0.015" size="0.07775 0.1215 0.015" mass="1.4"/>
                       <geom name="T10_back_L" class="flesh" material="flesh_l" type="ellipsoid" pos="-0.06 0.05 0.015" size="0.042 0.05 0.017"/>
                       <geom name="T10_back_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.06 -0.05 0.015" size="0.042 0.05 0.017"/>
+                      <geom name="T10_side_L" class="flesh" material="flesh_l" type="ellipsoid" pos="0.0115 0.115 0.015" size="0.04725 0.04 0.017"/>
+                      <geom name="T10_side_R" class="flesh" material="flesh_r" type="ellipsoid" pos="0.0115 -0.115 0.015" size="0.04725 0.04 0.017"/>
                       <geom class="rib" fromto="-0.005 0.02 0.018 -0.045 0.08075 0.013"/>
                       <geom class="rib" fromto="-0.045 0.08075 0.013 0.0115 0.135 0.0005"/>
                       <geom class="rib" fromto="0.0115 0.135 0.0005 0.084 0.081 -0.031"/>
@@ -398,6 +454,8 @@
                         <geom class="mass" type="ellipsoid" pos="0.046 0 0.0135" size="0.08325 0.126 0.0135" mass="1.4"/>
                         <geom name="T9_back_L" class="flesh" material="flesh_l" type="ellipsoid" pos="-0.06 0.05 0.0135" size="0.042 0.05 0.0155"/>
                         <geom name="T9_back_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.06 -0.05 0.0135" size="0.042 0.05 0.0155"/>
+                        <geom name="T9_side_L" class="flesh" material="flesh_l" type="ellipsoid" pos="0.0145 0.12 0.0135" size="0.05175 0.04 0.0155"/>
+                        <geom name="T9_side_R" class="flesh" material="flesh_r" type="ellipsoid" pos="0.0145 -0.12 0.0135" size="0.05175 0.04 0.0155"/>
                         <geom class="rib" fromto="-0.005 0.02 0.0162 -0.045 0.083 0.0112"/>
                         <geom class="rib" fromto="-0.045 0.083 0.0112 0.0145 0.14 -0.0038"/>
                         <geom class="rib" fromto="0.0145 0.14 -0.0038 0.092 0.084 -0.0398"/>
@@ -417,6 +475,8 @@
                           <geom class="mass" type="ellipsoid" pos="0.048 0 0.0135" size="0.086 0.126 0.0135" mass="1.4"/>
                           <geom name="T8_back_L" class="flesh" material="flesh_l" type="ellipsoid" pos="-0.06 0.05 0.0135" size="0.042 0.05 0.0155"/>
                           <geom name="T8_back_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.06 -0.05 0.0135" size="0.042 0.05 0.0155"/>
+                          <geom name="T8_side_L" class="flesh" material="flesh_l" type="ellipsoid" pos="0.016 0.12 0.0135" size="0.054 0.04 0.0155"/>
+                          <geom name="T8_side_R" class="flesh" material="flesh_r" type="ellipsoid" pos="0.016 -0.12 0.0135" size="0.054 0.04 0.0155"/>
                           <geom class="rib" fromto="-0.005 0.02 0.0162 -0.045 0.083 0.0112"/>
                           <geom class="rib" fromto="-0.045 0.083 0.0112 0.016 0.14 -0.0038"/>
                           <geom class="rib" fromto="0.016 0.14 -0.0038 0.096 0.084 -0.0398"/>
@@ -436,6 +496,8 @@
                             <geom class="mass" type="ellipsoid" pos="0.048 0 0.0145" size="0.086 0.1215 0.0145" mass="1.7"/>
                             <geom name="T7_back_L" class="flesh" material="flesh_l" type="ellipsoid" pos="-0.06 0.05 0.0145" size="0.042 0.05 0.0165"/>
                             <geom name="T7_back_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.06 -0.05 0.0145" size="0.042 0.05 0.0165"/>
+                            <geom name="T7_side_L" class="flesh" material="flesh_l" type="ellipsoid" pos="0.016 0.115 0.0145" size="0.054 0.04 0.0165"/>
+                            <geom name="T7_side_R" class="flesh" material="flesh_r" type="ellipsoid" pos="0.016 -0.115 0.0145" size="0.054 0.04 0.0165"/>
                             <geom class="rib" fromto="-0.005 0.02 0.0174 -0.045 0.08075 0.0124"/>
                             <geom class="rib" fromto="-0.045 0.08075 0.0124 0.016 0.135 -0.0026"/>
                             <geom class="rib" fromto="0.016 0.135 -0.0026 0.096 0.081 -0.0386"/>
@@ -455,6 +517,8 @@
                               <geom class="mass" type="ellipsoid" pos="0.046 0 0.013" size="0.08325 0.117 0.013" mass="1.6"/>
                               <geom name="T6_back_L" class="flesh" material="flesh_l" type="ellipsoid" pos="-0.06 0.05 0.013" size="0.042 0.05 0.015"/>
                               <geom name="T6_back_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.06 -0.05 0.013" size="0.042 0.05 0.015"/>
+                              <geom name="T6_side_L" class="flesh" material="flesh_l" type="ellipsoid" pos="0.0145 0.11 0.013" size="0.05175 0.04 0.015"/>
+                              <geom name="T6_side_R" class="flesh" material="flesh_r" type="ellipsoid" pos="0.0145 -0.11 0.013" size="0.05175 0.04 0.015"/>
                               <geom class="rib" fromto="-0.005 0.02 0.0156 -0.045 0.0785 0.0106"/>
                               <geom class="rib" fromto="-0.045 0.0785 0.0106 0.0145 0.13 -0.0019"/>
                               <geom class="rib" fromto="0.0145 0.13 -0.0019 0.092 0.078 -0.0334"/>
@@ -475,6 +539,8 @@
                                 <geom class="mass" type="ellipsoid" pos="0.042 0 0.013" size="0.07775 0.108 0.013" mass="1.5"/>
                                 <geom name="T5_back_L" class="flesh" material="flesh_l" type="ellipsoid" pos="-0.06 0.05 0.013" size="0.042 0.05 0.015"/>
                                 <geom name="T5_back_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.06 -0.05 0.013" size="0.042 0.05 0.015"/>
+                                <geom name="T5_side_L" class="flesh" material="flesh_l" type="ellipsoid" pos="0.0115 0.1 0.013" size="0.04725 0.04 0.015"/>
+                                <geom name="T5_side_R" class="flesh" material="flesh_r" type="ellipsoid" pos="0.0115 -0.1 0.013" size="0.04725 0.04 0.015"/>
                                 <geom class="rib" fromto="-0.005 0.02 0.0156 -0.045 0.074 0.0106"/>
                                 <geom class="rib" fromto="-0.045 0.074 0.0106 0.0115 0.12 0.0006"/>
                                 <geom class="rib" fromto="0.0115 0.12 0.0006 0.084 0.072 -0.0264"/>
@@ -494,6 +560,8 @@
                                   <geom class="mass" type="ellipsoid" pos="0.04 0 0.012" size="0.075 0.099 0.012" mass="1.35"/>
                                   <geom name="T4_back_L" class="flesh" material="flesh_l" type="ellipsoid" pos="-0.06 0.05 0.012" size="0.042 0.05 0.014"/>
                                   <geom name="T4_back_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.06 -0.05 0.012" size="0.042 0.05 0.014"/>
+                                  <geom name="T4_side_L" class="flesh" material="flesh_l" type="ellipsoid" pos="0.01 0.09 0.012" size="0.045 0.04 0.014"/>
+                                  <geom name="T4_side_R" class="flesh" material="flesh_r" type="ellipsoid" pos="0.01 -0.09 0.012" size="0.045 0.04 0.014"/>
                                   <geom class="rib" fromto="-0.005 0.02 0.0144 -0.045 0.0695 0.0094"/>
                                   <geom class="rib" fromto="-0.045 0.0695 0.0094 0.0085 0.11 0.0019"/>
                                   <geom class="rib" fromto="0.0085 0.11 0.0019 0.076 0.066 -0.0206"/>
@@ -570,10 +638,12 @@
                                             <geom class="mass" type="capsule" fromto="0 0 -0.02  0 0 -0.27" size="0.045" mass="1.9"/>
                                             <geom name="arm_L" class="flesh" material="flesh_l" type="ellipsoid" pos="-0.01 0 -0.15" size="0.045 0.045 0.13"/>
                                             <geom name="elbow_L" class="flesh" type="sphere" pos="-0.02 0 -0.29" size="0.025"/>
+                                            <geom name="deltoid_L" class="flesh" material="flesh_l" type="sphere" pos="0 0.02 -0.03" size="0.045"/>
                                             <body name="forearm_L" pos="0 0 -0.29">
                                               <geom class="bonemesh" mesh="forearm_L"/>
                                               <joint name="elbow_L" class="elbow" axis="0 -1 0" range="0 145" springref="10"/>
                                               <joint name="pronation_L" class="forearm" axis="0 0 -1" range="-10 150"/>
+                                              <site name="elbow_L" pos="-0.02 0 0" size="0.012"/>
                                               <geom class="bone" type="capsule" fromto="0 0.012 0  0 0.02 -0.245" size="0.008"/>
                                               <geom class="bone" type="capsule" fromto="0 -0.012 0  0 -0.005 -0.245" size="0.008"/>
                                               <geom class="mass" type="capsule" fromto="0 0 -0.02  0 0 -0.23" size="0.035" mass="1.15"/>
@@ -618,10 +688,12 @@
                                             <geom class="mass" type="capsule" fromto="0 0 -0.02  0 0 -0.27" size="0.045" mass="1.9"/>
                                             <geom name="arm_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.01 0 -0.15" size="0.045 0.045 0.13"/>
                                             <geom name="elbow_R" class="flesh" type="sphere" pos="-0.02 0 -0.29" size="0.025"/>
+                                            <geom name="deltoid_R" class="flesh" material="flesh_r" type="sphere" pos="0 -0.02 -0.03" size="0.045"/>
                                             <body name="forearm_R" pos="0 0 -0.29">
                                               <geom class="bonemesh" mesh="forearm_R"/>
                                               <joint name="elbow_R" class="elbow" axis="0 -1 0" range="0 145" springref="10"/>
                                               <joint name="pronation_R" class="forearm" axis="0 0 1" range="-10 150"/>
+                                              <site name="elbow_R" pos="-0.02 0 0" size="0.012"/>
                                               <geom class="bone" type="capsule" fromto="0 -0.012 0  0 -0.02 -0.245" size="0.008"/>
                                               <geom class="bone" type="capsule" fromto="0 0.012 0  0 0.005 -0.245" size="0.008"/>
                                               <geom class="mass" type="capsule" fromto="0 0 -0.02  0 0 -0.23" size="0.035" mass="1.15"/>
@@ -741,6 +813,8 @@
                                                         <!-- The back of the head as a sphere centred on the head's mass, so it rolls like a real head. -->
                                                         <geom name="occiput" class="flesh" type="sphere" pos="0.02 0 0.04" size="0.11"/>
                                                         <site name="forehead" pos="0.1 0 0.08" size="0.012"/>
+                                                        <site name="chin" pos="0.085 0 -0.05" size="0.012"/>
+                                                        <site name="temple" pos="0.06 0.07 0.07" size="0.012"/>
                                                       </body>
                                                     </body>
                                                   </body>
@@ -769,6 +843,15 @@
     </body>
   </worldbody>
 
+  <!-- Body parts that can rest on each other (body parts otherwise only touch the floor and props). -->
+  <contact>
+    <pair geom1="thigh_L" geom2="thigh_R"/>
+    <pair geom1="calf_L" geom2="calf_R"/>
+    <pair geom1="malleolus_L" geom2="malleolus_R"/>
+    <pair geom1="thigh_L" geom2="calf_R"/>
+    <pair geom1="calf_L" geom2="thigh_R"/>
+  </contact>
+
   <!-- The guide's hands: a soft spring from each hand to its point on the body. -->
   <tendon>
     <spatial name="guide_knee_L" stiffness="2500" damping="120" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
@@ -779,7 +862,7 @@
       <site site="guide_knee_R"/>
       <site site="knee_R"/>
     </spatial>
-    <spatial name="guide_forehead" stiffness="1500" damping="60" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+    <spatial name="guide_forehead" stiffness="3000" damping="100" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
       <site site="guide_forehead"/>
       <site site="forehead"/>
     </spatial>
@@ -819,7 +902,35 @@
       <site site="guide_ankle_R"/>
       <site site="ankle_R"/>
     </spatial>
+    <spatial name="guide_elbow_L" stiffness="800" damping="40" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_elbow_L"/>
+      <site site="elbow_L"/>
+    </spatial>
+    <spatial name="guide_elbow_R" stiffness="800" damping="40" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_elbow_R"/>
+      <site site="elbow_R"/>
+    </spatial>
+    <spatial name="guide_chin" stiffness="3000" damping="100" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_chin"/>
+      <site site="chin"/>
+    </spatial>
+    <spatial name="guide_temple" stiffness="3000" damping="100" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_temple"/>
+      <site site="temple"/>
+    </spatial>
+    <spatial name="guide_pubis" stiffness="15000" damping="500" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_pubis"/>
+      <site site="pubis"/>
+    </spatial>
+    <spatial name="guide_toes_L" stiffness="1500" damping="60" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_toes_L"/>
+      <site site="toes_L"/>
+    </spatial>
+    <spatial name="guide_toes_R" stiffness="1500" damping="60" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_toes_R"/>
+      <site site="toes_R"/>
+    </spatial>
   </tendon>
 
-  <include file="hook_lying_key.xml"/>
+  <include file="keyframes.xml"/>
 </mujoco>

@@ -1,0 +1,198 @@
+{
+ "title": "Turning to look behind",
+ "start": "sitting_chair",
+ "fps": 30,
+ "frames": 2176,
+ "bodies": [
+  "pelvis",
+  "L5",
+  "L4",
+  "L3",
+  "L2",
+  "L1",
+  "T12",
+  "T11",
+  "T10",
+  "T9",
+  "T8",
+  "T7",
+  "T6",
+  "T5",
+  "T4",
+  "T3",
+  "T2",
+  "T1",
+  "C7",
+  "C6",
+  "C5",
+  "C4",
+  "C3",
+  "C2",
+  "C1",
+  "skull",
+  "thigh_L",
+  "shin_L",
+  "foot_L",
+  "toes_L",
+  "clavicle_L",
+  "scapula_L",
+  "humerus_L",
+  "forearm_L",
+  "hand_L",
+  "thigh_R",
+  "shin_R",
+  "foot_R",
+  "toes_R",
+  "clavicle_R",
+  "scapula_R",
+  "humerus_R",
+  "forearm_R",
+  "hand_R"
+ ],
+ "handles": [
+  "knee_L",
+  "knee_R",
+  "forehead",
+  "asis_L",
+  "asis_R",
+  "sternum",
+  "palm_L",
+  "palm_R",
+  "shoulder_L",
+  "shoulder_R",
+  "ankle_L",
+  "ankle_R",
+  "elbow_L",
+  "elbow_R",
+  "chin",
+  "temple",
+  "pubis",
+  "toes_L",
+  "toes_R"
+ ],
+ "captions": [
+  {
+   "start": 0.5,
+   "end": 2.5,
+   "text": "Sit on the front half of the chair, feet standing on the floor."
+  },
+  {
+   "start": 2.5,
+   "end": 10.5,
+   "text": "Turn the head to the right, as if to look behind you, and come back."
+  },
+  {
+   "start": 10.5,
+   "end": 26.01,
+   "text": "Turn the chest to the right as well, the head going with it. Come back."
+  },
+  {
+   "start": 26.01,
+   "end": 41.51,
+   "text": "Turn the chest to the right and the head to the left, at the same time. Small."
+  },
+  {
+   "start": 41.51,
+   "end": 57.02,
+   "text": "Leave the head facing forward and turn only the chest to the right, and back."
+  },
+  {
+   "start": 57.02,
+   "end": 61.02,
+   "text": "Rest."
+  },
+  {
+   "start": 61.02,
+   "end": 72.52,
+   "text": "Turn head and chest together to the right once more, and notice how far you see now."
+  }
+ ],
+ "props": [
+  {
+   "pos": [
+    -0.01,
+    0.0,
+    0.4102
+   ],
+   "size": [
+    0.22,
+    0.22,
+    0.02
+   ],
+   "color": [
+    0.550000011920929,
+    0.41999998688697815,
+    0.30000001192092896
+   ]
+  },
+  {
+   "pos": [
+    0.18,
+    0.19,
+    0.1902
+   ],
+   "size": [
+    0.02,
+    0.02,
+    0.22
+   ],
+   "color": [
+    0.550000011920929,
+    0.41999998688697815,
+    0.30000001192092896
+   ]
+  },
+  {
+   "pos": [
+    0.18,
+    -0.19,
+    0.1902
+   ],
+   "size": [
+    0.02,
+    0.02,
+    0.22
+   ],
+   "color": [
+    0.550000011920929,
+    0.41999998688697815,
+    0.30000001192092896
+   ]
+  },
+  {
+   "pos": [
+    -0.2,
+    0.19,
+    0.1902
+   ],
+   "size": [
+    0.02,
+    0.02,
+    0.22
+   ],
+   "color": [
+    0.550000011920929,
+    0.41999998688697815,
+    0.30000001192092896
+   ]
+  },
+  {
+   "pos": [
+    -0.2,
+    -0.19,
+    0.1902
+   ],
+   "size": [
+    0.02,
+    0.02,
+    0.22
+   ],
+   "color": [
+    0.550000011920929,
+    0.41999998688697815,
+    0.30000001192092896
+   ]
+  }
+ ],
+ "seconds": 72.52
+}

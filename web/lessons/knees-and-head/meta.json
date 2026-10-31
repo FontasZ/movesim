@@ -1,5 +1,6 @@
 {
  "title": "Knees and head",
+ "start": "hook_lying",
  "fps": 30,
  "frames": 3181,
  "bodies": [
@@ -60,7 +61,14 @@
   "shoulder_L",
   "shoulder_R",
   "ankle_L",
-  "ankle_R"
+  "ankle_R",
+  "elbow_L",
+  "elbow_R",
+  "chin",
+  "temple",
+  "pubis",
+  "toes_L",
+  "toes_R"
  ],
  "captions": [
   {
@@ -109,5 +117,6 @@
    "text": "Rest, and notice how your back lies on the floor now."
   }
  ],
+ "props": [],
  "seconds": 106.02
 }

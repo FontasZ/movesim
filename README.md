@@ -42,29 +42,43 @@ The script is plain JSON, so you can edit it and play it again without Claude:
 uv run movesim play lessons/knees-and-head.json
 ```
 
-Each step has the teacher's words (`say`), the movements done together (`moves`), what stays
-still (`hold`), and timing (`seconds` to go there, `stay`, `return`, `repeat`, `rest_after`,
-`release` to let go of parts left in place). The movements:
+Each script starts in one position (`start`), and each step has the teacher's words (`say`),
+the movements done together (`moves`), what stays still (`hold`), and timing (`seconds` to go
+there, `stay`, `return`, `repeat`, `rest_after`, `release` to let go of parts left in place).
 
-| move | what it does | amount |
-|---|---|---|
-| `knees_tilt` | both knees tip to one side over the feet | degrees |
-| `knee_open` / `knee_close` | one or both knees fall outward / move across | degrees |
-| `foot_press` | a foot presses; that side of the pelvis lifts | cm |
-| `knee_to_chest` | a knee comes toward the chest, the foot leaves the floor | degrees |
-| `head_roll` | the head rolls to one side | degrees |
-| `head_lift` | the head lifts, chin toward the chest | degrees |
-| `pelvis_flatten` / `pelvis_arch` | the pelvis tilts: lower back toward / away from the floor | degrees |
-| `pelvis_lift` | a small bridge | cm |
-| `arm_lift` | an arm lifts toward the ceiling | degrees |
-| `shoulder_lift` | a shoulder lifts from the floor | cm |
+**Starting positions:** `hook_lying` (on the back, knees bent, feet standing), `lying_long`
+(legs long), `side_lying_left` / `side_lying_right` (knees bent and stacked, head on a pillow),
+`sitting_chair` (front half of a chair, feet on the floor). Each comes with the small muscle
+tone that holds it, kept separate from the passive tissue: lying with the knees standing needs a
+little hip tone or the knees fall open, and sitting upright needs a lot of trunk tone. While a
+joint is turned on purpose, its tone follows the intention instead of resisting it.
 
-Holds: `head`, `pelvis`, `chest`, `knees`, `feet`, `left_arm`, `right_arm`, `shoulders`.
+**Movements** come in three kinds (the full list with help texts is `MOVES` in
+`src/movesim/lesson.py`; `side` is left, right or both):
 
-Each movement takes hold of a point of the body (a knee, the forehead, the front hip bones, the
-breastbone, a palm, a shoulder, an ankle) with an invisible hand on a spring and guides it; the
-green dots in the player show which hands are working. Only lying on the back with the knees bent
-is available as a starting position so far.
+- *Joint intentions*, which turn a joint (the head and spine share the turn over their levels):
+  `hip_bend`/`hip_straighten`, `hip_turn_in`/`out`, `hip_open`/`close`, `knee_bend`/`straighten`,
+  `foot_flex`/`point`, `foot_roll_in`/`out`, `arm_raise`, `arm_out`, `arm_turn_in`/`out`,
+  `elbow_bend`/`straighten`, `palm_turn_down`/`up`, `wrist_bend`/`back`, `head_turn`,
+  `head_tilt`, `head_nod`, `head_back`, `spine_twist`, `spine_side_bend`, `spine_round`,
+  `spine_arch` (degrees).
+- *Reach*: a point of the body (`point`) goes toward another point or in a direction (`toward`),
+  by `amount` cm, or all the way to the other point with 0. Points: knees, ankles, toes, hands,
+  elbows, shoulders, forehead, chin, breastbone, pubic bone, front hip bones. Directions: up,
+  down, head, feet, front, back, left, right, inward, outward (the person's own).
+- *Shorthands* for lying on the back: `knees_tilt`, `knee_open`/`close`, `foot_press` (the pelvis
+  lifts on that side), `knee_to_chest`, `head_roll`, `head_lift`, `pelvis_flatten`/`arch`,
+  `pelvis_lift`, `arm_lift`, `shoulder_lift`.
+
+Holds: `head`, `pelvis`, `chest`, `knees`, `feet`, `left_arm`, `right_arm`, `shoulders`,
+`left_leg`, `right_leg`, `elbows`.
+
+Points are guided by invisible hands on springs (the green dots in the player show which are
+working); joint intentions by a pull toward the wanted angle. Everything else is passive. Moving
+from one position to another (rolling over, coming to sit) is not available yet.
+
+Sample lessons in `lessons/`: knees and head, elbow to knee (lying), turning to look behind
+(sitting), the top arm slides (side-lying), and a test of the building blocks.
 
 ## The web player
 
@@ -83,6 +97,19 @@ and drag it with Ctrl + right mouse button; the point it holds follows on a spri
 let go the hand eases back and stops pulling. Double-click any bone and Ctrl + right drag to push
 it directly. Simulation → Key → `hook_lying` → Load key starts again. On macOS use this command
 (plain `python`), not `mjpython`.
+
+## Validation
+
+```bash
+uv run movesim validate
+```
+
+Compares the body with measurements of living people and writes `docs/validation.md`: lumbar
+passive stiffness through the range in three planes (Watt et al. 2022), neck rotation stiffness
+(De Boe et al.), hip rotation stiffness, and how much each lumbar level twists when the trunk is
+turned 45° (Fujii et al. 2007). All 15 checks pass. The thoracic spine has no in-vivo data and is
+assumed to resist like the lumbar levels. `docs/knee-tilt-tuning.md` tells the story of what was
+tuned and why.
 
 ## The knee-tilt test
 
@@ -108,12 +135,14 @@ About 70 kg and 1.76 m, 44 rigid segments, 118 joints.
 - **Bone shapes and proportions** come from BodyParts3D, a CT-based skeleton of one adult man
   (© DBCLS, CC BY 4.0; see `model/meshes/ATTRIBUTION.md`), scaled to 1.76 m. Masses follow
   de Leva (1996).
-- **Ligaments:** each joint is loose around rest and stiffens steeply toward the end of its
-  range (`src/movesim/ligaments.py`).
+- **Passive tissue:** the spine stiffens steadily from rest toward the end of each range, as
+  measured in vivo; the limbs are loose to halfway and then tighten
+  (`src/movesim/ligaments.py`, parameters in `build_model.py`).
 - **Contact:** soft surfaces for the back of the pelvis, both sides of each vertebra's back, the
-  shoulder blades, the back of the head, arms, heels, balls of the feet and toes.
-- **Resting tone:** gentle springs hold the legs in hook lying without pushing the feet along
-  the floor.
+  sides of the chest, the shoulder blades and shoulders, the back of the head, arms, thighs,
+  calves, ankles, heels, balls of the feet and toes; the legs can rest on each other. Props: a
+  pillow and a chair.
+- **Tone:** per starting position, the least muscle tone that holds it (see above).
 
 Not modelled: muscles (by design), discs that compress, breathing, the shoulder blade gliding
 over the ribs.
@@ -125,6 +154,8 @@ over the ribs.
 - `src/movesim/bones.py`: fits BodyParts3D bones onto the segments (run once; needs the
   BodyParts3D download, see its docstring).
 - `src/movesim/lesson.py`: movement scripts, the movement vocabulary, and playback.
+- `src/movesim/positions.py`: starting positions, their tone and props.
+- `src/movesim/validate.py`: the checks against published measurements.
 - `src/movesim/translate.py`: lesson text to script with Claude.
 - `src/movesim/cli.py`: the `movesim` command.
 - `src/movesim/ligaments.py`, `sim.py`, `view.py`, `knee_tilt.py`.
