@@ -1,0 +1,340 @@
+<!--
+  movesim skeleton, v0.1
+
+  Rigid segments only, no muscles. Joint limits, mild passive stiffness and
+  damping stand in for soft tissue. Adult of about 1.76 m and 60 kg (no arms).
+
+  Body frame (as if standing): x = forward (anterior), y = the person's left,
+  z = up (toward the head). The pelvis is placed lying on its back with the
+  head toward world +x, face up (+z). The person's right side is world +y.
+
+  Geom groups:
+    0  bones (visible)
+    1  "flesh" contact surfaces: the only geoms that touch the floor
+    3  mass/inertia carriers (hidden, no contact)
+  Masses roughly follow de Leva (1996), with arms left out.
+-->
+<mujoco model="movesim-skeleton">
+  <compiler angle="degree" autolimits="true"/>
+  <!-- noslip stops the slow creep that soft contacts otherwise allow under constant load. -->
+  <option timestep="0.001" integrator="implicitfast" gravity="0 0 -9.81" cone="elliptic" impratio="10"
+          noslip_iterations="5"/>
+
+  <visual>
+    <global offwidth="1280" offheight="960"/>
+    <quality shadowsize="4096"/>
+    <headlight ambient="0.3 0.3 0.3" diffuse="0.25 0.25 0.25" specular="0 0 0"/>
+  </visual>
+
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" rgb1="0.82 0.80 0.76" rgb2="0.76 0.74 0.70"
+             width="300" height="300"/>
+    <material name="floor" texture="grid" texrepeat="8 8" reflectance="0"/>
+    <material name="bone" rgba="0.93 0.90 0.82 1"/>
+    <material name="flesh" rgba="0.80 0.55 0.45 0.25"/>
+    <material name="flesh_left" rgba="0.35 0.55 0.85 0.30"/>
+    <material name="flesh_right" rgba="0.85 0.45 0.35 0.30"/>
+    <material name="hand" rgba="0.2 0.7 0.3 0.6"/>
+  </asset>
+
+  <default>
+    <!-- Geoms carry no mass unless they are mass carriers. -->
+    <geom density="0" contype="0" conaffinity="0"/>
+    <joint armature="0.01" limited="true"/>
+    <default class="bone">
+      <geom material="bone" group="0"/>
+      <default class="vertebra">
+        <geom type="cylinder" size="0.022 0.012"/>
+      </default>
+      <default class="spinous">
+        <geom type="capsule" size="0.006"/>
+      </default>
+    </default>
+    <default class="flesh">
+      <!-- Soft contact stands in for skin, fat and muscle over the bones. -->
+      <geom material="flesh" group="1" contype="1" conaffinity="0" condim="3"
+            friction="0.9 0.01 0.001" solref="0.015 1" solimp="0.9 0.97 0.004"/>
+      <default class="sole">
+        <!-- Bare feet on a mat grip well, also against pivoting. -->
+        <geom condim="4" friction="1.2 0.02 0.001"/>
+      </default>
+    </default>
+    <default class="mass">
+      <geom group="3" rgba="0.5 0.5 0.5 0.1"/>
+    </default>
+
+    <!-- Each spinal level: three hinges (bend forward/back, side-bend, twist),
+         so each motion gets its own range and stiffness. -->
+    <default class="lumbar">
+      <joint stiffness="20" damping="2"/>
+      <default class="lumbar_flex"><joint axis="0 1 0" range="-4 8"/></default>
+      <default class="lumbar_side"><joint axis="1 0 0" range="-4 4"/></default>
+      <default class="lumbar_twist"><joint axis="0 0 1" range="-2 2"/></default>
+    </default>
+    <default class="thoracic">
+      <joint stiffness="40" damping="2"/>
+      <default class="thoracic_flex"><joint axis="0 1 0" range="-4 6"/></default>
+      <default class="thoracic_side"><joint axis="1 0 0" range="-4 4"/></default>
+      <default class="thoracic_twist"><joint axis="0 0 1" range="-5 5"/></default>
+    </default>
+    <default class="cervical">
+      <joint stiffness="5" damping="0.5"/>
+      <default class="cervical_flex"><joint axis="0 1 0" range="-15 12"/></default>
+      <default class="cervical_side"><joint axis="1 0 0" range="-8 8"/></default>
+      <default class="cervical_twist"><joint axis="0 0 1" range="-8 8"/></default>
+    </default>
+
+    <default class="hip">
+      <joint stiffness="60" damping="5"/>
+    </default>
+    <default class="knee">
+      <joint stiffness="30" damping="3" axis="0 1 0" range="0 150" springref="103.6"/>
+    </default>
+    <default class="tibia_rot">
+      <joint stiffness="10" damping="1" axis="0 0 1" range="-25 25"/>
+    </default>
+    <default class="ankle">
+      <joint stiffness="10" damping="1"/>
+    </default>
+  </default>
+
+  <worldbody>
+    <light name="key" pos="0.6 -1.2 2.5" dir="-0.2 0.5 -1" diffuse="0.45 0.45 0.45" specular="0.1 0.1 0.1" castshadow="true"/>
+    <geom name="floor" type="plane" size="3 3 0.05" material="floor" contype="0" conaffinity="1"
+          condim="3" friction="0.9 0.01 0.001"/>
+
+    <!-- Hands of a guide: mocap targets, each pulling one knee through a soft spring. -->
+    <body name="hand_L" mocap="true" pos="0.26 -0.08 0.52">
+      <site name="hand_L" type="sphere" size="0.025" material="hand"/>
+      <!-- A geom so the hand can be picked and dragged in the viewer. -->
+      <geom type="sphere" size="0.03" material="hand" group="2"/>
+    </body>
+    <body name="hand_R" mocap="true" pos="0.26 0.08 0.52">
+      <site name="hand_R" type="sphere" size="0.025" material="hand"/>
+      <geom type="sphere" size="0.03" material="hand" group="2"/>
+    </body>
+
+    <body name="pelvis" pos="0.0 0 0.115" quat="0 0.7071068 0 0.7071068">
+      <freejoint name="pelvis"/>
+      <geom class="mass" type="ellipsoid" pos="0.0 0 -0.05" size="0.10 0.16 0.10" mass="9"/>
+      <geom class="bone" type="capsule" fromto="-0.035 0 0.0  -0.05 0 -0.11" size="0.025"/>
+      <geom class="bone" type="ellipsoid" pos="0.0  0.08 -0.03" size="0.025 0.06 0.075" euler="0 0 -25"/>
+      <geom class="bone" type="ellipsoid" pos="0.0 -0.08 -0.03" size="0.025 0.06 0.075" euler="0 0 25"/>
+      <geom class="bone" type="capsule" fromto="0.05 0.03 -0.11  0.05 -0.03 -0.11" size="0.012"/>
+      <geom name="sacrum" class="flesh" type="sphere" pos="-0.055 0 -0.04" size="0.04"/>
+      <geom name="pelvis_L" class="flesh" type="ellipsoid" pos="-0.04  0.065 -0.09" size="0.06 0.065 0.08"
+            material="flesh_left"/>
+      <geom name="pelvis_R" class="flesh" type="ellipsoid" pos="-0.04 -0.065 -0.09" size="0.06 0.065 0.08"
+            material="flesh_right"/>
+
+      <!-- Lumbar spine: L5 (bottom) to L1, 36 mm per level. -->
+      <body name="L5" pos="0 0 0">
+        <joint name="L5_flex" class="lumbar_flex"/>
+        <joint name="L5_side" class="lumbar_side"/>
+        <joint name="L5_twist" class="lumbar_twist"/>
+        <geom class="vertebra" pos="0 0 0.018"/>
+        <geom class="spinous" fromto="-0.02 0 0.018  -0.05 0 0.010"/>
+        <geom class="mass" type="ellipsoid" pos="0.05 0 0.018" size="0.09 0.13 0.018" mass="2.2"/>
+        <geom name="L5_back" class="flesh" type="ellipsoid" pos="-0.04 0 0.018" size="0.035 0.06 0.02"/>
+        <body name="L4" pos="0 0 0.036">
+          <joint name="L4_flex" class="lumbar_flex"/>
+          <joint name="L4_side" class="lumbar_side"/>
+          <joint name="L4_twist" class="lumbar_twist"/>
+          <geom class="vertebra" pos="0 0 0.018"/>
+          <geom class="spinous" fromto="-0.02 0 0.018  -0.05 0 0.010"/>
+          <geom class="mass" type="ellipsoid" pos="0.05 0 0.018" size="0.09 0.13 0.018" mass="2.2"/>
+          <geom name="L4_back" class="flesh" type="ellipsoid" pos="-0.04 0 0.018" size="0.035 0.06 0.02"/>
+          <body name="L3" pos="0 0 0.036">
+            <joint name="L3_flex" class="lumbar_flex"/>
+            <joint name="L3_side" class="lumbar_side"/>
+            <joint name="L3_twist" class="lumbar_twist"/>
+            <geom class="vertebra" pos="0 0 0.018"/>
+            <geom class="spinous" fromto="-0.02 0 0.018  -0.05 0 0.010"/>
+            <geom class="mass" type="ellipsoid" pos="0.05 0 0.018" size="0.09 0.13 0.018" mass="2.2"/>
+            <geom name="L3_back" class="flesh" type="ellipsoid" pos="-0.04 0 0.018" size="0.035 0.06 0.02"/>
+            <body name="L2" pos="0 0 0.036">
+              <joint name="L2_flex" class="lumbar_flex"/>
+              <joint name="L2_side" class="lumbar_side"/>
+              <joint name="L2_twist" class="lumbar_twist"/>
+              <geom class="vertebra" pos="0 0 0.018"/>
+              <geom class="spinous" fromto="-0.02 0 0.018  -0.05 0 0.010"/>
+              <geom class="mass" type="ellipsoid" pos="0.05 0 0.018" size="0.09 0.13 0.018" mass="2.2"/>
+              <geom name="L2_back" class="flesh" type="ellipsoid" pos="-0.04 0 0.018" size="0.035 0.06 0.02"/>
+              <body name="L1" pos="0 0 0.036">
+                <joint name="L1_flex" class="lumbar_flex"/>
+                <joint name="L1_side" class="lumbar_side"/>
+                <joint name="L1_twist" class="lumbar_twist"/>
+                <geom class="vertebra" pos="0 0 0.018"/>
+                <geom class="spinous" fromto="-0.02 0 0.018  -0.05 0 0.010"/>
+                <geom class="mass" type="ellipsoid" pos="0.05 0 0.018" size="0.09 0.13 0.018" mass="2.2"/>
+                <geom name="L1_back" class="flesh" type="ellipsoid" pos="-0.04 0 0.018" size="0.035 0.06 0.02"/>
+
+                <!-- Thoracic spine in five segments of about 56 mm (T11-12 up to T1-3). -->
+                <body name="T11_12" pos="0 0 0.036">
+                  <joint name="T11_12_flex" class="thoracic_flex"/>
+                  <joint name="T11_12_side" class="thoracic_side"/>
+                  <joint name="T11_12_twist" class="thoracic_twist"/>
+                  <geom class="vertebra" pos="0 0 0.028" size="0.019 0.022"/>
+                  <geom class="spinous" fromto="-0.02 0 0.03  -0.045 0 0.012"/>
+                  <geom class="mass" type="ellipsoid" pos="0.04 0 0.028" size="0.06 0.08 0.028" mass="0.6"/>
+                  <body name="T9_10" pos="0 0 0.056">
+                    <joint name="T9_10_flex" class="thoracic_flex"/>
+                    <joint name="T9_10_side" class="thoracic_side"/>
+                    <joint name="T9_10_twist" class="thoracic_twist"/>
+                    <geom class="vertebra" pos="0 0 0.028" size="0.018 0.022"/>
+                    <geom class="spinous" fromto="-0.02 0 0.03  -0.045 0 0.012"/>
+                    <geom class="mass" type="ellipsoid" pos="0.04 0 0.028" size="0.06 0.08 0.028" mass="0.6"/>
+                    <body name="T7_8" pos="0 0 0.056">
+                      <joint name="T7_8_flex" class="thoracic_flex"/>
+                      <joint name="T7_8_side" class="thoracic_side"/>
+                      <joint name="T7_8_twist" class="thoracic_twist"/>
+                      <geom class="vertebra" pos="0 0 0.028" size="0.017 0.022"/>
+                      <geom class="spinous" fromto="-0.02 0 0.03  -0.045 0 0.012"/>
+                      <geom class="mass" type="ellipsoid" pos="0.04 0 0.028" size="0.06 0.08 0.028" mass="0.6"/>
+
+                      <!-- Ribcage (with shoulder girdle and chest contents): one rigid body on T7-8. -->
+                      <body name="ribcage" pos="0 0 0.03">
+                        <geom class="mass" type="ellipsoid" pos="0.07 0 0" size="0.10 0.14 0.15" mass="11"/>
+                        <geom class="bone" type="ellipsoid" pos="0.07 0 0" size="0.10 0.14 0.15" rgba="0.93 0.90 0.82 0.35"/>
+                        <geom class="bone" type="capsule" fromto="0.165 0 0.10  0.17 0 -0.07" size="0.012"/>
+                        <geom class="bone" type="capsule" fromto="0.03 0.07 0.16  0.12 0.17 0.15" size="0.008"/>
+                        <geom class="bone" type="capsule" fromto="0.03 -0.07 0.16  0.12 -0.17 0.15" size="0.008"/>
+                        <geom name="ribs_L" class="flesh" type="ellipsoid" pos="-0.03  0.065 0" size="0.07 0.07 0.13"
+                              material="flesh_left"/>
+                        <geom name="ribs_R" class="flesh" type="ellipsoid" pos="-0.03 -0.065 0" size="0.07 0.07 0.13"
+                              material="flesh_right"/>
+                      </body>
+
+                      <body name="T4_6" pos="0 0 0.056">
+                        <joint name="T4_6_flex" class="thoracic_flex"/>
+                        <joint name="T4_6_side" class="thoracic_side"/>
+                        <joint name="T4_6_twist" class="thoracic_twist"/>
+                        <geom class="vertebra" pos="0 0 0.028" size="0.016 0.022"/>
+                        <geom class="spinous" fromto="-0.02 0 0.03  -0.045 0 0.012"/>
+                        <geom class="mass" type="ellipsoid" pos="0.04 0 0.028" size="0.06 0.08 0.028" mass="0.6"/>
+                        <body name="T1_3" pos="0 0 0.056">
+                          <joint name="T1_3_flex" class="thoracic_flex"/>
+                          <joint name="T1_3_side" class="thoracic_side"/>
+                          <joint name="T1_3_twist" class="thoracic_twist"/>
+                          <geom class="vertebra" pos="0 0 0.028" size="0.015 0.022"/>
+                          <geom class="spinous" fromto="-0.02 0 0.03  -0.05 0 0.015"/>
+                          <geom class="mass" type="ellipsoid" pos="0.04 0 0.028" size="0.06 0.08 0.028" mass="0.6"/>
+
+                          <!-- Neck in three segments of 40 mm. -->
+                          <body name="C6_7" pos="0 0 0.056">
+                            <joint name="C6_7_flex" class="cervical_flex"/>
+                            <joint name="C6_7_side" class="cervical_side"/>
+                            <joint name="C6_7_twist" class="cervical_twist"/>
+                            <geom class="vertebra" pos="0 0 0.02" size="0.014 0.016"/>
+                            <geom class="mass" type="cylinder" pos="0.0 0 0.02" size="0.05 0.02" mass="0.35"/>
+                            <body name="C3_5" pos="0 0 0.04">
+                              <joint name="C3_5_flex" class="cervical_flex"/>
+                              <joint name="C3_5_side" class="cervical_side"/>
+                              <joint name="C3_5_twist" class="cervical_twist"/>
+                              <geom class="vertebra" pos="0 0 0.02" size="0.013 0.016"/>
+                              <geom class="mass" type="cylinder" pos="0.0 0 0.02" size="0.05 0.02" mass="0.35"/>
+                              <body name="C1_2" pos="0 0 0.04">
+                                <joint name="C1_2_flex" class="cervical_flex"/>
+                                <joint name="C1_2_side" class="cervical_side"/>
+                                <!-- C1-C2 carries about half of all neck rotation. -->
+                                <joint name="C1_2_twist" class="cervical_twist" range="-40 40"/>
+                                <geom class="vertebra" pos="0 0 0.02" size="0.013 0.016"/>
+                                <geom class="mass" type="cylinder" pos="0.0 0 0.02" size="0.05 0.02" mass="0.3"/>
+
+                                <body name="skull" pos="0 0 0.04">
+                                  <joint name="skull_flex" class="cervical_flex" range="-20 15"/>
+                                  <joint name="skull_side" class="cervical_side" range="-5 5"/>
+                                  <joint name="skull_twist" class="cervical_twist" range="-5 5"/>
+                                  <geom class="mass" type="ellipsoid" pos="0.02 0 0.10" size="0.095 0.075 0.11" mass="4.5"/>
+                                  <geom class="bone" type="ellipsoid" pos="0.0 0 0.11" size="0.095 0.075 0.10"/>
+                                  <geom class="bone" type="ellipsoid" pos="0.07 0 0.04" size="0.04 0.05 0.05"/>
+                                  <geom class="bone" type="sphere" pos="0.085 0.03 0.11" size="0.012" rgba="0.2 0.2 0.2 1"/>
+                                  <geom class="bone" type="sphere" pos="0.085 -0.03 0.11" size="0.012" rgba="0.2 0.2 0.2 1"/>
+                                  <!-- The back of the head as a sphere centred on the head's mass, so it rolls like a real head. -->
+                                  <geom name="occiput" class="flesh" type="sphere" pos="0.02 0 0.10" size="0.11"/>
+                                </body>
+                              </body>
+                            </body>
+                          </body>
+                        </body>
+                      </body>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+
+      <!-- Left leg. Hip flexion lifts the knee forward; the pose springs hold the knees up. -->
+      <body name="thigh_L" pos="0.06 0.085 -0.09">
+        <joint name="hip_flex_L" class="hip" axis="0 -1 0" range="-20 125" springref="38.6"/>
+        <joint name="hip_abd_L" class="hip" axis="1 0 0" range="-30 45"/>
+        <joint name="hip_inrot_L" class="hip" axis="0 0 -1" range="-45 40"/>
+        <geom class="bone" type="capsule" fromto="0 0 0  0 0 -0.42" size="0.018"/>
+        <geom class="bone" type="sphere" pos="0 0 0" size="0.025"/>
+        <geom class="mass" type="capsule" fromto="0 0 -0.03  0 0 -0.39" size="0.07" mass="9"/>
+        <site name="knee_L" pos="0.03 0 -0.42" size="0.015"/>
+        <body name="shin_L" pos="0 0 -0.42">
+          <joint name="knee_L" class="knee"/>
+          <!-- With the knee bent, the shin can turn about its own length. -->
+          <joint name="tibia_rot_L" class="tibia_rot"/>
+          <geom class="bone" type="capsule" fromto="0 0 0  0 0 -0.43" size="0.017"/>
+          <geom class="bone" type="sphere" pos="0.03 0 0" size="0.022"/>
+          <geom class="mass" type="capsule" fromto="0 0 -0.03  0 0 -0.38" size="0.05" mass="3.2"/>
+          <body name="foot_L" pos="0 0 -0.43">
+            <joint name="ankle_L" class="ankle" axis="0 1 0" range="-25 50" springref="30.2"/>
+            <joint name="subtalar_L" class="ankle" axis="1 0 0" range="-25 25"/>
+            <geom class="bone" type="box" pos="0.06 0 -0.045" size="0.11 0.035 0.02"/>
+            <geom class="mass" type="box" pos="0.06 0 -0.04" size="0.11 0.04 0.03" mass="1.0"/>
+            <geom name="heel_L" class="sole" type="sphere" pos="-0.04 0 -0.05" size="0.03"/>
+            <geom name="ballin_L" class="sole" type="sphere" pos="0.15 -0.03 -0.06" size="0.02"/>
+            <geom name="ballout_L" class="sole" type="sphere" pos="0.13 0.035 -0.06" size="0.02"/>
+          </body>
+        </body>
+      </body>
+
+      <!-- Right leg (mirror image). -->
+      <body name="thigh_R" pos="0.06 -0.085 -0.09">
+        <joint name="hip_flex_R" class="hip" axis="0 -1 0" range="-20 125" springref="38.6"/>
+        <joint name="hip_abd_R" class="hip" axis="-1 0 0" range="-30 45"/>
+        <joint name="hip_inrot_R" class="hip" axis="0 0 1" range="-45 40"/>
+        <geom class="bone" type="capsule" fromto="0 0 0  0 0 -0.42" size="0.018"/>
+        <geom class="bone" type="sphere" pos="0 0 0" size="0.025"/>
+        <geom class="mass" type="capsule" fromto="0 0 -0.03  0 0 -0.39" size="0.07" mass="9"/>
+        <site name="knee_R" pos="0.03 0 -0.42" size="0.015"/>
+        <body name="shin_R" pos="0 0 -0.42">
+          <joint name="knee_R" class="knee"/>
+          <joint name="tibia_rot_R" class="tibia_rot"/>
+          <geom class="bone" type="capsule" fromto="0 0 0  0 0 -0.43" size="0.017"/>
+          <geom class="bone" type="sphere" pos="0.03 0 0" size="0.022"/>
+          <geom class="mass" type="capsule" fromto="0 0 -0.03  0 0 -0.38" size="0.05" mass="3.2"/>
+          <body name="foot_R" pos="0 0 -0.43">
+            <joint name="ankle_R" class="ankle" axis="0 1 0" range="-25 50" springref="30.2"/>
+            <joint name="subtalar_R" class="ankle" axis="-1 0 0" range="-25 25"/>
+            <geom class="bone" type="box" pos="0.06 0 -0.045" size="0.11 0.035 0.02"/>
+            <geom class="mass" type="box" pos="0.06 0 -0.04" size="0.11 0.04 0.03" mass="1.0"/>
+            <geom name="heel_R" class="sole" type="sphere" pos="-0.04 0 -0.05" size="0.03"/>
+            <geom name="ballin_R" class="sole" type="sphere" pos="0.15 0.03 -0.06" size="0.02"/>
+            <geom name="ballout_R" class="sole" type="sphere" pos="0.13 -0.035 -0.06" size="0.02"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <!-- The guide's hands: a soft spring from each hand to the front of each knee. -->
+  <tendon>
+    <spatial name="guide_L" stiffness="1000" damping="60" springlength="0" rgba="0.2 0.7 0.3 1" width="0.004">
+      <site site="hand_L"/>
+      <site site="knee_L"/>
+    </spatial>
+    <spatial name="guide_R" stiffness="1000" damping="60" springlength="0" rgba="0.2 0.7 0.3 1" width="0.004">
+      <site site="hand_R"/>
+      <site site="knee_R"/>
+    </spatial>
+  </tendon>
+
+  <include file="hook_lying_key.xml"/>
+</mujoco>
