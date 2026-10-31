@@ -1,12 +1,14 @@
 # movesim
 
-A passive human skeleton in MuJoCo for composing and checking Feldenkrais-style movements.
-You move one part on purpose (the driver), say what stays still, and physics decides where the
-rest of the body goes. Results come out as plain body words and short animations, for whoever
-writes or reviews lessons. Students never watch a screen.
+A passive human skeleton in MuJoCo for composing and checking Feldenkrais-style movement lessons.
+You say what moves on purpose (the driver) and what stays still, and physics decides where the
+rest of the body goes. A lesson in words plays as 3D motion in a web page, step by step, with
+the instructions as captions. The pictures are for whoever writes or reviews lessons; students
+never watch a screen.
 
-The model has rigid segments only, with no muscles. Joint limits, mild passive stiffness and
-damping stand in for soft tissue; there is gravity and a floor with friction.
+The body is meant to be a good-enough reference adult, not a perfect one: rigid bones, no
+muscles; joint limits, gentle springs and ligaments that stiffen toward the end of each range
+stand in for soft tissue; gravity and a floor with friction.
 
 ## Setup
 
@@ -19,85 +21,113 @@ cd ~/Documents/Projects/movesim
 uv sync
 ```
 
-(Homebrew's `uv` works too where Homebrew has a bottle for it; on macOS 14 it builds from source.)
+To turn lesson text into movement you need a Claude API key: copy `.env.example` to `.env` and
+fill in `ANTHROPIC_API_KEY`.
 
-## Look at the body and move it yourself
-
-```bash
-uv run python -m movesim.view
-```
-
-Use plain `python` here, also on macOS. `mjpython` is only needed for MuJoCo's *passive* viewer;
-with the standard viewer used here it fails with `RuntimeError: Caught an unknown exception!`.
-
-This opens the skeleton lying on its back, knees bent, feet flat (the stored `hook_lying`
-keyframe). Press space to start or pause the physics if it is paused.
-
-- **Guide a knee the way a teacher's hand would:** double-click one of the green balls above the
-  knees (the guide's hands), then hold **Ctrl** and drag with the **right** mouse button to move it
-  sideways. The knee follows on a soft spring. Ctrl + left drag rotates instead. When you let
-  go, the hand eases back onto the knee within a second or so, stops pulling, and the body
-  settles under its own weight. After a big lift it may land a little differently, as a real
-  body would; load the key again to start fresh.
-- **Push any bone directly:** double-click it (a thigh, the pelvis, a vertebra, the skull, a
-  hand), then Ctrl + right drag. That applies a spring force to that bone.
-- **Start again:** in the left panel, Simulation → Key → `hook_lying` → Load key.
-- **See the contact surfaces:** toggle geom group 1 (the translucent "flesh" that touches the
-  floor; blue is the person's left, red the right). Group 3 shows the mass carriers.
-
-The bare model also opens with `uv run python -m mujoco.viewer --mjcf=model/skeleton.xml`, but
-then it starts standing and floating (load the `hook_lying` key from the panel), the ligaments
-are off and the guide hands don't let go. Use `movesim.view`.
-
-## Rebuild the body and run the knee-tilt test
+## Play a lesson
 
 ```bash
-uv run python -m movesim.build_model   # write model/skeleton.xml from the anatomy tables, then settle
-uv run python -m movesim.knee_tilt     # knees 20° to the right and back, writes out/knee_tilt/
+uv run movesim lesson "Slowly let both knees go to the right, and come back. Then roll the head to the left."
+uv run movesim lesson lessons/knees-and-head.txt      # or a whole lesson from a text file
+uv run movesim serve                                   # then open http://127.0.0.1:8765/web/
 ```
 
-`out/knee_tilt/` holds `report.md` (plain words), `data.csv` (50 samples a second: how far each
-segment rolled, the force on each contact surface, how far each part of the back rose, the
-centre of pressure under the back, slip at each foot point), `strip_above.png`,
-`strip_feet.png` and `knee_tilt.mp4`.
+`movesim lesson` asks Claude (`claude-opus-5-5`) to turn the text into a movement script, saves
+the script in `lessons/<name>.json`, simulates it, and adds it to the web player. It also prints
+what the text asks for that the body can't show yet (other positions, breathing, the eyes...).
+
+The script is plain JSON, so you can edit it and play it again without Claude:
+
+```bash
+uv run movesim play lessons/knees-and-head.json
+```
+
+Each step has the teacher's words (`say`), the movements done together (`moves`), what stays
+still (`hold`), and timing (`seconds` to go there, `stay`, `return`, `repeat`, `rest_after`,
+`release` to let go of parts left in place). The movements:
+
+| move | what it does | amount |
+|---|---|---|
+| `knees_tilt` | both knees tip to one side over the feet | degrees |
+| `knee_open` / `knee_close` | one or both knees fall outward / move across | degrees |
+| `foot_press` | a foot presses; that side of the pelvis lifts | cm |
+| `knee_to_chest` | a knee comes toward the chest, the foot leaves the floor | degrees |
+| `head_roll` | the head rolls to one side | degrees |
+| `head_lift` | the head lifts, chin toward the chest | degrees |
+| `pelvis_flatten` / `pelvis_arch` | the pelvis tilts: lower back toward / away from the floor | degrees |
+| `pelvis_lift` | a small bridge | cm |
+| `arm_lift` | an arm lifts toward the ceiling | degrees |
+| `shoulder_lift` | a shoulder lifts from the floor | cm |
+
+Holds: `head`, `pelvis`, `chest`, `knees`, `feet`, `left_arm`, `right_arm`, `shoulders`.
+
+Each movement takes hold of a point of the body (a knee, the forehead, the front hip bones, the
+breastbone, a palm, a shoulder, an ankle) with an invisible hand on a spring and guides it; the
+green dots in the player show which hands are working. Only lying on the back with the knees bent
+is available as a starting position so far.
+
+## The web player
+
+`uv run movesim serve`, then <http://127.0.0.1:8765/web/>. Pick a lesson at the top; play,
+pause (space), scrub, change speed; click a step to jump to it; switch between side, above,
+from the feet and from the head, or drag to turn the view.
+
+## Move the body yourself
+
+```bash
+uv run movesim view
+```
+
+MuJoCo's viewer opens with the body in hook lying. Double-click a green ball (a guide's hand)
+and drag it with Ctrl + right mouse button; the point it holds follows on a spring, and when you
+let go the hand eases back and stops pulling. Double-click any bone and Ctrl + right drag to push
+it directly. Simulation → Key → `hook_lying` → Load key starts again. On macOS use this command
+(plain `python`), not `mjpython`.
+
+## The knee-tilt test
+
+```bash
+uv run python -m movesim.knee_tilt
+```
+
+Knees 20° to the right and back, with a plain-language report of what each vertebra did, which
+parts of the back lifted and how the pressure moved: `out/knee_tilt/report.md`, plus a CSV,
+frame strips and an MP4.
+
+## The body
+
+About 70 kg and 1.76 m, 44 rigid segments, 118 joints.
+
+- **Spine:** all 24 vertebrae and the skull, each joined to the one below by three hinges (bend,
+  side-bend, twist) with its own range of motion (White & Panjabi) and resting curve.
+- **Ribs** on every thoracic vertebra, so the ribcage bends and twists with the spine.
+- **Shoulders and arms:** collarbones, shoulder blades, upper arms, forearms that turn the palm,
+  hands. Arms lie by the sides, palms up.
+- **Legs:** hips with three hinges, knees that bend and let the shin turn, slanted ankle and
+  subtalar axes, toes.
+- **Bone shapes and proportions** come from BodyParts3D, a CT-based skeleton of one adult man
+  (© DBCLS, CC BY 4.0; see `model/meshes/ATTRIBUTION.md`), scaled to 1.76 m. Masses follow
+  de Leva (1996).
+- **Ligaments:** each joint is loose around rest and stiffens steeply toward the end of its
+  range (`src/movesim/ligaments.py`).
+- **Contact:** soft surfaces for the back of the pelvis, both sides of each vertebra's back, the
+  shoulder blades, the back of the head, arms, heels, balls of the feet and toes.
+- **Resting tone:** gentle springs hold the legs in hook lying without pushing the feet along
+  the floor.
+
+Not modelled: muscles (by design), discs that compress, breathing, the shoulder blade gliding
+over the ribs.
 
 ## Files
 
-- `src/movesim/build_model.py`: the anatomy tables (spinal levels, ranges of motion, curves,
-  ribs, masses, resting tone) and the code that turns them into the model. Edit here.
-- `model/skeleton.xml`: the generated body. Header comments explain the frames and groups.
-- `model/hook_lying_key.xml`: the settled starting pose, generated by `movesim.sim`.
-- `src/movesim/sim.py`: loading (with ligaments), hook-lying pose, settling.
-- `src/movesim/ligaments.py`: the end-of-range stiffening.
-- `src/movesim/knee_tilt.py`: the driver, recording, report and rendering for the first test.
-- `src/movesim/view.py`: opens the viewer in hook lying.
-
-## The model in brief
-
-About 70 kg and 1.76 m, 44 rigid segments, 118 joints. No muscles.
-
-- **Spine:** all 24 vertebrae (L5–L1, T12–T1, C7–C1) and the skull, each joined to the one below
-  by three hinges (bend, side-bend, twist). Each level has its own range of motion (White &
-  Panjabi) and its own resting angle, so the lumbar and neck curves and the thoracic curve are
-  built in. Lying down, gravity and the floor reshape them.
-- **Ribs:** each thoracic vertebra carries its own pair of ribs, so the ribcage bends and twists
-  with the spine, and each level can lift off the floor by itself. The stiffening the ribs and
-  sternum give the thoracic spine is in its joint stiffness.
-- **Shoulders and arms:** collarbone (three hinges at the sternum), shoulder blade (three at the
-  collarbone end), upper arm (three at the shoulder), forearm (elbow bend and turning the palm),
-  hand (wrist bend and side-to-side). The arms lie by the sides, palms up.
-- **Legs:** hips with three hinges; knees that bend and let the shin turn about its length;
-  ankle and subtalar joints on their real, slanted axes; toes as their own segment.
-- **Masses** follow de Leva (1996). Each segment carries the flesh around it.
-- **Contact:** soft "flesh" surfaces (back of the pelvis and buttocks, both sides of every
-  vertebra's back, shoulder blades, back of the head and neck, arms, heels, balls of the feet,
-  outer midfoot, toes) give way over about 2 cm, like tissue.
-- **Ligaments:** each joint is loose around its resting angle and stiffens gradually toward the
-  end of its range: from halfway to the end, resistance grows exponentially to a set end moment
-  (for one lumbar level about 10–12 N·m). This is `src/movesim/ligaments.py`, a passive-force
-  callback that everything loading the model through `movesim` switches on.
-- **Resting tone:** gentle springs hold the legs in hook lying (hip 45°, knee 100°) without
-  pushing the feet along the floor, and let the arms rest by the sides.
-
-What it does not have: muscles (by design), discs that compress, a breathing ribcage, or the
-shoulder blade sliding over the ribs (it hangs from the collarbone on springs instead).
+- `src/movesim/build_model.py`: the anatomy tables and the model builder. Edit here, then
+  `uv run movesim build`.
+- `src/movesim/bones.py`: fits BodyParts3D bones onto the segments (run once; needs the
+  BodyParts3D download, see its docstring).
+- `src/movesim/lesson.py`: movement scripts, the movement vocabulary, and playback.
+- `src/movesim/translate.py`: lesson text to script with Claude.
+- `src/movesim/cli.py`: the `movesim` command.
+- `src/movesim/ligaments.py`, `sim.py`, `view.py`, `knee_tilt.py`.
+- `model/`: the generated model, settled keyframe and bone meshes.
+- `lessons/`: lesson texts and scripts. `web/`: the player and played lessons.
+- `docs/knee-tilt-tuning.md`: what was tuned along the way and why.
