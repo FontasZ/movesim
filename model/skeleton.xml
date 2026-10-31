@@ -21,8 +21,9 @@
 -->
 <mujoco model="movesim-skeleton">
   <compiler angle="degree" autolimits="true"/>
-  <!-- Each joint's user value: the moment (N·m) its ligaments resist with at the end of its range. -->
-  <size nuser_jnt="1"/>
+  <!-- Each joint's user values describe its passive tissue (see movesim/ligaments.py):
+       c below rest, c above rest (N·m), sharpness, and where in the range tightening starts. -->
+  <size nuser_jnt="4"/>
   <!-- noslip stops the slow creep that soft contacts otherwise allow under constant load. -->
   <option timestep="0.001" integrator="implicitfast" gravity="0 0 -9.81" cone="elliptic" impratio="10"
           noslip_iterations="5"/>
@@ -114,17 +115,19 @@
     <default class="mass">
       <geom group="3" rgba="0.5 0.5 0.5 0.1"/>
     </default>
-    <default class="hip"><joint stiffness="60" damping="5" user="30"/></default>
-    <default class="knee"><joint stiffness="30" damping="3" user="20"/></default>
-    <default class="tibia_rot"><joint stiffness="10" damping="1" user="8"/></default>
-    <default class="ankle"><joint stiffness="10" damping="1" user="15"/></default>
-    <default class="toes"><joint stiffness="2" damping="0.2" user="3"/></default>
-    <default class="girdle"><joint stiffness="20" damping="1" user="8"/></default>
-    <default class="girdle_ac"><joint stiffness="30" damping="1" user="8"/></default>
-    <default class="shoulder"><joint stiffness="5" damping="1" user="10"/></default>
-    <default class="elbow"><joint stiffness="2" damping="0.5" user="8"/></default>
-    <default class="forearm"><joint stiffness="1" damping="0.2" user="3"/></default>
-    <default class="wrist"><joint stiffness="1" damping="0.2" user="4"/></default>
+    <default class="hip"><joint stiffness="60" damping="5" user="1.5719 1.5719 3 0.5"/></default>
+    <!-- Hip side-to-side and rotation: tissue stiffness plus the small tone that keeps the knees up. -->
+    <default class="hip_turn"><joint stiffness="16" damping="5" user="1.5719 1.5719 3 0.5"/></default>
+    <default class="knee"><joint stiffness="30" damping="3" user="1.0479 1.0479 3 0.5"/></default>
+    <default class="tibia_rot"><joint stiffness="10" damping="1" user="0.41917 0.41917 3 0.5"/></default>
+    <default class="ankle"><joint stiffness="10" damping="1" user="0.78594 0.78594 3 0.5"/></default>
+    <default class="toes"><joint stiffness="2" damping="0.2" user="0.15719 0.15719 3 0.5"/></default>
+    <default class="girdle"><joint stiffness="20" damping="1" user="0.41917 0.41917 3 0.5"/></default>
+    <default class="girdle_ac"><joint stiffness="30" damping="1" user="0.41917 0.41917 3 0.5"/></default>
+    <default class="shoulder"><joint stiffness="5" damping="1" user="0.52396 0.52396 3 0.5"/></default>
+    <default class="elbow"><joint stiffness="2" damping="0.5" user="0.41917 0.41917 3 0.5"/></default>
+    <default class="forearm"><joint stiffness="1" damping="0.2" user="0.15719 0.15719 3 0.5"/></default>
+    <default class="wrist"><joint stiffness="1" damping="0.2" user="0.20958 0.20958 3 0.5"/></default>
   </default>
 
   <worldbody>
@@ -203,8 +206,8 @@
       <body name="thigh_L" pos="0.01 0.08 -0.1">
         <geom class="bonemesh" mesh="thigh_L"/>
         <joint name="hip_flex_L" class="hip" axis="0 -1 0" range="-20 125" springref="49.4"/>
-        <joint name="hip_abd_L" class="hip" axis="1 0 0" range="-30 45"/>
-        <joint name="hip_inrot_L" class="hip" axis="0 0 -1" range="-45 40"/>
+        <joint name="hip_abd_L" class="hip_turn" axis="1 0 0" range="-30 45"/>
+        <joint name="hip_inrot_L" class="hip_turn" axis="0 0 -1" range="-45 40"/>
         <geom class="bone" type="sphere" size="0.024"/>
         <geom class="bone" type="capsule" fromto="0 0 0  0 0 -0.46" size="0.015"/>
         <geom class="bone" type="capsule" fromto="0 -0.025 -0.45  0 0.025 -0.45" size="0.02"/>
@@ -243,8 +246,8 @@
       <body name="thigh_R" pos="0.01 -0.08 -0.1">
         <geom class="bonemesh" mesh="thigh_R"/>
         <joint name="hip_flex_R" class="hip" axis="0 -1 0" range="-20 125" springref="49.4"/>
-        <joint name="hip_abd_R" class="hip" axis="-1 0 0" range="-30 45"/>
-        <joint name="hip_inrot_R" class="hip" axis="0 0 1" range="-45 40"/>
+        <joint name="hip_abd_R" class="hip_turn" axis="-1 0 0" range="-30 45"/>
+        <joint name="hip_inrot_R" class="hip_turn" axis="0 0 1" range="-45 40"/>
         <geom class="bone" type="sphere" size="0.024"/>
         <geom class="bone" type="capsule" fromto="0 0 0  0 0 -0.46" size="0.015"/>
         <geom class="bone" type="capsule" fromto="0 -0.025 -0.45  0 0.025 -0.45" size="0.02"/>
@@ -282,9 +285,9 @@
       </body>
       <body name="L5" pos="0 0 0" quat="0.98325 0 0.18224 0">
         <geom class="bonemesh" mesh="L5"/>
-        <joint name="L5_S1_bend" axis="0 1 0" range="-7 10" stiffness="25" damping="2" user="12"/>
-        <joint name="L5_S1_side" axis="1 0 0" range="-3 3" stiffness="25" damping="2" user="10"/>
-        <joint name="L5_S1_twist" axis="0 0 1" range="-1 1" stiffness="50" damping="2" user="10"/>
+        <joint name="L5_S1_bend" axis="0 1 0" range="-7 10" stiffness="0" damping="2" user="2.6169 4.2992 2.6 0"/>
+        <joint name="L5_S1_side" axis="1 0 0" range="-3 3" stiffness="0" damping="2" user="1.5646 1.5646 3.67 0"/>
+        <joint name="L5_S1_twist" axis="0 0 1" range="-2 2" stiffness="0" damping="2" user="0.60086 0.60086 2.33 0"/>
         <geom class="bone" type="cylinder" pos="0 0 0.01665" size="0.024 0.01406"/>
         <geom class="bone" type="capsule" size="0.005" fromto="-0.024 0 0.01665 -0.075 0 0.01265"/>
         <geom class="bone" type="capsule" size="0.004" fromto="-0.024 -0.04 0.01665 -0.024 0.04 0.01665"/>
@@ -293,9 +296,9 @@
         <geom name="L5_back_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.07 -0.035 0.0185" size="0.032 0.035 0.0205"/>
         <body name="L4" pos="0 0 0.037" quat="0.99619 0 -0.087156 0">
           <geom class="bonemesh" mesh="L4"/>
-          <joint name="L4_L5_bend" axis="0 1 0" range="-6 10" stiffness="25" damping="2" user="12"/>
-          <joint name="L4_L5_side" axis="1 0 0" range="-6 6" stiffness="25" damping="2" user="10"/>
-          <joint name="L4_L5_twist" axis="0 0 1" range="-2 2" stiffness="50" damping="2" user="10"/>
+          <joint name="L4_L5_bend" axis="0 1 0" range="-6 10" stiffness="0" damping="2" user="2.6169 4.2992 2.6 0"/>
+          <joint name="L4_L5_side" axis="1 0 0" range="-6 6" stiffness="0" damping="2" user="1.5646 1.5646 3.67 0"/>
+          <joint name="L4_L5_twist" axis="0 0 1" range="-2 2" stiffness="0" damping="2" user="0.60086 0.60086 2.33 0"/>
           <geom class="bone" type="cylinder" pos="0 0 0.01485" size="0.024 0.01254"/>
           <geom class="bone" type="capsule" size="0.005" fromto="-0.024 0 0.01485 -0.075 0 0.01085"/>
           <geom class="bone" type="capsule" size="0.004" fromto="-0.024 -0.04 0.01485 -0.024 0.04 0.01485"/>
@@ -304,9 +307,9 @@
           <geom name="L4_back_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.07 -0.035 0.0165" size="0.032 0.035 0.0185"/>
           <body name="L3" pos="0 0 0.033" quat="0.99813 0 -0.061049 0">
             <geom class="bonemesh" mesh="L3"/>
-            <joint name="L3_L4_bend" axis="0 1 0" range="-6 9" stiffness="25" damping="2" user="12"/>
-            <joint name="L3_L4_side" axis="1 0 0" range="-8 8" stiffness="25" damping="2" user="10"/>
-            <joint name="L3_L4_twist" axis="0 0 1" range="-2 2" stiffness="50" damping="2" user="10"/>
+            <joint name="L3_L4_bend" axis="0 1 0" range="-6 9" stiffness="0" damping="2" user="2.6169 4.2992 2.6 0"/>
+            <joint name="L3_L4_side" axis="1 0 0" range="-8 8" stiffness="0" damping="2" user="1.5646 1.5646 3.67 0"/>
+            <joint name="L3_L4_twist" axis="0 0 1" range="-2 2" stiffness="0" damping="2" user="0.60086 0.60086 2.33 0"/>
             <geom class="bone" type="cylinder" pos="0 0 0.0162" size="0.024 0.01368"/>
             <geom class="bone" type="capsule" size="0.005" fromto="-0.024 0 0.0162 -0.075 0 0.0122"/>
             <geom class="bone" type="capsule" size="0.004" fromto="-0.024 -0.04 0.0162 -0.024 0.04 0.0162"/>
@@ -315,9 +318,9 @@
             <geom name="L3_back_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.07 -0.035 0.018" size="0.032 0.035 0.02"/>
             <body name="L2" pos="0 0 0.036" quat="0.99905 0 -0.043619 0">
               <geom class="bonemesh" mesh="L2"/>
-              <joint name="L2_L3_bend" axis="0 1 0" range="-5 9" stiffness="25" damping="2" user="12"/>
-              <joint name="L2_L3_side" axis="1 0 0" range="-6 6" stiffness="25" damping="2" user="10"/>
-              <joint name="L2_L3_twist" axis="0 0 1" range="-2 2" stiffness="50" damping="2" user="10"/>
+              <joint name="L2_L3_bend" axis="0 1 0" range="-5 9" stiffness="0" damping="2" user="2.6169 4.2992 2.6 0"/>
+              <joint name="L2_L3_side" axis="1 0 0" range="-6 6" stiffness="0" damping="2" user="1.5646 1.5646 3.67 0"/>
+              <joint name="L2_L3_twist" axis="0 0 1" range="-2 2" stiffness="0" damping="2" user="0.60086 0.60086 2.33 0"/>
               <geom class="bone" type="cylinder" pos="0 0 0.01485" size="0.024 0.01254"/>
               <geom class="bone" type="capsule" size="0.005" fromto="-0.024 0 0.01485 -0.075 0 0.01085"/>
               <geom class="bone" type="capsule" size="0.004" fromto="-0.024 -0.04 0.01485 -0.024 0.04 0.01485"/>
@@ -326,9 +329,9 @@
               <geom name="L2_back_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.07 -0.035 0.0165" size="0.032 0.035 0.0185"/>
               <body name="L1" pos="0 0 0.033" quat="0.99939 0 -0.034899 0">
                 <geom class="bonemesh" mesh="L1"/>
-                <joint name="L1_L2_bend" axis="0 1 0" range="-4 8" stiffness="25" damping="2" user="12"/>
-                <joint name="L1_L2_side" axis="1 0 0" range="-6 6" stiffness="25" damping="2" user="10"/>
-                <joint name="L1_L2_twist" axis="0 0 1" range="-2 2" stiffness="50" damping="2" user="10"/>
+                <joint name="L1_L2_bend" axis="0 1 0" range="-4 8" stiffness="0" damping="2" user="2.6169 4.2992 2.6 0"/>
+                <joint name="L1_L2_side" axis="1 0 0" range="-6 6" stiffness="0" damping="2" user="1.5646 1.5646 3.67 0"/>
+                <joint name="L1_L2_twist" axis="0 0 1" range="-2 2" stiffness="0" damping="2" user="0.60086 0.60086 2.33 0"/>
                 <geom class="bone" type="cylinder" pos="0 0 0.01395" size="0.024 0.01178"/>
                 <geom class="bone" type="capsule" size="0.005" fromto="-0.024 0 0.01395 -0.075 0 0.00995"/>
                 <geom class="bone" type="capsule" size="0.004" fromto="-0.024 -0.04 0.01395 -0.024 0.04 0.01395"/>
@@ -337,9 +340,9 @@
                 <geom name="L1_back_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.07 -0.035 0.0155" size="0.032 0.035 0.0175"/>
                 <body name="T12" pos="0 0 0.031" quat="1 0 0 0">
                   <geom class="bonemesh" mesh="T12"/>
-                  <joint name="T12_L1_bend" axis="0 1 0" range="-4 8" stiffness="25" damping="2" user="12"/>
-                  <joint name="T12_L1_side" axis="1 0 0" range="-8 8" stiffness="25" damping="2" user="10"/>
-                  <joint name="T12_L1_twist" axis="0 0 1" range="-2 2" stiffness="50" damping="2" user="10"/>
+                  <joint name="T12_L1_bend" axis="0 1 0" range="-4 8" stiffness="0" damping="2" user="2.6169 4.2992 2.6 0"/>
+                  <joint name="T12_L1_side" axis="1 0 0" range="-8 8" stiffness="0" damping="2" user="1.5646 1.5646 3.67 0"/>
+                  <joint name="T12_L1_twist" axis="0 0 1" range="-2 2" stiffness="0" damping="2" user="0.60086 0.60086 2.33 0"/>
                   <geom class="bone" type="cylinder" pos="0 0 0.01485" size="0.021 0.01254"/>
                   <geom class="bone" type="capsule" size="0.005" fromto="-0.021 0 0.01485 -0.075 0 0.01085"/>
                   <geom class="bone" type="capsule" size="0.004" fromto="-0.021 -0.04 0.01485 -0.021 0.04 0.01485"/>
@@ -352,9 +355,9 @@
                   <geom class="rib" fromto="-0.045 -0.0605 0.0148 -0.01 -0.09 -0.0102"/>
                   <body name="T11" pos="0 0 0.033" quat="0.99996 0 0.0087265 0">
                     <geom class="bonemesh" mesh="T11"/>
-                    <joint name="T11_T12_bend" axis="0 1 0" range="-4 8" stiffness="25" damping="2" user="12"/>
-                    <joint name="T11_T12_side" axis="1 0 0" range="-9 9" stiffness="25" damping="2" user="10"/>
-                    <joint name="T11_T12_twist" axis="0 0 1" range="-2 2" stiffness="50" damping="2" user="10"/>
+                    <joint name="T11_T12_bend" axis="0 1 0" range="-4 8" stiffness="0" damping="2" user="2.6169 4.2992 2.6 0"/>
+                    <joint name="T11_T12_side" axis="1 0 0" range="-9 9" stiffness="0" damping="2" user="1.5646 1.5646 3.67 0"/>
+                    <joint name="T11_T12_twist" axis="0 0 1" range="-2 2" stiffness="0" damping="2" user="0.60086 0.60086 2.33 0"/>
                     <geom class="bone" type="cylinder" pos="0 0 0.0135" size="0.021 0.0114"/>
                     <geom class="bone" type="capsule" size="0.005" fromto="-0.021 0 0.0135 -0.075 0 0.0095"/>
                     <geom class="bone" type="capsule" size="0.004" fromto="-0.021 -0.04 0.0135 -0.021 0.04 0.0135"/>
@@ -367,9 +370,9 @@
                     <geom class="rib" fromto="-0.045 -0.074 0.013 -0.01 -0.12 -0.022"/>
                     <body name="T10" pos="0 0 0.03" quat="0.99985 0 0.017452 0">
                       <geom class="bonemesh" mesh="T10"/>
-                      <joint name="T10_T11_bend" axis="0 1 0" range="-3 5" stiffness="40" damping="2" user="8"/>
-                      <joint name="T10_T11_side" axis="1 0 0" range="-7 7" stiffness="40" damping="2" user="8"/>
-                      <joint name="T10_T11_twist" axis="0 0 1" range="-2 2" stiffness="40" damping="2" user="8"/>
+                      <joint name="T10_T11_bend" axis="0 1 0" range="-3 5" stiffness="0" damping="2" user="2.6169 4.2992 2.6 0"/>
+                      <joint name="T10_T11_side" axis="1 0 0" range="-7 7" stiffness="0" damping="2" user="1.5646 1.5646 3.67 0"/>
+                      <joint name="T10_T11_twist" axis="0 0 1" range="-3 3" stiffness="0" damping="2" user="0.60086 0.60086 2.33 0"/>
                       <geom class="bone" type="cylinder" pos="0 0 0.0135" size="0.019 0.0114"/>
                       <geom class="bone" type="capsule" size="0.005" fromto="-0.019 0 0.0135 -0.055 0 -0.0165"/>
                       <geom class="bone" type="capsule" size="0.004" fromto="-0.019 -0.04 0.0135 -0.019 0.04 0.0135"/>
@@ -386,9 +389,9 @@
                       <geom class="rib" fromto="0.084 -0.081 -0.031 0.09975 -0.04725 -0.052"/>
                       <body name="T9" pos="0 0 0.03" quat="0.99966 0 0.026177 0">
                         <geom class="bonemesh" mesh="T9"/>
-                        <joint name="T9_T10_bend" axis="0 1 0" range="-2 4" stiffness="40" damping="2" user="8"/>
-                        <joint name="T9_T10_side" axis="1 0 0" range="-6 6" stiffness="40" damping="2" user="8"/>
-                        <joint name="T9_T10_twist" axis="0 0 1" range="-3 3" stiffness="40" damping="2" user="8"/>
+                        <joint name="T9_T10_bend" axis="0 1 0" range="-2 4" stiffness="0" damping="2" user="2.6169 4.2992 2.6 0"/>
+                        <joint name="T9_T10_side" axis="1 0 0" range="-6 6" stiffness="0" damping="2" user="1.5646 1.5646 3.67 0"/>
+                        <joint name="T9_T10_twist" axis="0 0 1" range="-4 4" stiffness="0" damping="2" user="0.60086 0.60086 2.33 0"/>
                         <geom class="bone" type="cylinder" pos="0 0 0.01215" size="0.0184 0.01026"/>
                         <geom class="bone" type="capsule" size="0.005" fromto="-0.0184 0 0.01215 -0.055 0 -0.01785"/>
                         <geom class="bone" type="capsule" size="0.004" fromto="-0.0184 -0.04 0.01215 -0.0184 0.04 0.01215"/>
@@ -405,9 +408,9 @@
                         <geom class="rib" fromto="0.092 -0.084 -0.0398 0.10925 -0.049 -0.0638"/>
                         <body name="T8" pos="0 0 0.027" quat="0.99939 0 0.034899 0">
                           <geom class="bonemesh" mesh="T8"/>
-                          <joint name="T8_T9_bend" axis="0 1 0" range="-2 4" stiffness="40" damping="2" user="8"/>
-                          <joint name="T8_T9_side" axis="1 0 0" range="-6 6" stiffness="40" damping="2" user="8"/>
-                          <joint name="T8_T9_twist" axis="0 0 1" range="-3.5 3.5" stiffness="40" damping="2" user="8"/>
+                          <joint name="T8_T9_bend" axis="0 1 0" range="-2 4" stiffness="0" damping="2" user="2.6169 4.2992 2.6 0"/>
+                          <joint name="T8_T9_side" axis="1 0 0" range="-6 6" stiffness="0" damping="2" user="1.5646 1.5646 3.67 0"/>
+                          <joint name="T8_T9_twist" axis="0 0 1" range="-5 5" stiffness="0" damping="2" user="0.60086 0.60086 2.33 0"/>
                           <geom class="bone" type="cylinder" pos="0 0 0.01215" size="0.0178 0.01026"/>
                           <geom class="bone" type="capsule" size="0.005" fromto="-0.0178 0 0.01215 -0.055 0 -0.01785"/>
                           <geom class="bone" type="capsule" size="0.004" fromto="-0.0178 -0.04 0.01215 -0.0178 0.04 0.01215"/>
@@ -424,9 +427,9 @@
                           <geom class="rib" fromto="0.096 -0.084 -0.0398 0.114 -0.049 -0.0638"/>
                           <body name="T7" pos="0 0 0.027" quat="0.99939 0 0.034899 0">
                             <geom class="bonemesh" mesh="T7"/>
-                            <joint name="T7_T8_bend" axis="0 1 0" range="-2 4" stiffness="40" damping="2" user="8"/>
-                            <joint name="T7_T8_side" axis="1 0 0" range="-6 6" stiffness="40" damping="2" user="8"/>
-                            <joint name="T7_T8_twist" axis="0 0 1" range="-4 4" stiffness="40" damping="2" user="8"/>
+                            <joint name="T7_T8_bend" axis="0 1 0" range="-2 4" stiffness="0" damping="2" user="2.6169 4.2992 2.6 0"/>
+                            <joint name="T7_T8_side" axis="1 0 0" range="-6 6" stiffness="0" damping="2" user="1.5646 1.5646 3.67 0"/>
+                            <joint name="T7_T8_twist" axis="0 0 1" range="-5 5" stiffness="0" damping="2" user="0.60086 0.60086 2.33 0"/>
                             <geom class="bone" type="cylinder" pos="0 0 0.01305" size="0.0172 0.01102"/>
                             <geom class="bone" type="capsule" size="0.005" fromto="-0.0172 0 0.01305 -0.055 0 -0.01695"/>
                             <geom class="bone" type="capsule" size="0.004" fromto="-0.0172 -0.04 0.01305 -0.0172 0.04 0.01305"/>
@@ -443,9 +446,9 @@
                             <geom class="rib" fromto="0.096 -0.081 -0.0386 0.12 -0.02 -0.0626"/>
                             <body name="T6" pos="0 0 0.029" quat="0.99939 0 0.034899 0">
                               <geom class="bonemesh" mesh="T6"/>
-                              <joint name="T6_T7_bend" axis="0 1 0" range="-2 3" stiffness="40" damping="2" user="8"/>
-                              <joint name="T6_T7_side" axis="1 0 0" range="-6 6" stiffness="40" damping="2" user="8"/>
-                              <joint name="T6_T7_twist" axis="0 0 1" range="-4 4" stiffness="40" damping="2" user="8"/>
+                              <joint name="T6_T7_bend" axis="0 1 0" range="-2 3" stiffness="0" damping="2" user="2.6169 4.2992 2.6 0"/>
+                              <joint name="T6_T7_side" axis="1 0 0" range="-6 6" stiffness="0" damping="2" user="1.5646 1.5646 3.67 0"/>
+                              <joint name="T6_T7_twist" axis="0 0 1" range="-5 5" stiffness="0" damping="2" user="0.60086 0.60086 2.33 0"/>
                               <geom class="bone" type="cylinder" pos="0 0 0.0117" size="0.0166 0.00988"/>
                               <geom class="bone" type="capsule" size="0.005" fromto="-0.0166 0 0.0117 -0.055 0 -0.0183"/>
                               <geom class="bone" type="capsule" size="0.004" fromto="-0.0166 -0.04 0.0117 -0.0166 0.04 0.0117"/>
@@ -463,9 +466,9 @@
                               <geom class="bone" type="box" pos="0.12 0 -0.0744" size="0.006 0.015 0.025"/>
                               <body name="T5" pos="0 0 0.026" quat="0.99939 0 0.034899 0">
                                 <geom class="bonemesh" mesh="T5"/>
-                                <joint name="T5_T6_bend" axis="0 1 0" range="-2 3" stiffness="40" damping="2" user="8"/>
-                                <joint name="T5_T6_side" axis="1 0 0" range="-6 6" stiffness="40" damping="2" user="8"/>
-                                <joint name="T5_T6_twist" axis="0 0 1" range="-4.5 4.5" stiffness="40" damping="2" user="8"/>
+                                <joint name="T5_T6_bend" axis="0 1 0" range="-2 3" stiffness="0" damping="2" user="2.6169 4.2992 2.6 0"/>
+                                <joint name="T5_T6_side" axis="1 0 0" range="-6 6" stiffness="0" damping="2" user="1.5646 1.5646 3.67 0"/>
+                                <joint name="T5_T6_twist" axis="0 0 1" range="-5 5" stiffness="0" damping="2" user="0.60086 0.60086 2.33 0"/>
                                 <geom class="bone" type="cylinder" pos="0 0 0.0117" size="0.016 0.00988"/>
                                 <geom class="bone" type="capsule" size="0.005" fromto="-0.016 0 0.0117 -0.055 0 -0.0183"/>
                                 <geom class="bone" type="capsule" size="0.004" fromto="-0.016 -0.04 0.0117 -0.016 0.04 0.0117"/>
@@ -482,9 +485,9 @@
                                 <geom class="rib" fromto="0.084 -0.072 -0.0264 0.105 -0.02 -0.0444"/>
                                 <body name="T4" pos="0 0 0.026" quat="0.99939 0 0.034899 0">
                                   <geom class="bonemesh" mesh="T4"/>
-                                  <joint name="T4_T5_bend" axis="0 1 0" range="-2 3" stiffness="40" damping="2" user="8"/>
-                                  <joint name="T4_T5_side" axis="1 0 0" range="-6 6" stiffness="40" damping="2" user="8"/>
-                                  <joint name="T4_T5_twist" axis="0 0 1" range="-4.5 4.5" stiffness="40" damping="2" user="8"/>
+                                  <joint name="T4_T5_bend" axis="0 1 0" range="-2 3" stiffness="0" damping="2" user="2.6169 4.2992 2.6 0"/>
+                                  <joint name="T4_T5_side" axis="1 0 0" range="-6 6" stiffness="0" damping="2" user="1.5646 1.5646 3.67 0"/>
+                                  <joint name="T4_T5_twist" axis="0 0 1" range="-5 5" stiffness="0" damping="2" user="0.60086 0.60086 2.33 0"/>
                                   <geom class="bone" type="cylinder" pos="0 0 0.0108" size="0.0154 0.00912"/>
                                   <geom class="bone" type="capsule" size="0.005" fromto="-0.0154 0 0.0108 -0.055 0 -0.0192"/>
                                   <geom class="bone" type="capsule" size="0.004" fromto="-0.0154 -0.04 0.0108 -0.0154 0.04 0.0108"/>
@@ -503,9 +506,9 @@
                                   <site name="sternum" pos="0.11 0 -0.0556" size="0.012"/>
                                   <body name="T3" pos="0 0 0.024" quat="0.99966 0 0.026177 0">
                                     <geom class="bonemesh" mesh="T3"/>
-                                    <joint name="T3_T4_bend" axis="0 1 0" range="-1 3" stiffness="40" damping="2" user="8"/>
-                                    <joint name="T3_T4_side" axis="1 0 0" range="-5 5" stiffness="40" damping="2" user="8"/>
-                                    <joint name="T3_T4_twist" axis="0 0 1" range="-5 5" stiffness="40" damping="2" user="8"/>
+                                    <joint name="T3_T4_bend" axis="0 1 0" range="-1 3" stiffness="0" damping="2" user="2.6169 4.2992 2.6 0"/>
+                                    <joint name="T3_T4_side" axis="1 0 0" range="-5 5" stiffness="0" damping="2" user="1.5646 1.5646 3.67 0"/>
+                                    <joint name="T3_T4_twist" axis="0 0 1" range="-5 5" stiffness="0" damping="2" user="0.60086 0.60086 2.33 0"/>
                                     <geom class="bone" type="cylinder" pos="0 0 0.0108" size="0.0148 0.00912"/>
                                     <geom class="bone" type="capsule" size="0.005" fromto="-0.0148 0 0.0108 -0.055 0 -0.0192"/>
                                     <geom class="bone" type="capsule" size="0.004" fromto="-0.0148 -0.04 0.0108 -0.0148 0.04 0.0108"/>
@@ -522,9 +525,9 @@
                                     <geom class="rib" fromto="0.064 -0.057 -0.0136 0.08 -0.02 -0.0256"/>
                                     <body name="T2" pos="0 0 0.024" quat="0.99966 0 0.026177 0">
                                       <geom class="bonemesh" mesh="T2"/>
-                                      <joint name="T2_T3_bend" axis="0 1 0" range="-1 3" stiffness="40" damping="2" user="8"/>
-                                      <joint name="T2_T3_side" axis="1 0 0" range="-5 5" stiffness="40" damping="2" user="8"/>
-                                      <joint name="T2_T3_twist" axis="0 0 1" range="-5 5" stiffness="40" damping="2" user="8"/>
+                                      <joint name="T2_T3_bend" axis="0 1 0" range="-1 3" stiffness="0" damping="2" user="2.6169 4.2992 2.6 0"/>
+                                      <joint name="T2_T3_side" axis="1 0 0" range="-5 5" stiffness="0" damping="2" user="1.5646 1.5646 3.67 0"/>
+                                      <joint name="T2_T3_twist" axis="0 0 1" range="-5 5" stiffness="0" damping="2" user="0.60086 0.60086 2.33 0"/>
                                       <geom class="bone" type="cylinder" pos="0 0 0.0099" size="0.0142 0.00836"/>
                                       <geom class="bone" type="capsule" size="0.005" fromto="-0.0142 0 0.0099 -0.055 0 -0.0201"/>
                                       <geom class="bone" type="capsule" size="0.004" fromto="-0.0142 -0.04 0.0099 -0.0142 0.04 0.0099"/>
@@ -638,9 +641,9 @@
                                       </body>
                                       <body name="T1" pos="0 0 0.022" quat="0.99966 0 0.026177 0">
                                         <geom class="bonemesh" mesh="T1"/>
-                                        <joint name="T1_T2_bend" axis="0 1 0" range="-1 3" stiffness="40" damping="2" user="8"/>
-                                        <joint name="T1_T2_side" axis="1 0 0" range="-5 5" stiffness="40" damping="2" user="8"/>
-                                        <joint name="T1_T2_twist" axis="0 0 1" range="-5 5" stiffness="40" damping="2" user="8"/>
+                                        <joint name="T1_T2_bend" axis="0 1 0" range="-1 3" stiffness="0" damping="2" user="2.6169 4.2992 2.6 0"/>
+                                        <joint name="T1_T2_side" axis="1 0 0" range="-5 5" stiffness="0" damping="2" user="1.5646 1.5646 3.67 0"/>
+                                        <joint name="T1_T2_twist" axis="0 0 1" range="-5 5" stiffness="0" damping="2" user="0.60086 0.60086 2.33 0"/>
                                         <geom class="bone" type="cylinder" pos="0 0 0.00855" size="0.0136 0.00722"/>
                                         <geom class="bone" type="capsule" size="0.005" fromto="-0.0136 0 0.00855 -0.055 0 -0.02145"/>
                                         <geom class="bone" type="capsule" size="0.004" fromto="-0.0136 -0.04 0.00855 -0.0136 0.04 0.00855"/>
@@ -657,9 +660,9 @@
                                         <geom class="rib" fromto="0.04 -0.036 -0.0026 0.05 -0.02 -0.0086"/>
                                         <body name="C7" pos="0 0 0.019" quat="0.99985 0 -0.017452 0">
                                           <geom class="bonemesh" mesh="C7"/>
-                                          <joint name="C7_T1_bend" axis="0 1 0" range="-3 4" stiffness="4" damping="0.4" user="2"/>
-                                          <joint name="C7_T1_side" axis="1 0 0" range="-4 4" stiffness="4" damping="0.4" user="2"/>
-                                          <joint name="C7_T1_twist" axis="0 0 1" range="-3 3" stiffness="3" damping="0.4" user="2"/>
+                                          <joint name="C7_T1_bend" axis="0 1 0" range="-3 4" stiffness="0" damping="0.4" user="0.26917 0.26291 2.5 0"/>
+                                          <joint name="C7_T1_side" axis="1 0 0" range="-4 4" stiffness="0" damping="0.4" user="0.36933 0.36933 2.5 0"/>
+                                          <joint name="C7_T1_twist" axis="0 0 1" range="-3 3" stiffness="0" damping="0.4" user="0.47574 0.47574 2.5 0"/>
                                           <geom class="bone" type="cylinder" pos="0 0 0.0081" size="0.01 0.00684"/>
                                           <geom class="bone" type="capsule" size="0.005" fromto="-0.01 0 0.0081 -0.045 0 -0.0019"/>
                                           <geom class="bone" type="capsule" size="0.004" fromto="-0.01 -0.025 0.0081 -0.01 0.025 0.0081"/>
@@ -667,9 +670,9 @@
                                           <geom name="C7_back" class="flesh" type="ellipsoid" pos="-0.045 0 0.009" size="0.025 0.04 0.011"/>
                                           <body name="C6" pos="0 0 0.018" quat="0.99939 0 -0.034899 0">
                                             <geom class="bonemesh" mesh="C6"/>
-                                            <joint name="C6_C7_bend" axis="0 1 0" range="-3 4" stiffness="4" damping="0.4" user="2"/>
-                                            <joint name="C6_C7_side" axis="1 0 0" range="-7 7" stiffness="4" damping="0.4" user="2"/>
-                                            <joint name="C6_C7_twist" axis="0 0 1" range="-6 6" stiffness="3" damping="0.4" user="2"/>
+                                            <joint name="C6_C7_bend" axis="0 1 0" range="-3 4" stiffness="0" damping="0.4" user="0.26917 0.26291 2.5 0"/>
+                                            <joint name="C6_C7_side" axis="1 0 0" range="-7 7" stiffness="0" damping="0.4" user="0.36933 0.36933 2.5 0"/>
+                                            <joint name="C6_C7_twist" axis="0 0 1" range="-6 6" stiffness="0" damping="0.4" user="0.47574 0.47574 2.5 0"/>
                                             <geom class="bone" type="cylinder" pos="0 0 0.0072" size="0.01 0.00608"/>
                                             <geom class="bone" type="capsule" size="0.005" fromto="-0.01 0 0.0072 -0.03 0 -0.0028"/>
                                             <geom class="bone" type="capsule" size="0.004" fromto="-0.01 -0.025 0.0072 -0.01 0.025 0.0072"/>
@@ -677,9 +680,9 @@
                                             <geom name="C6_back" class="flesh" type="ellipsoid" pos="-0.045 0 0.008" size="0.025 0.04 0.01"/>
                                             <body name="C5" pos="0 0 0.016" quat="0.99905 0 -0.043619 0">
                                               <geom class="bonemesh" mesh="C5"/>
-                                              <joint name="C5_C6_bend" axis="0 1 0" range="-5 6" stiffness="4" damping="0.4" user="2"/>
-                                              <joint name="C5_C6_side" axis="1 0 0" range="-8 8" stiffness="4" damping="0.4" user="2"/>
-                                              <joint name="C5_C6_twist" axis="0 0 1" range="-7 7" stiffness="3" damping="0.4" user="2"/>
+                                              <joint name="C5_C6_bend" axis="0 1 0" range="-5 6" stiffness="0" damping="0.4" user="0.26917 0.26291 2.5 0"/>
+                                              <joint name="C5_C6_side" axis="1 0 0" range="-8 8" stiffness="0" damping="0.4" user="0.36933 0.36933 2.5 0"/>
+                                              <joint name="C5_C6_twist" axis="0 0 1" range="-7 7" stiffness="0" damping="0.4" user="0.47574 0.47574 2.5 0"/>
                                               <geom class="bone" type="cylinder" pos="0 0 0.00765" size="0.01 0.00646"/>
                                               <geom class="bone" type="capsule" size="0.005" fromto="-0.01 0 0.00765 -0.03 0 -0.00235"/>
                                               <geom class="bone" type="capsule" size="0.004" fromto="-0.01 -0.025 0.00765 -0.01 0.025 0.00765"/>
@@ -687,9 +690,9 @@
                                               <geom name="C5_back" class="flesh" type="ellipsoid" pos="-0.045 0 0.0085" size="0.025 0.04 0.0105"/>
                                               <body name="C4" pos="0 0 0.017" quat="0.99905 0 -0.043619 0">
                                                 <geom class="bonemesh" mesh="C4"/>
-                                                <joint name="C4_C5_bend" axis="0 1 0" range="-5 6" stiffness="4" damping="0.4" user="2"/>
-                                                <joint name="C4_C5_side" axis="1 0 0" range="-11 11" stiffness="4" damping="0.4" user="2"/>
-                                                <joint name="C4_C5_twist" axis="0 0 1" range="-7 7" stiffness="3" damping="0.4" user="2"/>
+                                                <joint name="C4_C5_bend" axis="0 1 0" range="-5 6" stiffness="0" damping="0.4" user="0.26917 0.26291 2.5 0"/>
+                                                <joint name="C4_C5_side" axis="1 0 0" range="-11 11" stiffness="0" damping="0.4" user="0.36933 0.36933 2.5 0"/>
+                                                <joint name="C4_C5_twist" axis="0 0 1" range="-7 7" stiffness="0" damping="0.4" user="0.47574 0.47574 2.5 0"/>
                                                 <geom class="bone" type="cylinder" pos="0 0 0.00675" size="0.01 0.0057"/>
                                                 <geom class="bone" type="capsule" size="0.005" fromto="-0.01 0 0.00675 -0.03 0 -0.00325"/>
                                                 <geom class="bone" type="capsule" size="0.004" fromto="-0.01 -0.025 0.00675 -0.01 0.025 0.00675"/>
@@ -697,9 +700,9 @@
                                                 <geom name="C4_back" class="flesh" type="ellipsoid" pos="-0.045 0 0.0075" size="0.025 0.04 0.0095"/>
                                                 <body name="C3" pos="0 0 0.015" quat="0.99905 0 -0.043619 0">
                                                   <geom class="bonemesh" mesh="C3"/>
-                                                  <joint name="C3_C4_bend" axis="0 1 0" range="-4 5" stiffness="4" damping="0.4" user="2"/>
-                                                  <joint name="C3_C4_side" axis="1 0 0" range="-11 11" stiffness="4" damping="0.4" user="2"/>
-                                                  <joint name="C3_C4_twist" axis="0 0 1" range="-7 7" stiffness="3" damping="0.4" user="2"/>
+                                                  <joint name="C3_C4_bend" axis="0 1 0" range="-4 5" stiffness="0" damping="0.4" user="0.26917 0.26291 2.5 0"/>
+                                                  <joint name="C3_C4_side" axis="1 0 0" range="-11 11" stiffness="0" damping="0.4" user="0.36933 0.36933 2.5 0"/>
+                                                  <joint name="C3_C4_twist" axis="0 0 1" range="-7 7" stiffness="0" damping="0.4" user="0.47574 0.47574 2.5 0"/>
                                                   <geom class="bone" type="cylinder" pos="0 0 0.0081" size="0.01 0.00684"/>
                                                   <geom class="bone" type="capsule" size="0.005" fromto="-0.01 0 0.0081 -0.03 0 -0.0019"/>
                                                   <geom class="bone" type="capsule" size="0.004" fromto="-0.01 -0.025 0.0081 -0.01 0.025 0.0081"/>
@@ -707,9 +710,9 @@
                                                   <geom name="C3_back" class="flesh" type="ellipsoid" pos="-0.045 0 0.009" size="0.025 0.04 0.011"/>
                                                   <body name="C2" pos="0 0 0.018" quat="0.99939 0 -0.034899 0">
                                                     <geom class="bonemesh" mesh="C2"/>
-                                                    <joint name="C2_C3_bend" axis="0 1 0" range="-3 4" stiffness="4" damping="0.4" user="2"/>
-                                                    <joint name="C2_C3_side" axis="1 0 0" range="-10 10" stiffness="4" damping="0.4" user="2"/>
-                                                    <joint name="C2_C3_twist" axis="0 0 1" range="-3 3" stiffness="3" damping="0.4" user="2"/>
+                                                    <joint name="C2_C3_bend" axis="0 1 0" range="-3 4" stiffness="0" damping="0.4" user="0.26917 0.26291 2.5 0"/>
+                                                    <joint name="C2_C3_side" axis="1 0 0" range="-10 10" stiffness="0" damping="0.4" user="0.36933 0.36933 2.5 0"/>
+                                                    <joint name="C2_C3_twist" axis="0 0 1" range="-3 3" stiffness="0" damping="0.4" user="0.47574 0.47574 2.5 0"/>
                                                     <geom class="bone" type="cylinder" pos="0 0 0.00945" size="0.01 0.00798"/>
                                                     <geom class="bone" type="capsule" size="0.005" fromto="-0.01 0 0.00945 -0.03 0 -0.00055"/>
                                                     <geom class="bone" type="capsule" size="0.004" fromto="-0.01 -0.025 0.00945 -0.01 0.025 0.00945"/>
@@ -717,9 +720,9 @@
                                                     <geom name="C2_back" class="flesh" type="ellipsoid" pos="-0.045 0 0.0105" size="0.025 0.04 0.0125"/>
                                                     <body name="C1" pos="0 0 0.021" quat="0.99966 0 -0.026177 0">
                                                       <geom class="bonemesh" mesh="C1"/>
-                                                      <joint name="C1_C2_bend" axis="0 1 0" range="-5 5" stiffness="4" damping="0.4" user="2"/>
-                                                      <joint name="C1_C2_side" axis="1 0 0" range="-3 3" stiffness="4" damping="0.4" user="2"/>
-                                                      <joint name="C1_C2_twist" axis="0 0 1" range="-40 40" stiffness="3" damping="0.4" user="2"/>
+                                                      <joint name="C1_C2_bend" axis="0 1 0" range="-5 5" stiffness="0" damping="0.4" user="0.26917 0.26291 2.5 0"/>
+                                                      <joint name="C1_C2_side" axis="1 0 0" range="-3 3" stiffness="0" damping="0.4" user="0.36933 0.36933 2.5 0"/>
+                                                      <joint name="C1_C2_twist" axis="0 0 1" range="-40 40" stiffness="0" damping="0.4" user="0.47574 0.47574 2.5 0"/>
                                                       <geom class="bone" type="cylinder" pos="0 0 0.0063" size="0.01 0.00532"/>
                                                       <geom class="bone" type="capsule" size="0.005" fromto="-0.01 0 0.0063 -0.03 0 -0.0037"/>
                                                       <geom class="bone" type="capsule" size="0.004" fromto="-0.01 -0.025 0.0063 -0.01 0.025 0.0063"/>
@@ -727,9 +730,9 @@
                                                       <geom name="C1_back" class="flesh" type="ellipsoid" pos="-0.045 0 0.007" size="0.025 0.04 0.009"/>
                                                       <body name="skull" pos="0 0 0.014" quat="0.99985 0 -0.017452 0">
                                                         <geom class="bonemesh" mesh="skull"/>
-                                                        <joint name="C0_C1_bend" axis="0 1 0" range="-15 8" stiffness="4" damping="0.4" user="2"/>
-                                                        <joint name="C0_C1_side" axis="1 0 0" range="-5 5" stiffness="4" damping="0.4" user="2"/>
-                                                        <joint name="C0_C1_twist" axis="0 0 1" range="-3 3" stiffness="3" damping="0.4" user="2"/>
+                                                        <joint name="C0_C1_bend" axis="0 1 0" range="-15 8" stiffness="0" damping="0.4" user="0.26917 0.26291 2.5 0"/>
+                                                        <joint name="C0_C1_side" axis="1 0 0" range="-5 5" stiffness="0" damping="0.4" user="0.36933 0.36933 2.5 0"/>
+                                                        <joint name="C0_C1_twist" axis="0 0 1" range="-3 3" stiffness="0" damping="0.4" user="0.47574 0.47574 2.5 0"/>
                                                         <geom class="mass" type="ellipsoid" pos="0.02 0 0.04" size="0.095 0.075 0.10" mass="4.0"/>
                                                         <geom class="bone" type="ellipsoid" pos="0.01 0 0.05" size="0.095 0.075 0.09"/>
                                                         <geom class="bone" type="ellipsoid" pos="0.065 0 -0.01" size="0.045 0.05 0.055"/>

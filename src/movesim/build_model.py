@@ -26,6 +26,9 @@ import numpy as np
 from movesim.sim import KEY_PATH, MODEL_PATH
 
 # ------------------------------------------------------------------ the spine
+# Thoracic twist ranges (T1-T9 ±5°, T10 ±3°) follow the in-vitro segmental data of Wilke et al.
+# 2017 (axial range 10-12° per segment over T1-T10) more than White & Panjabi's 2-5°, so that
+# turning the chest on a held pelvis leaves the lumbar levels the 1.2-1.7° measured in vivo.
 
 SACRAL_SLOPE = 35  # degrees the top of the sacrum faces forward-up
 
@@ -45,20 +48,20 @@ class Level:
 
 
 LEVELS = [
-    Level("L5", "S1", "lumbar", 0.037, -14, 10, 7, 3, 1, 0.65),
+    Level("L5", "S1", "lumbar", 0.037, -14, 10, 7, 3, 2, 0.65),  # twist: 1° in W&P; in vivo >=1.2° (Fujii 2007)
     Level("L4", "L5", "lumbar", 0.033, -10, 10, 6, 6, 2, 0.65),
     Level("L3", "L4", "lumbar", 0.036, -7, 9, 6, 8, 2, 1.4),
     Level("L2", "L3", "lumbar", 0.033, -5, 9, 5, 6, 2, 1.4),
     Level("L1", "L2", "lumbar", 0.031, -4, 8, 4, 6, 2, 1.4),
     Level("T12", "L1", "thoracolumbar", 0.033, 0, 8, 4, 8, 2, 1.4),
     Level("T11", "T12", "thoracolumbar", 0.030, 1, 8, 4, 9, 2, 1.4),
-    Level("T10", "T11", "thoracic", 0.030, 2, 5, 3, 7, 2, 1.4),
-    Level("T9", "T10", "thoracic", 0.027, 3, 4, 2, 6, 3, 1.4),
-    Level("T8", "T9", "thoracic", 0.027, 4, 4, 2, 6, 3.5, 1.4),
-    Level("T7", "T8", "thoracic", 0.029, 4, 4, 2, 6, 4, 1.7),
-    Level("T6", "T7", "thoracic", 0.026, 4, 3, 2, 6, 4, 1.6),
-    Level("T5", "T6", "thoracic", 0.026, 4, 3, 2, 6, 4.5, 1.5),
-    Level("T4", "T5", "thoracic", 0.024, 4, 3, 2, 6, 4.5, 1.35),
+    Level("T10", "T11", "thoracic", 0.030, 2, 5, 3, 7, 3, 1.4),
+    Level("T9", "T10", "thoracic", 0.027, 3, 4, 2, 6, 4, 1.4),
+    Level("T8", "T9", "thoracic", 0.027, 4, 4, 2, 6, 5, 1.4),
+    Level("T7", "T8", "thoracic", 0.029, 4, 4, 2, 6, 5, 1.7),
+    Level("T6", "T7", "thoracic", 0.026, 4, 3, 2, 6, 5, 1.6),
+    Level("T5", "T6", "thoracic", 0.026, 4, 3, 2, 6, 5, 1.5),
+    Level("T4", "T5", "thoracic", 0.024, 4, 3, 2, 6, 5, 1.35),
     Level("T3", "T4", "thoracic", 0.024, 3, 3, 1, 5, 5, 1.2),
     Level("T2", "T3", "thoracic", 0.022, 3, 3, 1, 5, 5, 1.0),
     Level("T1", "T2", "thoracic", 0.019, 3, 3, 1, 5, 5, 0.85),
@@ -72,24 +75,47 @@ LEVELS = [
 ]
 SKULL = Level("skull", "C1", "cervical", 0.0, -2, 8, 15, 5, 3, 4.0)
 
-# Passive stiffness (N·m/rad) for bend, side-bend, twist, and damping, by region.
-# The thoracic values include the stiffening from the ribs and sternum.
-REGION_SPRINGS = {
-    "lumbar": (25, 25, 50, 2),
-    "thoracolumbar": (25, 25, 50, 2),
-    "thoracic": (40, 40, 40, 2),
-    "cervical": (4, 4, 3, 0.4),
+# Passive resistance of the spine (all soft tissue, as nothing is active). At each level the
+# moment resisting a bend of d from rest is c·(exp(a·d/r) − 1), with r that level's range on
+# that side. Levels of one region share c, so in series they give way in proportion to their
+# range. Per region and plane: (stiffness of the whole region at rest, N·m/°; sharpness a).
+#   lumbar: fitted (weighted by the confidence intervals) to the in-vivo meta-analysis of Watt, Callaway & Williams 2022
+#     (Med Biol Eng Comput 60:2133, Tables 5-7; stiffness per quartile of range).
+#   thoracic: no in-vivo data found; assumed to resist like the lumbar levels (same c and a).
+#   cervical: axial rotation averages 0.07 N·m/° over the range in healthy adults
+#     (De Boe et al.); the other neck planes are assumed alike.
+SPINE_PASSIVE = {
+    "lumbar": {"bend": (0.243, 2.60), "side": (0.198, 3.67), "twist": (0.140, 2.33)},
 }
+CERVICAL_AVERAGE = (0.07, 2.5)  # N·m/° averaged over the range, sharpness
+SPINE_DAMPING = {"lumbar": 2, "thoracolumbar": 2, "thoracic": 2, "cervical": 0.4}
 
-# Ligaments: the moment (N·m) they resist with at the end of the range of motion, for bend,
-# side-bend and twist, by region. Toward the end of each range the resistance grows steeply
-# (see movesim/ligaments.py). Rough in-vivo values for one spinal level.
-REGION_END_MOMENT = {
-    "lumbar": (12, 10, 10),
-    "thoracolumbar": (12, 10, 10),
-    "thoracic": (8, 8, 8),
-    "cervical": (2, 2, 2),
-}
+PLANES = {"bend": ("ext", "flex"), "side": ("side", "side"), "twist": ("twist", "twist")}
+
+
+def region_ranges(regions, plane):
+    """Total range (deg) of the levels in these regions, for each side of a plane."""
+    levels = [lv for lv in LEVELS + [SKULL] if lv.region in regions]
+    lo, hi = PLANES[plane]
+    return sum(getattr(lv, lo) for lv in levels), sum(getattr(lv, hi) for lv in levels)
+
+
+def spine_ligaments(region, plane):
+    """(c_lo, c_hi, a, start) for one level's joint in this region and plane."""
+    if region == "cervical":
+        avg, a = CERVICAL_AVERAGE
+        r_lo, r_hi = region_ranges(["cervical"], plane)
+        return (avg * r_lo / np.expm1(a), avg * r_hi / np.expm1(a), a, 0)
+    stiffness, a = SPINE_PASSIVE["lumbar"][plane]  # thoracic levels: assumed like lumbar
+    r_lo, r_hi = region_ranges(["lumbar"], plane)
+    return (stiffness * r_lo / a, stiffness * r_hi / a, a, 0)
+
+
+def limb_ligaments(end_moment, sharpness=3.0, start=0.5):
+    """Limb joints: loose to halfway, then tightening to end_moment (N·m) at the end of range."""
+    c = end_moment / np.expm1(sharpness)
+    return (c, c, sharpness, start)
+
 
 # Ribs, one pair per thoracic vertebra: half-width, depth to the front, how far the front end
 # drops below the back end (m), and kind. True ribs reach the sternum, false ribs the costal arch.
@@ -101,6 +127,14 @@ RIBS = {
     "T9": (0.140, 0.115, 0.080, "false"), "T10": (0.135, 0.105, 0.070, "false"),
     "T11": (0.120, 0.000, 0.040, "floating"), "T12": (0.090, 0.000, 0.030, "floating"),
 }
+
+# ------------------------------------------------------------------ hips
+
+# Passive stiffness of hip rotation near rest, N·m/rad: 5.6 and 10.1 in two in-vivo studies
+# (isokinetic dynamometer, first 20°); taken for side-to-side movement too. Hook lying also
+# needs a little muscle tone to keep the knees from falling open; it is kept separate.
+HIP_TURN_TISSUE = 8.0
+HIP_TURN_TONE = 8.0  # the smallest that keeps the knees standing is about 7
 
 # ------------------------------------------------------------------ resting tone
 
@@ -195,7 +229,7 @@ class Xml:
 
 
 def hinge(x, name, axis, lo, hi, cls=None, stiffness=None, damping=None, springref=None, pos=None,
-          end_moment=None):
+          lig=None):
     attrs = [f'name="{name}"']
     if cls:
         attrs.append(f'class="{cls}"')
@@ -208,8 +242,8 @@ def hinge(x, name, axis, lo, hi, cls=None, stiffness=None, damping=None, springr
         attrs.append(f'damping="{damping}"')
     if springref is not None:
         attrs.append(f'springref="{springref:.4g}"')
-    if end_moment is not None:
-        attrs.append(f'user="{end_moment}"')
+    if lig is not None:
+        attrs.append(f'user="{v(lig)}"')
     x.add(f"<joint {' '.join(attrs)}/>")
 
 
@@ -230,16 +264,15 @@ def spine_poses():
 
 
 def vertebra(x, lv, i):
-    k_bend, k_side, k_twist, damp = REGION_SPRINGS[lv.region]
-    m_bend, m_side, m_twist = REGION_END_MOMENT[lv.region]
+    damp = SPINE_DAMPING[lv.region]
     tilt = lv.curve + (SACRAL_SLOPE if i == 0 else 0)
     prev_h = LEVELS[i - 1].height if i > 0 else 0.0
     rg = lv.region
     x.open(f'<body name="{lv.name}" pos="0 0 {prev_h:.4g}" quat="{v(quat(rot_y(tilt)))}">')
     j = f"{lv.name}_{lv.below}"
-    hinge(x, f"{j}_bend", (0, 1, 0), -lv.ext, lv.flex, stiffness=k_bend, damping=damp, end_moment=m_bend)
-    hinge(x, f"{j}_side", (1, 0, 0), -lv.side, lv.side, stiffness=k_side, damping=damp, end_moment=m_side)
-    hinge(x, f"{j}_twist", (0, 0, 1), -lv.twist, lv.twist, stiffness=k_twist, damping=damp, end_moment=m_twist)
+    for plane, axis, lo, hi in (("bend", (0, 1, 0), -lv.ext, lv.flex), ("side", (1, 0, 0), -lv.side, lv.side),
+                                ("twist", (0, 0, 1), -lv.twist, lv.twist)):
+        hinge(x, f"{j}_{plane}", axis, lo, hi, stiffness=0, damping=damp, lig=spine_ligaments(lv.region, plane))
 
     h = lv.height
     zc = 0.45 * h
@@ -305,12 +338,11 @@ def ribs(x, lv):
 
 def skull(x):
     lv = SKULL
-    k_bend, k_side, k_twist, damp = REGION_SPRINGS["cervical"]
-    m_bend, m_side, m_twist = REGION_END_MOMENT["cervical"]
+    damp = SPINE_DAMPING["cervical"]
     x.open(f'<body name="skull" pos="0 0 {LEVELS[-1].height:.4g}" quat="{v(quat(rot_y(lv.curve)))}">')
-    hinge(x, "C0_C1_bend", (0, 1, 0), -lv.ext, lv.flex, stiffness=k_bend, damping=damp, end_moment=m_bend)
-    hinge(x, "C0_C1_side", (1, 0, 0), -lv.side, lv.side, stiffness=k_side, damping=damp, end_moment=m_side)
-    hinge(x, "C0_C1_twist", (0, 0, 1), -lv.twist, lv.twist, stiffness=k_twist, damping=damp, end_moment=m_twist)
+    for plane, axis, lo, hi in (("bend", (0, 1, 0), -lv.ext, lv.flex), ("side", (1, 0, 0), -lv.side, lv.side),
+                                ("twist", (0, 0, 1), -lv.twist, lv.twist)):
+        hinge(x, f"C0_C1_{plane}", axis, lo, hi, stiffness=0, damping=damp, lig=spine_ligaments("cervical", plane))
     x.add(f"""
 <geom class="mass" type="ellipsoid" pos="0.02 0 0.04" size="0.095 0.075 0.10" mass="{lv.mass}"/>
 <geom class="bone" type="ellipsoid" pos="0.01 0 0.05" size="0.095 0.075 0.09"/>
@@ -388,8 +420,8 @@ def leg(x, s):
     hip = (0.01, s * 0.08, -0.10)
     x.open(f'<body name="thigh_{n}" pos="{v(hip)}">')
     hinge(x, f"hip_flex_{n}", mirror((0, -1, 0), s), -20, 125, cls="hip", springref=TONE_DEG["hip_flex"])
-    hinge(x, f"hip_abd_{n}", mirror((1, 0, 0), s), -30, 45, cls="hip")
-    hinge(x, f"hip_inrot_{n}", mirror((0, 0, -1), s), -45, 40, cls="hip")
+    hinge(x, f"hip_abd_{n}", mirror((1, 0, 0), s), -30, 45, cls="hip_turn")
+    hinge(x, f"hip_inrot_{n}", mirror((0, 0, -1), s), -45, 40, cls="hip_turn")
     x.add(f"""
 <geom class="bone" type="sphere" size="0.024"/>
 <geom class="bone" type="capsule" fromto="0 0 0  0 0 -0.46" size="0.015"/>
@@ -459,8 +491,9 @@ HEADER = """<!--
 PREAMBLE = """
 <mujoco model="movesim-skeleton">
   <compiler angle="degree" autolimits="true"/>
-  <!-- Each joint's user value: the moment (N·m) its ligaments resist with at the end of its range. -->
-  <size nuser_jnt="1"/>
+  <!-- Each joint's user values describe its passive tissue (see movesim/ligaments.py):
+       c below rest, c above rest (N·m), sharpness, and where in the range tightening starts. -->
+  <size nuser_jnt="4"/>
   <!-- noslip stops the slow creep that soft contacts otherwise allow under constant load. -->
   <option timestep="0.001" integrator="implicitfast" gravity="0 0 -9.81" cone="elliptic" impratio="10"
           noslip_iterations="5"/>
@@ -505,17 +538,19 @@ PREAMBLE = """
     <default class="mass">
       <geom group="3" rgba="0.5 0.5 0.5 0.1"/>
     </default>
-    <default class="hip"><joint stiffness="60" damping="5" user="30"/></default>
-    <default class="knee"><joint stiffness="30" damping="3" user="20"/></default>
-    <default class="tibia_rot"><joint stiffness="10" damping="1" user="8"/></default>
-    <default class="ankle"><joint stiffness="10" damping="1" user="15"/></default>
-    <default class="toes"><joint stiffness="2" damping="0.2" user="3"/></default>
-    <default class="girdle"><joint stiffness="20" damping="1" user="8"/></default>
-    <default class="girdle_ac"><joint stiffness="30" damping="1" user="8"/></default>
-    <default class="shoulder"><joint stiffness="5" damping="1" user="10"/></default>
-    <default class="elbow"><joint stiffness="2" damping="0.5" user="8"/></default>
-    <default class="forearm"><joint stiffness="1" damping="0.2" user="3"/></default>
-    <default class="wrist"><joint stiffness="1" damping="0.2" user="4"/></default>
+    <default class="hip"><joint stiffness="60" damping="5" user="LIMB:30"/></default>
+    <!-- Hip side-to-side and rotation: tissue stiffness plus the small tone that keeps the knees up. -->
+    <default class="hip_turn"><joint stiffness="HIP_TURN" damping="5" user="LIMB:30"/></default>
+    <default class="knee"><joint stiffness="30" damping="3" user="LIMB:20"/></default>
+    <default class="tibia_rot"><joint stiffness="10" damping="1" user="LIMB:8"/></default>
+    <default class="ankle"><joint stiffness="10" damping="1" user="LIMB:15"/></default>
+    <default class="toes"><joint stiffness="2" damping="0.2" user="LIMB:3"/></default>
+    <default class="girdle"><joint stiffness="20" damping="1" user="LIMB:8"/></default>
+    <default class="girdle_ac"><joint stiffness="30" damping="1" user="LIMB:8"/></default>
+    <default class="shoulder"><joint stiffness="5" damping="1" user="LIMB:10"/></default>
+    <default class="elbow"><joint stiffness="2" damping="0.5" user="LIMB:8"/></default>
+    <default class="forearm"><joint stiffness="1" damping="0.2" user="LIMB:3"/></default>
+    <default class="wrist"><joint stiffness="1" damping="0.2" user="LIMB:4"/></default>
   </default>
 
   <worldbody>
@@ -594,7 +629,9 @@ def build(meshes=True):
     for _ in LEVELS:
         x.close()
     x.close()  # pelvis
-    preamble = PREAMBLE.replace("HANDLE_BODIES", handle_bodies())
+    preamble = PREAMBLE.replace('"HIP_TURN"', f'"{HIP_TURN_TISSUE + HIP_TURN_TONE:g}"')
+    preamble = re.sub(r"LIMB:([\d.]+)", lambda m: v(limb_ligaments(float(m.group(1)))), preamble)
+    preamble = preamble.replace("HANDLE_BODIES", handle_bodies())
     tendons = TENDONS.replace("HANDLE_TENDONS", handle_tendons())
     xml = HEADER + preamble + x.text() + "\n  </worldbody>\n" + tendons
     return add_meshes(xml) if meshes else xml

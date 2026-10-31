@@ -85,3 +85,29 @@ roll, T9 2% → 5%); everything else is within a newton or a millimetre.
 At 45° it shows. Levels near their limits now hand the twist on gradually instead of stopping
 it at a wall, so more of it reaches the chest (roll in degrees, ligaments off → on):
 pelvis 31.7 → 30.9, T10 15.6 → 17.6, T8 8.9 → 11.6, T6 4.7 → 7.5, T4 3.2 → 5.1.
+
+## Validation against published measurements (`uv run movesim validate`)
+
+The stiffness values were my estimates until here. They now come from measurements of living
+people where those exist (all 15 checks in `docs/validation.md` pass):
+
+- **Lumbar spine:** passive stiffness per quartile of range in flexion, side-bending and axial
+  rotation, fitted to the in-vivo meta-analysis of Watt, Callaway & Williams (2022). Each level
+  resists with c·(exp(a·d/r) − 1): it stiffens steadily from rest, roughly doubling every
+  quarter of its range, instead of being loose to halfway.
+- **Thoracic spine:** no in-vivo data found; assumed to resist like the lumbar levels. Its twist
+  ranges are widened to ±5° (T1-T9) after Wilke et al. 2017, so that turning the trunk 45° on a
+  held pelvis leaves each lumbar level the 1.2-1.7° measured by MRI (Fujii et al. 2007); the
+  body gives 1.5°. L5-S1 twist is ±2° (in vivo at least 1.2°; White & Panjabi give 1°).
+- **Neck:** axial rotation averages 0.07 N·m/° over its range (De Boe et al.). The old neck was
+  much softer near rest.
+- **Hips:** rotation stiffness 8 N·m/rad from two in-vivo studies (5.6 and 10.1), where the
+  body had 60. Lying with the knees standing needs a little muscle tone as well, without which
+  the knees fall open; that tone (8 N·m/rad, about the least that holds them) is now explicit
+  and separate.
+
+The body became less stiff where it matters most for these lessons, at the hips. Knees tipped
+to the right now move in the hips first and the pelvis follows later, the twist travelling
+higher as the movement grows: knees 20° → pelvis 0.7°; 30° → 5° (twist to T10); 45° → 15° (T8);
+60° → 28° (T6, head turning slightly the other way). With the old, six-times-stiffer hips,
+20° already rolled the pelvis 8°.

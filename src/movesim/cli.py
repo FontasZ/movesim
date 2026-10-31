@@ -5,6 +5,7 @@
     uv run movesim play lessons/some-lesson.json      # a script you wrote or edited
     uv run movesim serve                              # the web player
     uv run movesim view                               # MuJoCo's interactive viewer
+    uv run movesim validate                           # check the body against published data
 """
 
 import argparse
@@ -74,6 +75,12 @@ def cmd_view(args):
     view.main()
 
 
+def cmd_validate(args):
+    from movesim import validate
+
+    validate.main()
+
+
 def cmd_build(args):
     from movesim import build_model
 
@@ -96,6 +103,7 @@ def main():
     p.add_argument("--port", type=int, default=PORT)
     p.set_defaults(func=cmd_serve)
     sub.add_parser("view", help="open MuJoCo's interactive viewer").set_defaults(func=cmd_view)
+    sub.add_parser("validate", help="check the body against published measurements").set_defaults(func=cmd_validate)
     sub.add_parser("build", help="rebuild the model from the anatomy tables and settle it").set_defaults(func=cmd_build)
     args = parser.parse_args()
     args.func(args)
