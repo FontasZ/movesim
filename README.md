@@ -35,7 +35,10 @@ keyframe). Press space to start or pause the physics if it is paused.
 
 - **Guide a knee the way a teacher's hand would:** double-click one of the green balls above the
   knees (the guide's hands), then hold **Ctrl** and drag with the **right** mouse button to move it
-  sideways. The knee follows on a soft spring. Ctrl + left drag rotates instead.
+  sideways. The knee follows on a soft spring. Ctrl + left drag rotates instead. When you let
+  go, the hand eases back onto the knee within a second or so, stops pulling, and the body
+  settles under its own weight. After a big lift it may land a little differently, as a real
+  body would; load the key again to start fresh.
 - **Push any bone directly:** double-click it (a thigh, the pelvis, the skull), then Ctrl + right
   drag. That applies a spring force to that bone.
 - **Start again:** in the left panel, Simulation → Key → `hook_lying` → Load key.
