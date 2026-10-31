@@ -46,3 +46,27 @@ not move. Everything returns to where it started.
   barely touches the floor.
 - No arms. Their weight would mostly rest on the floor beside the body anyway.
 - The stiffness and damping values are reasoned guesses, not measured.
+
+## v0.2: the detailed skeleton
+
+The model is now generated from anatomy tables (`src/movesim/build_model.py`): all 24
+vertebrae with per-level ranges and built-in curves, a pair of ribs on every thoracic vertebra,
+arms with collarbones and shoulder blades, slanted ankle and subtalar axes, and toes.
+
+What needed tuning:
+
+1. **The whole upper back rested on one patch (T7, 228 N), the shoulder blades on almost
+   nothing.** The contact surfaces were too hard to spread the load over the curve of the back.
+   Fix: softer flesh that gives way over about 2 cm, a slightly flatter lying thoracic curve
+   (32° instead of 40°), and shoulder-blade surfaces 1 cm further back. Now T7–T9 and both
+   shoulder blades share the load.
+2. **Shear at the feet, again.** The settling spell of low friction now covers the feet too,
+   so the legs find the pose where their tone carries them without pushing the feet along the
+   floor. Their rest angles (hip 49.4°, knee 112.5°) are set so that this pose is hip 45°,
+   knee 100°. A little toe-down ankle tone (40°) puts weight on the ball of the foot.
+
+Result: the pelvis rolls 8.5° right. With a jointed ribcage the twist now travels further up:
+L1 56%, T12 44%, T11 32%, T10 16%, then it stops at T9, where the floor holds the back of the
+ribs. The left buttock lifts 2 cm and the left lower back 0.5–1.2 cm; the left ribs unload a
+little and the right lower ribs take more. The feet roll onto their edges and slip at most
+0.5 mm. The head and arms stay still. Everything returns to where it started.

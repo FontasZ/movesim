@@ -9,17 +9,9 @@ ROOT = Path(__file__).resolve().parents[2]
 MODEL_PATH = ROOT / "model" / "skeleton.xml"
 KEY_PATH = ROOT / "model" / "hook_lying_key.xml"
 
-# Hook lying: knees bent, feet flat. These match the springref values in the model.
-HOOK_POSE_DEG = {
-    "hip_flex_L": 38.6, "hip_flex_R": 38.6,
-    "knee_L": 103.6, "knee_R": 103.6,
-    "ankle_L": 30.2, "ankle_R": 30.2,
-}
-
 # Segments whose rotation we follow, from the pelvis up to the skull.
-SPINE = ["pelvis", "L5", "L4", "L3", "L2", "L1",
-         "T11_12", "T9_10", "T7_8", "ribcage", "T4_6", "T1_3",
-         "C6_7", "C3_5", "C1_2", "skull"]
+SPINE = (["pelvis"] + [f"L{i}" for i in range(5, 0, -1)] + [f"T{i}" for i in range(12, 0, -1)]
+         + [f"C{i}" for i in range(7, 0, -1)] + ["skull"])
 
 
 def load():
@@ -30,14 +22,16 @@ def load():
 def hands_to_knees(model, data):
     """Put each guide hand exactly on its knee, so the springs pull with no force."""
     for side in "LR":
-        mocap = model.body(f"hand_{side}").mocapid[0]
+        mocap = model.body(f"guide_{side}").mocapid[0]
         data.mocap_pos[mocap] = data.site(f"knee_{side}").xpos
 
 
 def set_hook_pose(model, data):
+    """Start every joint at its resting-tone angle: hook lying, arms by the sides."""
     mujoco.mj_resetData(model, data)
-    for name, deg in HOOK_POSE_DEG.items():
-        data.qpos[model.joint(name).qposadr[0]] = np.radians(deg)
+    hinges = model.jnt_type == mujoco.mjtJoint.mjJNT_HINGE
+    adr = model.jnt_qposadr[hinges]
+    data.qpos[adr] = model.qpos_spring[adr]
     mujoco.mj_forward(model, data)
     # Lower the body so the lowest contact surface just touches the floor.
     data.qpos[2] -= lowest_flesh_point(model, data) - 0.002
@@ -65,21 +59,16 @@ def lowest_flesh_point(model, data):
 
 
 def settle(model, data, max_time=15.0, tol=1e-3):
-    """Let the body come to rest, then let the back and head ease out sideways shear.
+    """Let the body come to rest, then let it ease out sideways shear.
 
-    Dropping a body onto sticky contacts locks in shear that a real back would let go of
-    by shifting a little, so the back and head get a short spell of low friction.
-    The feet keep their grip: the hook-lying legs need it, as in a real body.
+    Dropping a body onto sticky contacts locks in shear that a real body would let go of by
+    shifting a little. So everything gets a short spell of low friction: the legs then find
+    the pose where their tone carries them without pushing the feet along the floor.
     """
     still(model, data, data.time + max_time / 3, tol)
     friction = model.geom_friction.copy()
-    # MuJoCo uses the larger friction of the two touching geoms, so the floor goes low too;
-    # the soles keep their own high friction.
-    back = [model.geom("floor").id] + [
-        g for g in range(model.ngeom)
-        if model.geom_group[g] == 1 and not model.geom(g).name.startswith(("heel", "ball"))]
-    model.geom_friction[back, 0] *= 0.03
-    still(model, data, data.time + 2.0, tol=0)  # a fixed spell: slow sliding is what we want
+    model.geom_friction[:, 0] *= 0.03
+    still(model, data, data.time + 3.0, tol=0)  # a fixed spell: slow sliding is what we want
     model.geom_friction[:] = friction
     return still(model, data, data.time + max_time / 3, tol)
 

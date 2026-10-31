@@ -22,7 +22,7 @@ def hands_let_go(model, data):
     """
     alpha = model.opt.timestep / LET_GO_TIME
     for side in "LR":
-        mocap = model.body(f"hand_{side}").mocapid[0]
+        mocap = model.body(f"guide_{side}").mocapid[0]
         knee = data.site(f"knee_{side}").xpos
         data.mocap_pos[mocap] += alpha * (knee - data.mocap_pos[mocap])
 

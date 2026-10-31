@@ -17,10 +17,32 @@ TILT_DEG = 20.0
 # Phases (s): rest, knees go right, stay, knees come back, rest.
 T_REST, T_GO, T_HOLD, T_BACK, T_END = 1.0, 4.0, 5.0, 8.0, 9.0
 
-FLESH_SIDES = {  # contact surfaces and the side of the body they are on
-    "pelvis_L": "L", "pelvis_R": "R", "ribs_L": "L", "ribs_R": "R",
-}
-FOOT_POINTS = ["heel_L", "ballin_L", "ballout_L", "heel_R", "ballin_R", "ballout_R"]
+FOOT_PARTS = ("heel", "met1", "met5", "midfoot", "bigtoe", "smalltoes")
+FOOT_POINTS = [f"{p}_{s}" for s in "LR" for p in FOOT_PARTS]
+REGIONS = ["pelvis", "lumbar back", "lower ribs (T8-T12)", "upper back (T1-T7)", "shoulder blades",
+           "head and neck", "arms", "feet"]
+
+
+def region(geom):
+    """Which part of the body a contact surface belongs to."""
+    base = geom.rsplit("_", 1)[0] if geom.endswith(("_L", "_R")) else geom
+    if base in ("sacrum", "glute"):
+        return "pelvis"
+    if base.startswith("L"):
+        return "lumbar back"
+    if base.startswith("T"):
+        return "lower ribs (T8-T12)" if int(base[1:].split("_")[0]) >= 8 else "upper back (T1-T7)"
+    if base == "scapula":
+        return "shoulder blades"
+    if base.startswith("C") or base == "occiput":
+        return "head and neck"
+    if base in ("arm", "elbow", "forearm", "hand"):
+        return "arms"
+    return "feet"
+
+
+def side(geom):
+    return {"L": "left", "R": "right"}.get(geom[-1], "centre") if geom[-2] == "_" else "centre"
 
 
 def tilt_fraction(t):
@@ -46,7 +68,7 @@ class Guide:
     """
 
     def __init__(self, model, data):
-        self.mocap = [model.body(f"hand_{s}").mocapid[0] for s in "LR"]
+        self.mocap = [model.body(f"guide_{s}").mocapid[0] for s in "LR"]
         self.start = data.mocap_pos[self.mocap].copy()
         self.pivot = 0.5 * (data.body("foot_L").xpos + data.body("foot_R").xpos)
 
@@ -94,7 +116,7 @@ def contact_forces(model, data):
         mujoco.mj_contactForce(model, data, i, wrench)
         name = model.geom(g).name
         forces[name] = forces.get(name, 0.0) + wrench[0]
-        if not name.startswith(("heel", "ball")):
+        if not name.startswith(FOOT_PARTS):
             cop += wrench[0] * c.pos
             total += wrench[0]
     return forces, (cop / total if total > 0 else cop)
@@ -104,6 +126,8 @@ def run(render=True):
     model, data = load_settled()
     guide = Guide(model, data)
     flesh = [model.geom(g).name for g in range(model.ngeom) if model.geom_group[g] == 1]
+    back = [g for g in flesh if region(g) not in ("arms", "feet", "head and neck")]
+    rest_height = {g: data.geom(g).xpos[2] for g in back}
     ref_quat = {b: data.body(b).xquat.copy() for b in SPINE}
     foot_geoms = {model.geom(p).id: p for p in FOOT_POINTS}
     slip = dict.fromkeys(FOOT_POINTS, 0.0)
@@ -127,6 +151,8 @@ def run(render=True):
                 row[f"roll_{b}"] = round(roll_right_deg(relative_quat(data.body(b).xquat, ref_quat[b])), 3)
             for g in flesh:
                 row[f"force_{g}"] = round(forces.get(g, 0.0), 2)
+            for g in back:
+                row[f"lift_{g}_mm"] = round(1000 * (data.geom(g).xpos[2] - rest_height[g]), 2)
             row["cop_back_y_mm"] = round(1000 * cop[1], 2)
             for p in FOOT_POINTS:
                 row[f"slip_{p}_mm"] = round(1000 * slip[p], 2)
@@ -154,7 +180,7 @@ class Renderer:
         self.model = model
         self.r = mujoco.Renderer(model, height, width)
         self.opt = mujoco.MjvOption()
-        self.opt.geomgroup[:] = [1, 1, 0, 0, 0, 0]  # bones and the guide; hide flesh and mass
+        self.opt.geomgroup[:] = [1, 0, 1, 0, 0, 0]  # bones and the guide; hide flesh and mass
         self.opt.sitegroup[:] = 1
         self.opt.flags[mujoco.mjtVisFlag.mjVIS_TENDON] = True
         self.cams = {}
@@ -201,9 +227,9 @@ def report(rows, flesh):
     lines = [
         "# Knees to the right: what the skeleton did",
         "",
-        f"Lying on the back, knees bent, feet flat. A guide's hands moved both knees {TILT_DEG:.0f}° to the right "
-        f"over {T_GO - T_REST:.0f} s, held for {T_HOLD - T_GO:.0f} s, and brought them back over "
-        f"{T_BACK - T_HOLD:.0f} s. Everything else was passive. "
+        f"Lying on the back, knees bent, feet flat, arms by the sides. A guide's hands moved both knees "
+        f"{TILT_DEG:.0f}° to the right over {T_GO - T_REST:.0f} s, held for {T_HOLD - T_GO:.0f} s, and brought "
+        f"them back over {T_BACK - T_HOLD:.0f} s. Everything else was passive. "
         f"At the peak (t = {peak['t']:.1f} s) the knees had tipped {peak['knee_tilt_actual_deg']:.1f}° "
         f"(the hands asked for {peak['knee_tilt_target_deg']:.1f}°).",
         "",
@@ -218,34 +244,51 @@ def report(rows, flesh):
         lines.append(f"| {b} | {peak[f'roll_{b}']:.2f} | {100 * share:.0f}% |")
 
     lines += ["", "## Floor contact (newtons) at rest and at the peak", "",
-              "| surface | at rest | at peak | change |", "|---|---:|---:|---:|"]
+              "| region | side | at rest | at peak | change |", "|---|---|---:|---:|---:|"]
+    totals = {}
     for g in flesh:
-        a, b = rest[f"force_{g}"], peak[f"force_{g}"]
-        flag = " (lifts off)" if a > 1 and b < 1 else " (comes down)" if a < 1 and b > 1 else ""
-        lines.append(f"| {g} | {a:.0f} | {b:.0f} | {b - a:+.0f}{flag} |")
+        key = (region(g), side(g))
+        a, b = totals.get(key, (0.0, 0.0))
+        totals[key] = (a + rest[f"force_{g}"], b + peak[f"force_{g}"])
+    for reg in REGIONS:
+        for sd in ("left", "centre", "right"):
+            if (reg, sd) in totals and max(totals[reg, sd]) >= 0.5:
+                a, b = totals[reg, sd]
+                lines.append(f"| {reg} | {sd} | {a:.0f} | {b:.0f} | {b - a:+.0f} |")
 
+    lifted = [g for g in flesh if rest[f"force_{g}"] > 1 and peak[f"force_{g}"] < 0.5]
+    landed = [g for g in flesh if rest[f"force_{g}"] < 0.5 and peak[f"force_{g}"] > 1]
+    rises = sorted(((peak[k], k[5:-3]) for k in peak if k.startswith("lift_")), reverse=True)
     max_slide = max(max(r[f"slip_{p}_mm"] for r in rows) for p in FOOT_POINTS)
     cop_shift = peak["cop_back_y_mm"] - rest["cop_back_y_mm"]
-    left = sum(peak[f"force_{g}"] - rest[f"force_{g}"] for g, s in FLESH_SIDES.items() if s == "L")
-    right = sum(peak[f"force_{g}"] - rest[f"force_{g}"] for g, s in FLESH_SIDES.items() if s == "R")
+    left = sum(peak[f"force_{g}"] - rest[f"force_{g}"] for g in flesh
+               if side(g) == "left" and region(g) not in ("arms", "feet"))
+    right = sum(peak[f"force_{g}"] - rest[f"force_{g}"] for g in flesh
+                if side(g) == "right" and region(g) not in ("arms", "feet"))
     skull = max(abs(r["roll_skull"]) for r in rows)
     first_small = next((b for b in SPINE[1:] if abs(peak[f"roll_{b}"]) < 0.1 * abs(pelvis)), None)
+    half = next((b for b in SPINE[1:] if abs(peak[f"roll_{b}"]) < 0.5 * abs(pelvis)), None)
 
     lines += ["", "## In plain words", ""]
     lines.append(f"- The pelvis rolled {pelvis:.1f}° to the right"
                  + (" (to the right, as expected)." if pelvis > 0 else " (the wrong way)."))
     if first_small:
-        lines.append(f"- The twist faded going up the spine: by {first_small} it was under a tenth of the pelvis roll.")
+        lines.append(f"- The twist faded going up the spine: under half the pelvis roll by {half}, "
+                     f"under a tenth by {first_small}.")
     else:
         lines.append("- The twist did not fade below a tenth of the pelvis roll anywhere up the spine.")
-    lines.append(f"- The ribcage rolled {peak['roll_ribcage']:.2f}° and the skull at most {skull:.2f}°.")
+    lines.append(f"- T6, in the middle of the chest, rolled {peak['roll_T6']:.2f}°; the skull at most {skull:.2f}°.")
     lines.append(f"- Back pressure moved {abs(cop_shift):.0f} mm to the {'right' if cop_shift > 0 else 'left'}: "
                  f"the left side of the back unloaded by {-left:.0f} N and the right side took {right:+.0f} N.")
+    up = [f"{g} {mm:.0f} mm" for mm, g in rises if mm >= 1 and g.endswith("_L")][:6]
+    if up:
+        lines.append(f"- The left side of the back lifted: {', '.join(up)}.")
+    if lifted:
+        lines.append(f"- Off the floor at the peak: {', '.join(lifted)}.")
+    if landed:
+        lines.append(f"- Newly touching the floor at the peak: {', '.join(landed)}.")
     lines.append(f"- The feet stayed planted: no point of contact slid more than {max_slide:.1f} mm in total."
                  if max_slide < 5 else f"- The feet slid: up to {max_slide:.1f} mm in total.")
-    edges = [p for p in FOOT_POINTS if rest[f"force_{p}"] > 1 and peak[f"force_{p}"] < 1]
-    if edges:
-        lines.append(f"- The feet rolled onto their edges: {', '.join(edges)} came off the floor at the peak.")
     lines.append(f"- After returning, the pelvis was {end['roll_pelvis']:+.2f}° from where it started.")
     lines.append("")
     return "\n".join(lines)
