@@ -23,11 +23,12 @@ uv sync
 
 ## Look at the body and move it yourself
 
-On macOS the interactive viewer has to run under `mjpython`:
-
 ```bash
-uv run mjpython -m movesim.view
+uv run python -m movesim.view
 ```
+
+Use plain `python` here, also on macOS. `mjpython` is only needed for MuJoCo's *passive* viewer;
+with the standard viewer used here it fails with `RuntimeError: Caught an unknown exception!`.
 
 This opens the skeleton lying on its back, knees bent, feet flat (the stored `hook_lying`
 keyframe). Press space to start or pause the physics if it is paused.
@@ -41,7 +42,7 @@ keyframe). Press space to start or pause the physics if it is paused.
 - **See the contact surfaces:** toggle geom group 1 (the translucent "flesh" that touches the
   floor; blue is the person's left, red the right). Group 3 shows the mass carriers.
 
-The bare model also opens with `uv run mjpython -m mujoco.viewer --mjcf=model/skeleton.xml`, but
+The bare model also opens with `uv run python -m mujoco.viewer --mjcf=model/skeleton.xml`, but
 then it starts standing and floating; load the `hook_lying` key from the panel.
 
 ## Run the knee-tilt test
