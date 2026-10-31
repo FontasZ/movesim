@@ -1,5 +1,7 @@
 # movesim
 
+**Website: <https://fontasz.github.io/movesim/>**
+
 A passive human skeleton in MuJoCo for composing and checking Feldenkrais-style movement lessons.
 You say what moves on purpose (the driver) and what stays still, and physics decides where the
 rest of the body goes. A lesson in words plays as 3D motion in a web page, step by step, with
@@ -171,3 +173,9 @@ over the ribs.
 - `model/`: the generated model, settled keyframe and bone meshes.
 - `lessons/`: lesson texts and scripts. `web/`: the player and played lessons.
 - `docs/knee-tilt-tuning.md`: what was tuned along the way and why.
+
+## Licence
+
+Code: MIT (see `LICENSE`). Bone meshes in `model/meshes`: derived from BodyParts3D
+(© DBCLS, CC BY 4.0) and shared under CC BY-SA 4.0. The website is published from `web/` to
+GitHub Pages on every push to `master` (`.github/workflows/pages.yml`).
