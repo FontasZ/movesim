@@ -3,274 +3,183 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>movesim player</title>
+<title>movesim · see where a movement goes</title>
+<meta name="description" content="A simulated skeleton that shows how a small movement travels through the whole body. For Feldenkrais practitioners: to look, to explain, and to compose lessons.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css?v=2">
 <style>
-  :root {
-    --bg: #f4f1ea; --panel: #fbf9f4; --ink: #2b2a27; --muted: #77736a; --line: #ddd7ca;
-    --accent: #3f7d58; --accent-soft: #e3efe6; --now: #fff4d6;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #1c1d1f; --panel: #242528; --ink: #ecebe7; --muted: #a29e95; --line: #3a3b3f;
-      --accent: #7fc29a; --accent-soft: #24352b; --now: #3a3424;
-    }
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink);
-         font: 15px/1.45 -apple-system, "Segoe UI", system-ui, sans-serif; height: 100vh;
-         display: grid; grid-template-columns: 1fr 340px; grid-template-rows: auto 1fr auto; }
-  header { grid-column: 1 / 3; display: flex; align-items: center; gap: 12px; padding: 10px 16px;
-           border-bottom: 1px solid var(--line); background: var(--panel); }
-  header h1 { font-size: 15px; margin: 0; font-weight: 600; }
-  header .links { margin-left: auto; display: flex; gap: 16px; }
-  header .links a { color: var(--muted); text-decoration: none; font-size: 14px; }
-  header .links a:hover { color: var(--accent); }
-  header select { font: inherit; padding: 4px 8px; border-radius: 6px; border: 1px solid var(--line);
-                  background: var(--bg); color: var(--ink); max-width: 50vw; }
-  #stage { position: relative; min-height: 0; }
-  #stage canvas { display: block; width: 100%; height: 100%; }
-  #caption { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%);
-             max-width: min(720px, 90%); padding: 12px 18px; border-radius: 10px;
-             background: rgba(20, 20, 20, 0.72); color: #fff; font-size: 19px; line-height: 1.4;
-             text-align: center; pointer-events: none; transition: opacity .3s; }
-  #caption:empty { opacity: 0; }
-  #views { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; }
-  #views button, #bar button { font: inherit; border: 1px solid var(--line); background: var(--panel);
-                               color: var(--ink); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
-  #views button:hover, #bar button:hover { border-color: var(--accent); }
-  aside { grid-row: 2 / 4; grid-column: 2; border-left: 1px solid var(--line); background: var(--panel);
-          overflow-y: auto; padding: 8px 0; }
-  aside h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
-             margin: 8px 16px; font-weight: 600; }
-  .step { padding: 8px 16px; cursor: pointer; border-left: 3px solid transparent; }
-  .step:hover { background: var(--accent-soft); }
-  .step.now { background: var(--now); border-left-color: var(--accent); }
-  .step .t { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
-  #bar { grid-column: 1; display: flex; align-items: center; gap: 10px; padding: 10px 16px;
-         border-top: 1px solid var(--line); background: var(--panel); }
-  #bar input[type=range] { flex: 1; accent-color: var(--accent); }
-  #time { font-variant-numeric: tabular-nums; color: var(--muted); min-width: 92px; text-align: right; }
-  #msg { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); }
-  @media (max-width: 760px) {
-    body { grid-template-columns: 1fr; grid-template-rows: auto 55vh auto 1fr; }
-    aside { grid-row: 4; grid-column: 1; border-left: 0; border-top: 1px solid var(--line); }
-    #bar { grid-row: 3; }
-    #caption { font-size: 16px; }
+  .hero { display: grid; grid-template-columns: 1fr 1.1fr; gap: 40px; align-items: center;
+          max-width: 1120px; margin: 0 auto; padding: 56px 24px 40px; }
+  .hero h1 { font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: clamp(34px, 5vw, 52px);
+             line-height: 1.08; margin: 0 0 16px; letter-spacing: -.01em; }
+  .hero p { font-size: 19px; color: var(--muted); margin: 0 0 26px; max-width: 34em; }
+  .hero .stage { aspect-ratio: 4 / 3; border-radius: 16px; overflow: hidden; border: 1px solid var(--line);
+                 background: var(--panel); box-shadow: 0 12px 40px rgba(0,0,0,.08); }
+  .hero iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .hero .caption { font-size: 13px; color: var(--muted); margin-top: 8px; }
+  .buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 11px 20px; border-radius: 999px; font-weight: 600; font-size: 15px;
+         text-decoration: none; border: 1.5px solid var(--accent); }
+  .btn.primary { background: var(--accent); color: var(--on-accent); }
+  .btn.secondary { color: var(--accent); }
+  .btn:hover { filter: brightness(1.08); }
+  section.band { max-width: 1120px; margin: 0 auto; padding: 40px 24px; }
+  section.band h2 { font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 30px; margin: 0 0 8px;
+                    border: 0; padding: 0; }
+  section.band > p.intro { color: var(--muted); margin: 0 0 24px; font-size: 17px; max-width: 46em; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+  .card h3 { margin: 0 0 6px; font-size: 17px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  a.card { text-decoration: none; color: inherit; display: block; transition: border-color .15s, transform .15s; }
+  a.card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  a.card .pos { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--accent); margin-bottom: 6px; }
+  a.card .open { margin-top: 12px; color: var(--accent); font-weight: 600; font-size: 14px; }
+  .steps { counter-reset: step; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .steps .card { position: relative; padding-top: 44px; }
+  .steps .card::before { counter-increment: step; content: counter(step); position: absolute; top: 14px; left: 20px;
+                         width: 24px; height: 24px; border-radius: 50%; background: var(--accent-soft);
+                         color: var(--accent); font-weight: 700; font-size: 13px; display: grid; place-items: center; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #3f9d62; }
+  .cta { background: var(--accent-soft); border-radius: 20px; padding: 36px; display: grid;
+         grid-template-columns: 1.2fr 1fr; gap: 28px; align-items: center; }
+  .cta h2 { margin-bottom: 10px; }
+  .cta ul { margin: 0; padding-left: 20px; color: var(--ink); }
+  .cta li { margin-bottom: 6px; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  .split p { color: var(--ink); margin: 0 0 12px; }
+  .fine { color: var(--muted); font-size: 14px; }
+  footer { max-width: 1120px; margin: 24px auto 0; padding: 24px; border-top: 1px solid var(--line);
+           color: var(--muted); font-size: 13px; }
+  footer p { margin: 0 0 6px; }
+  @media (max-width: 820px) {
+    .hero, .cta, .split { grid-template-columns: 1fr; }
+    .hero { padding-top: 28px; gap: 24px; }
+    .cta { padding: 24px; }
   }
 </style>
-<script type="importmap">
-{ "imports": {
-  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-} }
-</script>
 </head>
 <body>
-<header>
-  <h1>movesim</h1>
-  <select id="lesson" aria-label="Lesson"></select>
-  <nav class="links"><a href="science.html">The science</a><a href="about.html">About</a></nav>
-</header>
-<div id="stage">
-  <div id="views">
-    <button data-view="side">Side</button>
-    <button data-view="above">Above</button>
-    <button data-view="feet">From the feet</button>
-    <button data-view="head">From the head</button>
+<nav class="site-nav">
+  <a class="brand" href="index.html">movesim</a>
+  <a href="player.html">Movements</a>
+  <a href="science.html">The science</a>
+  <a href="#share">Send a movement</a>
+</nav>
+
+<div class="hero">
+  <div>
+    <h1>See where a movement goes.</h1>
+    <p>A simulated skeleton that shows how a small movement travels through the whole body: the
+      knees tip to one side and the pelvis rolls, the spine turns a little at each level, the head
+      answers. Made for Feldenkrais practitioners, to look, to explain, and to compose lessons.</p>
+    <div class="buttons">
+      <a class="btn primary" href="player.html">Explore the movements</a>
+      <a class="btn secondary" href="#share">Send a movement</a>
+    </div>
   </div>
-  <div id="caption"></div>
-  <div id="msg">Loading…</div>
-</div>
-<aside><h2>Steps</h2><div id="steps"></div></aside>
-<div id="bar">
-  <button id="play">Play</button>
-  <input id="scrub" type="range" min="0" max="1" step="1" value="0" aria-label="Time">
-  <select id="speed" aria-label="Speed">
-    <option value="0.5">½×</option><option value="1" selected>1×</option><option value="2">2×</option>
-  </select>
-  <span id="time">0:00 / 0:00</span>
+  <div>
+    <div class="stage">
+      <iframe src="player.html?lesson=knees-and-head&embed=1&view=feet&from=4.5&to=26&v=3" title="A skeleton letting the knees go to the right" loading="lazy"></iframe>
+    </div>
+    <div class="caption">Live: knees to the right and back, seen from the feet. Drag to turn it.</div>
+  </div>
 </div>
 
-<script type="module">
-import * as THREE from "three";
-import { STLLoader } from "three/addons/loaders/STLLoader.js";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+<section class="band">
+  <h2>What it is for</h2>
+  <p class="intro">You choose what moves on purpose. Physics, gravity, the floor and the joints decide
+    where the rest of the body goes.</p>
+  <div class="cards">
+    <div class="card"><h3>Look</h3><p>Watch how far a movement reaches: where the twist fades in the
+      spine, which side of the back lifts from the floor, what the head does.</p></div>
+    <div class="card"><h3>Explain</h3><p>Show students and colleagues why the pelvis rolls when the
+      knees go to the side, or how a press through the foot reaches the head.</p></div>
+    <div class="card"><h3>Compose</h3><p>Try variations side by side: small or large, the head held
+      or free, chest and head turning together or apart.</p></div>
+  </div>
+</section>
 
-const MESHES = "../model/meshes/";
-const LESSONS = "lessons/";
+<section class="band">
+  <h2>Movements to try</h2>
+  <p class="intro">Each is a short sequence with the teacher's words on screen as it plays.</p>
+  <div class="cards">
+    <a class="card" href="player.html?lesson=knees-and-head"><div class="pos">Lying, knees bent</div>
+      <h3>Knees and head</h3><p>The knees tip to the right, stay there while the head rolls the
+      other way; then a press through one foot.</p><div class="open">Open →</div></a>
+    <a class="card" href="player.html?lesson=elbow-to-knee"><div class="pos">Lying, knees bent</div>
+      <h3>Elbow to knee</h3><p>The diagonal: one elbow and the opposite knee come toward each other,
+      with and without the head.</p><div class="open">Open →</div></a>
+    <a class="card" href="player.html?lesson=looking-behind"><div class="pos">Sitting on a chair</div>
+      <h3>Turning to look behind</h3><p>Head alone, chest and head together, and chest and head
+      turning in opposite directions.</p><div class="open">Open →</div></a>
+    <a class="card" href="player.html?lesson=top-arm-slides"><div class="pos">Lying on the side</div>
+      <h3>The top arm slides</h3><p>The hand slides forward along the floor and the shoulder blade
+      follows; then the arm opens back.</p><div class="open">Open →</div></a>
+  </div>
+</section>
 
-// ---- scene (MuJoCo is z-up; so is this scene)
-const stage = document.getElementById("stage");
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.shadowMap.enabled = true;
-stage.prepend(renderer.domElement);
-const scene = new THREE.Scene();
-const dark = matchMedia("(prefers-color-scheme: dark)").matches;
-scene.background = new THREE.Color(dark ? 0x1c1d1f : 0xf4f1ea);
-const camera = new THREE.PerspectiveCamera(35, 1, 0.05, 50);
-camera.up.set(0, 0, 1);
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 0, 0.15);
+<section class="band">
+  <h2>How to use it</h2>
+  <div class="steps">
+    <div class="card"><h3>Pick a movement</h3><p>From the list above, or the menu at the top of the player.</p></div>
+    <div class="card"><h3>Play and pause</h3><p>The button at the bottom or the space bar. Click an
+      instruction on the right to jump to it; ½× slows everything down.</p></div>
+    <div class="card"><h3>Look from anywhere</h3><p>Drag to turn the body, scroll or pinch to zoom,
+      or choose side, above, from the feet, from the head.</p></div>
+    <div class="card"><h3>Follow the green dots</h3><p><span class="dot"></span> show where a movement is
+      led from. Everything else follows on its own.</p></div>
+  </div>
+</section>
 
-scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8478, 1.1));
-const sun = new THREE.DirectionalLight(0xffffff, 1.6);
-sun.position.set(0.8, -1.2, 2.5);
-sun.castShadow = true;
-sun.shadow.mapSize.set(2048, 2048);
-Object.assign(sun.shadow.camera, { left: -1.5, right: 1.5, top: 1.5, bottom: -1.5 });
-scene.add(sun);
-const floor = new THREE.Mesh(new THREE.PlaneGeometry(6, 6),
-  new THREE.MeshStandardMaterial({ color: dark ? 0x2c2d30 : 0xe6e0d4, roughness: 1 }));
-floor.receiveShadow = true;
-scene.add(floor);
-const grid = new THREE.GridHelper(6, 30, dark ? 0x3a3b3f : 0xd2cbbd, dark ? 0x333438 : 0xdcd5c8);
-grid.rotation.x = Math.PI / 2;
-grid.position.z = 0.0005;
-scene.add(grid);
+<section class="band" id="share">
+  <div class="cta">
+    <div>
+      <h2>Help shape it</h2>
+      <p class="fine" style="font-size:16px;margin:0 0 14px">The library grows from what practitioners want to see.</p>
+      <ul>
+        <li><b>Send a movement</b> you would like to see: the starting position and the instructions in
+          your own words, please, rather than a published lesson.</li>
+        <li><b>Tell us when something looks wrong.</b> Your trained eye is the best test this body has.</li>
+      </ul>
+    </div>
+    <div class="buttons" style="justify-content:flex-start">
+      <!-- TODO: replace both links with the submission form and the feedback address. -->
+      <a class="btn primary" href="#share">Send a movement</a>
+      <a class="btn secondary" href="#share">Give feedback</a>
+    </div>
+  </div>
+</section>
 
-// Camera offsets from the middle of the body (world: head toward +x, the person's right +y when lying on the back).
-const VIEWS = {
-  side:  [0.05, -2.3, 0.4],
-  above: [0.0, -0.01, 2.6],
-  feet:  [-2.0, 0, 0.4],
-  head:  [2.0, 0, 0.45],
-};
-let center = [0, 0, 0.15], view = "side";
-function setView(name) {
-  view = name;
-  const o = VIEWS[name];
-  camera.position.set(center[0] + o[0], center[1] + o[1], center[2] + o[2]);
-  controls.target.set(...center);
-  controls.update();
-}
-document.querySelectorAll("#views button").forEach(b => b.onclick = () => setView(b.dataset.view));
-setView("side");
+<section class="band">
+  <div class="split">
+    <div>
+      <h2>Built on research</h2>
+      <p>The skeleton's bones come from CT scans, and its joint ranges and the way the spine, neck and
+        hips resist movement follow published measurements of living people. Every change is checked
+        against those measurements.</p>
+      <p><a href="science.html">The science and the sources →</a></p>
+    </div>
+    <div>
+      <h2>Who is behind it</h2>
+      <p>movesim is made by Xenofontas (Fontas) Dimitropoulos, a professor of computer science at the
+        University of Crete, Greece, who studied physics. He has been practising the Feldenkrais
+        Method for more than five years.</p>
+      <p>It grew out of his love for the method, the impact he has seen it have on his own life, and
+        a wish to give something back to the Feldenkrais community.</p>
+    </div>
+  </div>
+</section>
 
-function resize() {
-  const r = stage.getBoundingClientRect();
-  renderer.setSize(r.width, r.height, false);
-  camera.aspect = r.width / r.height;
-  camera.updateProjectionMatrix();
-}
-new ResizeObserver(resize).observe(stage);
-
-// ---- the body
-const boneMat = new THREE.MeshStandardMaterial({ color: 0xece4d2, roughness: 0.75, metalness: 0 });
-const handMat = new THREE.MeshStandardMaterial({ color: 0x3f9d62, transparent: true, opacity: 0.85 });
-const loader = new STLLoader();
-const segments = {};
-async function loadBody(names) {
-  await Promise.all(names.filter(n => !segments[n]).map(async n => {
-    const geom = await loader.loadAsync(MESHES + n + ".stl");
-    geom.computeVertexNormals();
-    const mesh = new THREE.Mesh(geom, boneMat);
-    mesh.castShadow = true;
-    const g = new THREE.Group();
-    g.add(mesh);
-    scene.add(g);
-    segments[n] = g;
-  }));
-}
-let handleDots = [], propMeshes = [];
-const propMat = c => new THREE.MeshStandardMaterial({ color: new THREE.Color(...c), roughness: 0.9 });
-
-// ---- lessons
-let lesson = null, t = 0, playing = false, speed = 1;
-const $ = id => document.getElementById(id);
-
-async function openLesson(slug) {
-  playing = false; $("play").textContent = "Play";
-  $("msg").textContent = "Loading…"; $("msg").style.display = "";
-  const meta = await (await fetch(LESSONS + slug + "/meta.json")).json();
-  const buf = await (await fetch(LESSONS + slug + "/motion.bin")).arrayBuffer();
-  await loadBody(meta.bodies);
-  const nb = meta.bodies.length, nh = meta.handles.length, nf = meta.frames;
-  lesson = { meta, slug,
-    frames: new Float32Array(buf, 0, nf * nb * 7),
-    handles: new Float32Array(buf, nf * nb * 7 * 4, nf * nh * 4) };
-  propMeshes.forEach(p => scene.remove(p));
-  propMeshes = (meta.props || []).map(p => {
-    const box = new THREE.Mesh(new THREE.BoxGeometry(2 * p.size[0], 2 * p.size[1], 2 * p.size[2]), propMat(p.color));
-    box.position.set(...p.pos); box.castShadow = box.receiveShadow = true;
-    scene.add(box); return box;
-  });
-  // Aim the views at the middle of the body as it starts.
-  const pts = meta.bodies.map((n, i) => [lesson.frames[i * 7], lesson.frames[i * 7 + 1], lesson.frames[i * 7 + 2]]);
-  center = [0, 1, 2].map(k => pts.reduce((a, p) => a + p[k], 0) / pts.length);
-  setView(view);
-  handleDots.forEach(d => scene.remove(d));
-  handleDots = meta.handles.map(() => {
-    const d = new THREE.Mesh(new THREE.SphereGeometry(0.022, 16, 12), handMat);
-    scene.add(d); return d;
-  });
-  $("scrub").max = nf - 1;
-  $("steps").innerHTML = "";
-  meta.captions.forEach((c, i) => {
-    const el = document.createElement("div");
-    el.className = "step";
-    el.innerHTML = `<div class="t">${fmt(c.start)}</div><div></div>`;
-    el.lastChild.textContent = c.text;
-    el.onclick = () => { t = c.start; show(); };
-    $("steps").append(el);
-  });
-  $("msg").style.display = "none";
-  t = 0; show();
-}
-
-function fmt(s) { const m = Math.floor(s / 60); return `${m}:${String(Math.floor(s % 60)).padStart(2, "0")}`; }
-
-function show() {
-  if (!lesson) return;
-  const { meta, frames, handles } = lesson;
-  const f = Math.min(meta.frames - 1, Math.max(0, Math.round(t * meta.fps)));
-  const nb = meta.bodies.length;
-  meta.bodies.forEach((n, i) => {
-    const o = (f * nb + i) * 7, g = segments[n];
-    g.position.set(frames[o], frames[o + 1], frames[o + 2]);
-    g.quaternion.set(frames[o + 4], frames[o + 5], frames[o + 6], frames[o + 3]);  // MuJoCo: w x y z
-  });
-  const nh = meta.handles.length;
-  handleDots.forEach((d, i) => {
-    const o = (f * nh + i) * 4;
-    d.visible = handles[o + 3] > 0.5;
-    d.position.set(handles[o], handles[o + 1], handles[o + 2]);
-  });
-  const now = meta.captions.findIndex(c => t >= c.start && t < c.end);
-  $("caption").textContent = now >= 0 ? meta.captions[now].text : "";
-  [...$("steps").children].forEach((el, i) => el.classList.toggle("now", i === now));
-  $("scrub").value = f;
-  $("time").textContent = `${fmt(t)} / ${fmt(meta.seconds)}`;
-}
-
-$("play").onclick = () => {
-  playing = !playing;
-  if (playing && lesson && t >= lesson.meta.seconds - 0.05) t = 0;
-  $("play").textContent = playing ? "Pause" : "Play";
-};
-$("scrub").oninput = e => { if (lesson) { t = e.target.value / lesson.meta.fps; show(); } };
-$("speed").onchange = e => { speed = parseFloat(e.target.value); };
-$("lesson").onchange = e => openLesson(e.target.value);
-addEventListener("keydown", e => { if (e.code === "Space" && e.target === document.body) { e.preventDefault(); $("play").click(); } });
-
-let last = performance.now();
-renderer.setAnimationLoop(now => {
-  const dt = (now - last) / 1000; last = now;
-  if (playing && lesson) {
-    t += dt * speed;
-    if (t >= lesson.meta.seconds) { t = lesson.meta.seconds; playing = false; $("play").textContent = "Play"; }
-    show();
-  }
-  controls.update();
-  renderer.render(scene, camera);
-});
-
-const index = await (await fetch(LESSONS + "index.json")).json();
-index.forEach(l => $("lesson").append(new Option(l.title || l.slug, l.slug)));
-const wanted = new URLSearchParams(location.search).get("lesson");
-const first = wanted && index.some(l => l.slug === wanted) ? wanted : index[0]?.slug;
-if (first) { $("lesson").value = first; openLesson(first); }
-else $("msg").textContent = "No lessons yet. Make one with: uv run movesim lesson \"…\"";
-</script>
+<footer>
+  <p>A model, not a person: it shows how movement can travel through a reference skeleton. It does not
+    show how any particular person moves or feels, and it is not medical advice.</p>
+  <p>Bone shapes: BodyParts3D, © The Database Center for Life Science (DBCLS), CC BY 4.0; derived meshes
+    shared under CC BY-SA 4.0. Physics: MuJoCo.</p>
+  <p>Feldenkrais®, Awareness Through Movement® and Functional Integration® are registered service marks
+    in many countries. movesim is an independent project.</p>
+</footer>
 </body>
 </html>

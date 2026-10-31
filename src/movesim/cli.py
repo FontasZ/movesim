@@ -22,7 +22,7 @@ PORT = 8765
 
 
 def url(slug, port=PORT):
-    return f"http://127.0.0.1:{port}/web/?lesson={slug}"
+    return f"http://127.0.0.1:{port}/web/player.html?lesson={slug}"
 
 
 def play_script(script, slug):

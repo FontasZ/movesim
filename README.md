@@ -80,11 +80,20 @@ from one position to another (rolling over, coming to sit) is not available yet.
 Sample lessons in `lessons/`: knees and head, elbow to knee (lying), turning to look behind
 (sitting), the top arm slides (side-lying), and a test of the building blocks.
 
-## The web player
+## The website
 
-`uv run movesim serve`, then <http://127.0.0.1:8765/web/>. Pick a lesson at the top; play,
-pause (space), scrub, change speed; click a step to jump to it; switch between side, above,
-from the feet and from the head, or drag to turn the view.
+`uv run movesim serve`, then <http://127.0.0.1:8765/web/>:
+
+- `web/index.html`: the landing page for practitioners (what it is, a live skeleton, movements to
+  try, how to use it, the call to send movements and feedback, who is behind it).
+- `web/player.html`: the player. Pick a movement; play, pause (space), scrub, change speed; click
+  an instruction to jump to it; drag to turn the view. "How to use" explains it, and opens on the
+  first visit. `player.html?lesson=<name>&embed=1&view=feet&from=4.5&to=26` shows only the moving
+  body, looping, as on the landing page.
+- `web/science.html`: what the body is made of, where its numbers come from, the validation
+  checks (from `web/validation.json`, written by `movesim validate`), and references.
+
+Lessons whose name starts with `test-` stay out of the public menu.
 
 ## Move the body yourself
 

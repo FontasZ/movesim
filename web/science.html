@@ -3,140 +3,98 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The science behind movesim</title>
-<link rel="stylesheet" href="site.css">
+<title>movesim · the science</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css?v=2">
+<style>
+  main.page h1, main.page h2 { font-family: Fraunces, Georgia, serif; font-weight: 600; }
+  details { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; margin: 12px 0; }
+  summary { cursor: pointer; font-weight: 600; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+  .fact { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+  .fact b { display: block; font-size: 22px; color: var(--accent); }
+  .fact span { color: var(--muted); font-size: 14px; }
+</style>
 </head>
 <body>
 <nav class="site-nav">
   <a class="brand" href="index.html">movesim</a>
-  <a href="index.html">Movements</a>
+  <a href="player.html">Movements</a>
   <a href="science.html" aria-current="page">The science</a>
-  <a href="about.html">About</a>
+  <a href="index.html#share">Send a movement</a>
 </nav>
 <main class="page">
-  <h1>The science behind the body</h1>
-  <p class="lede">What the simulated body is made of, where each of its numbers comes from, and how well it
-    agrees with measurements of living people.</p>
+  <h1>The science</h1>
+  <p class="lede">What the body is made of, where its numbers come from, and how well it agrees with
+    living people.</p>
 
-  <div class="note">This is a model, not a person. It shows how movement can travel through a
-    reference skeleton under gravity. It does not show how any particular person moves, what anyone
-    feels, or what is good or safe for anyone. It is not medical advice.</div>
+  <div class="facts">
+    <div class="fact"><b>44 moving parts</b><span>all 24 vertebrae, ribs on every level, arms, legs, hands and feet</span></div>
+    <div class="fact"><b>CT-based</b><span>bone shapes and proportions of a real skeleton [2]</span></div>
+    <div class="fact"><b id="score">15 / 15</b><span>checks against measurements of living people</span></div>
+  </div>
 
-  <h2>What it is</h2>
-  <p>A physics simulation of an adult skeleton lying, sitting or side-lying on a floor or a chair,
-    built with the MuJoCo physics engine [1]. The body is 44 rigid segments joined by 118 joints:
-    all 24 vertebrae and the skull, a pair of ribs on every thoracic vertebra, the shoulder girdle and
-    arms, the pelvis, legs, feet and toes. It weighs about 70 kg and is 1.76 m tall.</p>
-  <p>There are no muscles. Between the bones, joint limits and passive tissue (ligaments, capsules,
-    discs and resting muscle) resist movement as measured in living people. A small amount of muscle
-    <em>tone</em> holds each starting position, because no one lies with the knees standing, or sits
-    upright, without it; that tone is kept separate and as small as will hold the position.</p>
-  <p>A movement takes hold of one part on purpose, like an intention leading the part: a point of the
-    body is guided along a path by a soft spring (the green dots in the player), or a joint is turned
-    toward an angle. Everything else is passive: gravity, the floor, the joints and the tissue decide
-    where the rest of the body goes. That passive response is what the simulation is for.</p>
+  <h2>How it works</h2>
+  <p>A physics simulation (MuJoCo [1]) of an adult skeleton, 1.76 m and 70 kg. There are no muscles:
+    joint limits and passive tissue resist movement, and a small amount of tone holds each starting
+    position. A movement leads one part on purpose; gravity, the floor and the joints decide where the
+    rest of the body goes.</p>
 
   <h2>Where the numbers come from</h2>
-  <p>Each part is marked <span class="tag measured">measured</span> when it follows published
-    measurements, or <span class="tag assumed">assumed</span> when no suitable data was found and the
-    value is a reasoned choice.</p>
-  <div class="table-wrap"><table>
-    <thead><tr><th>Part of the model</th><th>Value</th><th>Source</th><th></th></tr></thead>
-    <tbody>
-      <tr><td>Bone shapes and segment lengths</td><td>CT-based skeleton of one adult man, scaled to 1.76 m</td>
-        <td>BodyParts3D [2]</td><td><span class="tag measured">measured</span></td></tr>
-      <tr><td>Segment masses</td><td>% of a 70 kg body per segment</td><td>de Leva 1996 [3]</td>
-        <td><span class="tag measured">measured</span></td></tr>
-      <tr><td>Range of motion of each spinal level (bend, side-bend, twist)</td><td>per level</td>
-        <td>White &amp; Panjabi 1990 [4]</td><td><span class="tag measured">measured</span></td></tr>
-      <tr><td>Thoracic twist range</td><td>±5° per level (T1-T9)</td><td>Wilke et al. 2017 [5]</td>
-        <td><span class="tag measured">measured</span> (in vitro)</td></tr>
-      <tr><td>L5-S1 twist range</td><td>±2°</td><td>Fujii et al. 2007 [6]</td>
-        <td><span class="tag measured">measured</span></td></tr>
-      <tr><td>Lumbar passive stiffness through the range</td><td>fitted curve, 3 planes</td>
-        <td>Watt, Callaway &amp; Williams 2022 [7]</td><td><span class="tag measured">measured</span></td></tr>
-      <tr><td>Thoracic passive stiffness</td><td>like the lumbar levels</td><td>no in-vivo data found</td>
-        <td><span class="tag assumed">assumed</span></td></tr>
-      <tr><td>Neck passive stiffness</td><td>0.07 N·m/° in rotation, other planes alike</td><td>De Boe et al. 2016 [8]</td>
-        <td><span class="tag measured">measured</span> (rotation)</td></tr>
-      <tr><td>Hip passive stiffness</td><td>8 N·m/rad (rotation; side-to-side taken alike)</td>
-        <td>Leite et al. 2012 [9]; Manual Therapy study [10]</td><td><span class="tag measured">measured</span> (rotation)</td></tr>
-      <tr><td>Ankle and subtalar joint axes</td><td>slanted axes</td><td>Inman 1976 [11]</td>
-        <td><span class="tag measured">measured</span></td></tr>
-      <tr><td>Knee, ankle, shoulder and arm tissue</td><td>gentle springs, tightening near the end of range</td>
-        <td>-</td><td><span class="tag assumed">assumed</span></td></tr>
-      <tr><td>Soft tissue at the floor (skin, fat, muscle)</td><td>gives way over about 2 cm</td><td>-</td>
-        <td><span class="tag assumed">assumed</span></td></tr>
-      <tr><td>Muscle tone holding each position</td><td>the least that holds it</td><td>tuned in the simulation</td>
-        <td><span class="tag assumed">assumed</span></td></tr>
-    </tbody>
-  </table></div>
-
-  <h3>How the spine resists</h3>
-  <p>Living spines are loose around rest and stiffen steadily toward the end of their range. The
-    meta-analysis of Watt, Callaway and Williams [7] gives the stiffness of the whole lumbar spine in
-    each quarter of its range: it roughly doubles from one quarter to the next. In the model each
-    spinal level resists a bend <i>d</i> from rest with a moment <i>c</i>·(e<sup><i>a·d/r</i></sup> − 1),
-    where <i>r</i> is that level's range; <i>c</i> and <i>a</i> are fitted to the published quartiles,
-    and the levels of a region share <i>c</i>, so in series they give way in proportion to their range.</p>
-
-  <h2>How well it agrees with measurements</h2>
-  <p>These checks run with every change to the body (<code>movesim validate</code>). Each compares
-    the model with a measurement of living people. The studies differ in subjects, positions and
-    methods, so a pass means that part behaves within the published range; it does not prove the
-    whole body.</p>
-  <div class="table-wrap"><table>
-    <thead><tr><th>Check</th><th>Published</th><th>This body</th><th></th></tr></thead>
-    <tbody id="checks"><tr><td colspan="4">Loading…</td></tr></tbody>
-  </table></div>
-  <p id="summary"></p>
-
-  <h2>What it cannot tell you</h2>
   <ul>
-    <li>No muscles, so no habits, holding patterns, effort or ease: the parts that Feldenkrais work
-      changes most. Tone is a single, minimal value per position.</li>
-    <li>One reference body. People differ widely in proportions, mobility and stiffness.</li>
-    <li>The thoracic spine, the shoulders and the knees and ankles rest on assumptions, not
-      measurements.</li>
-    <li>Discs do not compress, the ribcage does not breathe, the shoulder blade hangs from the
-      collarbone instead of gliding over the ribs.</li>
-    <li>Arms meet the legs but can still pass through the trunk and through each other.</li>
-    <li>It cannot yet move from one position to another (rolling over, coming to sit).</li>
+    <li><b>Bones and proportions:</b> a CT-scanned skeleton (BodyParts3D [2]); masses from de Leva [3].</li>
+    <li><b>Range of each spinal level:</b> White &amp; Panjabi [4], with thoracic twist from Wilke et al. [5]
+      and the lowest lumbar level from Fujii et al. [6].</li>
+    <li><b>How the spine resists:</b> loose near rest, stiffening steadily toward the end of the range,
+      fitted to an in-vivo meta-analysis of the lumbar spine (Watt et al. [7]).</li>
+    <li><b>Neck and hips:</b> passive stiffness measured in living people (De Boe et al. [8]; Leite et al.
+      [9] and a Manual Therapy study [10]). Ankle axes after Inman [11].</li>
+    <li><b>Assumed, not measured:</b> the thoracic spine resists like the lumbar spine; knees, ankles,
+      shoulders and arms; the soft tissue at the floor; the tone that holds each position.</li>
+  </ul>
+
+  <details>
+    <summary>The validation checks</summary>
+    <p class="fine">Run with every change (<code>movesim validate</code>). The studies differ in subjects and
+      methods, so a pass means that part behaves within the published range, not that the whole body is
+      proven. Hover a row for its source.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Check</th><th>Published</th><th>This body</th><th></th></tr></thead>
+      <tbody id="checks"><tr><td colspan="4">Loading…</td></tr></tbody>
+    </table></div>
+  </details>
+
+  <h2>What it cannot show</h2>
+  <ul>
+    <li>Muscles, habits, effort and ease, which are what Feldenkrais work changes most.</li>
+    <li>Individual differences: it is one reference body.</li>
+    <li>Breathing, compressing discs, the shoulder blade gliding on the ribs, and moving from one position
+      to another.</li>
   </ul>
 
   <h2>References</h2>
   <ol class="refs">
-    <li>Todorov E, Erez T, Tassa Y. MuJoCo: A physics engine for model-based control. IEEE/RSJ
-      International Conference on Intelligent Robots and Systems (IROS), 2012.</li>
-    <li>Mitsuhashi N, Fujieda K, Tamura T, Kawamoto S, Takagi T, Okubo K. BodyParts3D: 3D structure
-      database for anatomical concepts. <i>Nucleic Acids Research</i> 2009;37(Database issue):D782-5.
-      <a href="https://pubmed.ncbi.nlm.nih.gov/18835852/">PubMed 18835852</a>. Bone meshes © Database
-      Center for Life Science (DBCLS), CC BY 4.0; the derived meshes in movesim are shared under CC BY-SA 4.0.</li>
-    <li>de Leva P. Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. <i>Journal of
-      Biomechanics</i> 1996;29(9):1223-30.</li>
-    <li>White AA, Panjabi MM. <i>Clinical Biomechanics of the Spine</i>, 2nd ed. Philadelphia: Lippincott, 1990.</li>
-    <li>Wilke H-J, Herkommer A, Werner K, Liebsch C. In vitro analysis of the segmental flexibility of the
-      thoracic spine. <i>PLoS ONE</i> 2017;12(5):e0177823.
-      <a href="https://doi.org/10.1371/journal.pone.0177823">doi:10.1371/journal.pone.0177823</a></li>
-    <li>Fujii R, Sakaura H, Mukai Y, et al. Kinematics of the lumbar spine in trunk rotation: in vivo
-      three-dimensional analysis using magnetic resonance imaging. <i>European Spine Journal</i>
-      2007;16(11):1867-74. <a href="https://pubmed.ncbi.nlm.nih.gov/17549527/">PubMed 17549527</a></li>
-    <li>Watt, Callaway, Williams. In vivo through-range passive stiffness of the lumbar spine: a
-      meta-analysis of measurements and methods. <i>Medical &amp; Biological Engineering &amp; Computing</i>
-      2022;60:2133-57. <a href="https://doi.org/10.1007/s11517-022-02609-w">doi:10.1007/s11517-022-02609-w</a></li>
-    <li>De Boe et al. Passive axial rotation stiffness of the upper and global cervical spine in 74
-      asymptomatic adults. <i>Mains Libres</i>, 2016.
-      <a href="https://files.medhyg.ch/images%20lison/Mains%20libres/article_De_Boe.pdf">PDF</a></li>
+    <li>Todorov E, Erez T, Tassa Y. MuJoCo: A physics engine for model-based control. IROS 2012.</li>
+    <li>Mitsuhashi N, et al. BodyParts3D: 3D structure database for anatomical concepts. <i>Nucleic Acids Res</i>
+      2009;37:D782-5. <a href="https://pubmed.ncbi.nlm.nih.gov/18835852/">PubMed</a>. Meshes © DBCLS, CC BY 4.0.</li>
+    <li>de Leva P. Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. <i>J Biomech</i> 1996;29:1223-30.</li>
+    <li>White AA, Panjabi MM. <i>Clinical Biomechanics of the Spine</i>, 2nd ed. Lippincott, 1990.</li>
+    <li>Wilke H-J, Herkommer A, Werner K, Liebsch C. In vitro analysis of the segmental flexibility of the thoracic
+      spine. <i>PLoS ONE</i> 2017;12:e0177823. <a href="https://doi.org/10.1371/journal.pone.0177823">doi</a></li>
+    <li>Fujii R, Sakaura H, Mukai Y, et al. Kinematics of the lumbar spine in trunk rotation: in vivo 3D analysis
+      using MRI. <i>Eur Spine J</i> 2007;16:1867-74. <a href="https://pubmed.ncbi.nlm.nih.gov/17549527/">PubMed</a></li>
+    <li>Watt, Callaway, Williams. In vivo through-range passive stiffness of the lumbar spine: a meta-analysis.
+      <i>Med Biol Eng Comput</i> 2022;60:2133-57. <a href="https://doi.org/10.1007/s11517-022-02609-w">doi</a></li>
+    <li>De Boe et al. Passive axial rotation stiffness of the cervical spine in asymptomatic adults. <i>Mains Libres</i>
+      2016. <a href="https://files.medhyg.ch/images%20lison/Mains%20libres/article_De_Boe.pdf">PDF</a></li>
     <li>Leite et al. Relationship between joint passive stiffness and hip lateral rotator concentric torque.
-      <i>Revista Brasileira de Fisioterapia</i> 2012;16(5).
-      <a href="https://pubmed.ncbi.nlm.nih.gov/22983213/">PubMed 22983213</a></li>
+      <i>Rev Bras Fisioter</i> 2012;16(5). <a href="https://pubmed.ncbi.nlm.nih.gov/22983213/">PubMed</a></li>
     <li>Validity and reliability of clinical tests for assessing hip passive stiffness. <i>Manual Therapy</i>.
       <a href="https://www.sciencedirect.com/science/article/abs/pii/S1356689X10001864">ScienceDirect</a></li>
-    <li>Inman VT. <i>The Joints of the Ankle</i>. Baltimore: Williams &amp; Wilkins, 1976.</li>
+    <li>Inman VT. <i>The Joints of the Ankle</i>. Williams &amp; Wilkins, 1976.</li>
   </ol>
-  <p>Related work, not used for parameters: Bruno AG, Bouxsein ML, Anderson DE. Development and
-    validation of a musculoskeletal model of the fully articulated thoracolumbar spine and rib cage.
-    <i>Journal of Biomechanical Engineering</i> 2015;137(8):081003.</p>
 </main>
 <script>
 fetch("validation.json").then(r => r.json()).then(rows => {
@@ -153,8 +111,7 @@ fetch("validation.json").then(r => r.json()).then(rows => {
     body.append(tr);
   }
   const checked = rows.filter(r => r.ok !== null), passed = checked.filter(r => r.ok);
-  document.getElementById("summary").textContent =
-    `${passed.length} of ${checked.length} checks within the published range. Hover a row for its source.`;
+  document.getElementById("score").textContent = `${passed.length} / ${checked.length}`;
 }).catch(() => { document.getElementById("checks").innerHTML = "<tr><td colspan='4'>Could not load the checks.</td></tr>"; });
 </script>
 </body>

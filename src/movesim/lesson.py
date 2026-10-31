@@ -439,6 +439,8 @@ def write_index(lessons_dir):
     lessons_dir = Path(lessons_dir)
     entries = []
     for meta_path in lessons_dir.glob("*/meta.json"):
+        if meta_path.parent.name.startswith("test-"):
+            continue  # tests stay out of the public menu
         meta = json.loads(meta_path.read_text())
         entries.append({"slug": meta_path.parent.name, "title": meta.get("title") or meta_path.parent.name,
                         "mtime": meta_path.stat().st_mtime})
