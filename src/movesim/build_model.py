@@ -184,6 +184,20 @@ def handle_tendons():
         for site, k, b in HANDLES)
 
 
+# ------------------------------------------------------------------ body parts touching each other
+
+LEG_PARTS = ("thigh", "calf")
+ARM_PARTS = ("arm", "elbow", "forearm", "hand")
+
+
+def contact_pairs():
+    """The legs can rest on each other, and an arm can meet either leg (elbow to knee)."""
+    pairs = [("thigh_L", "thigh_R"), ("calf_L", "calf_R"), ("malleolus_L", "malleolus_R"),
+             ("thigh_L", "calf_R"), ("calf_L", "thigh_R")]
+    pairs += [(f"{a}_{s}", f"{l}_{t}") for a in ARM_PARTS for s in "LR" for l in LEG_PARTS for t in "LR"]
+    return "\n".join(f'    <pair geom1="{g1}" geom2="{g2}"/>' for g1, g2 in pairs)
+
+
 # ------------------------------------------------------------------ helpers
 
 
@@ -621,13 +635,9 @@ PELVIS = """
 """
 
 TENDONS = """
-  <!-- Body parts that can rest on each other (body parts otherwise only touch the floor and props). -->
+  <!-- Body parts that can touch each other (body parts otherwise only touch the floor and props). -->
   <contact>
-    <pair geom1="thigh_L" geom2="thigh_R"/>
-    <pair geom1="calf_L" geom2="calf_R"/>
-    <pair geom1="malleolus_L" geom2="malleolus_R"/>
-    <pair geom1="thigh_L" geom2="calf_R"/>
-    <pair geom1="calf_L" geom2="thigh_R"/>
+CONTACT_PAIRS
   </contact>
 
   <!-- The guide's hands: a soft spring from each hand to its point on the body. -->
@@ -678,7 +688,7 @@ def build(meshes=True):
     preamble = PREAMBLE.replace('"HIP_TURN"', f'"{HIP_TURN_TISSUE + HIP_TURN_TONE:g}"')
     preamble = re.sub(r"LIMB:([\d.]+)", lambda m: v(limb_ligaments(float(m.group(1)))), preamble)
     preamble = preamble.replace("HANDLE_BODIES", handle_bodies())
-    tendons = TENDONS.replace("HANDLE_TENDONS", handle_tendons())
+    tendons = TENDONS.replace("HANDLE_TENDONS", handle_tendons()).replace("CONTACT_PAIRS", contact_pairs())
     xml = HEADER + preamble + x.text() + "\n  </worldbody>\n" + tendons
     return add_meshes(xml) if meshes else xml
 

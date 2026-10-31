@@ -843,13 +843,45 @@
     </body>
   </worldbody>
 
-  <!-- Body parts that can rest on each other (body parts otherwise only touch the floor and props). -->
+  <!-- Body parts that can touch each other (body parts otherwise only touch the floor and props). -->
   <contact>
     <pair geom1="thigh_L" geom2="thigh_R"/>
     <pair geom1="calf_L" geom2="calf_R"/>
     <pair geom1="malleolus_L" geom2="malleolus_R"/>
     <pair geom1="thigh_L" geom2="calf_R"/>
     <pair geom1="calf_L" geom2="thigh_R"/>
+    <pair geom1="arm_L" geom2="thigh_L"/>
+    <pair geom1="arm_L" geom2="thigh_R"/>
+    <pair geom1="arm_L" geom2="calf_L"/>
+    <pair geom1="arm_L" geom2="calf_R"/>
+    <pair geom1="arm_R" geom2="thigh_L"/>
+    <pair geom1="arm_R" geom2="thigh_R"/>
+    <pair geom1="arm_R" geom2="calf_L"/>
+    <pair geom1="arm_R" geom2="calf_R"/>
+    <pair geom1="elbow_L" geom2="thigh_L"/>
+    <pair geom1="elbow_L" geom2="thigh_R"/>
+    <pair geom1="elbow_L" geom2="calf_L"/>
+    <pair geom1="elbow_L" geom2="calf_R"/>
+    <pair geom1="elbow_R" geom2="thigh_L"/>
+    <pair geom1="elbow_R" geom2="thigh_R"/>
+    <pair geom1="elbow_R" geom2="calf_L"/>
+    <pair geom1="elbow_R" geom2="calf_R"/>
+    <pair geom1="forearm_L" geom2="thigh_L"/>
+    <pair geom1="forearm_L" geom2="thigh_R"/>
+    <pair geom1="forearm_L" geom2="calf_L"/>
+    <pair geom1="forearm_L" geom2="calf_R"/>
+    <pair geom1="forearm_R" geom2="thigh_L"/>
+    <pair geom1="forearm_R" geom2="thigh_R"/>
+    <pair geom1="forearm_R" geom2="calf_L"/>
+    <pair geom1="forearm_R" geom2="calf_R"/>
+    <pair geom1="hand_L" geom2="thigh_L"/>
+    <pair geom1="hand_L" geom2="thigh_R"/>
+    <pair geom1="hand_L" geom2="calf_L"/>
+    <pair geom1="hand_L" geom2="calf_R"/>
+    <pair geom1="hand_R" geom2="thigh_L"/>
+    <pair geom1="hand_R" geom2="thigh_R"/>
+    <pair geom1="hand_R" geom2="calf_L"/>
+    <pair geom1="hand_R" geom2="calf_R"/>
   </contact>
 
   <!-- The guide's hands: a soft spring from each hand to its point on the body. -->
