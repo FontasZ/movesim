@@ -112,6 +112,40 @@ TONE_DEG = {
     "shoulder_abd": 15, "elbow": 10,
 }
 
+# ------------------------------------------------------------------ handles
+
+# Points a movement can take hold of: an invisible hand on a spring that moves the point on
+# purpose, holds it still, or just follows it (no force). Each is stiff enough to carry out
+# the intention against the load it moves (the pelvis is heavy, a hand is light), so the
+# passive response of the rest of the body is what the simulation shows.
+# Site, stiffness (N/m), damping (N·s/m).
+HANDLES = [
+    ("knee_L", 2500, 120), ("knee_R", 2500, 120),
+    ("forehead", 1500, 60),
+    ("asis_L", 15000, 500), ("asis_R", 15000, 500),  # the front hip bones
+    ("sternum", 5000, 200),
+    ("palm_L", 800, 40), ("palm_R", 800, 40),
+    ("shoulder_L", 2500, 100), ("shoulder_R", 2500, 100),
+    ("ankle_L", 3000, 120), ("ankle_R", 3000, 120),
+]
+
+
+def handle_bodies():
+    return "\n".join(
+        f'    <body name="guide_{site}" mocap="true">\n'
+        f'      <site name="guide_{site}" type="sphere" size="0.02" material="hand"/>\n'
+        f'      <geom type="sphere" size="0.025" material="hand" group="2"/>\n'
+        f'    </body>' for site, _, _ in HANDLES)
+
+
+def handle_tendons():
+    return "\n".join(
+        f'    <spatial name="guide_{site}" stiffness="{k}" damping="{b}" springlength="0" '
+        f'rgba="0.2 0.7 0.3 1" width="0.003">\n'
+        f'      <site site="guide_{site}"/>\n      <site site="{site}"/>\n    </spatial>'
+        for site, k, b in HANDLES)
+
+
 # ------------------------------------------------------------------ helpers
 
 
@@ -265,6 +299,8 @@ def ribs(x, lv):
             x.add(f'<geom class="rib" fromto="{v(a, b)}"/>')
     if lv.name in ("T2", "T4", "T6"):  # the sternum, in three pieces riding on the ribs
         x.add(f'<geom class="bone" type="box" pos="{v(d + 0.005, 0, zc - drop - 0.02)}" size="0.006 0.015 0.025"/>')
+        if lv.name == "T4":
+            x.add(f'<site name="sternum" pos="{v(d + 0.015, 0, zc - drop - 0.02)}" size="0.012"/>')
 
 
 def skull(x):
@@ -282,7 +318,8 @@ def skull(x):
 <geom class="bone" type="sphere" pos="0.085 0.03 0.04" size="0.012" rgba="0.2 0.2 0.2 1"/>
 <geom class="bone" type="sphere" pos="0.085 -0.03 0.04" size="0.012" rgba="0.2 0.2 0.2 1"/>
 <!-- The back of the head as a sphere centred on the head's mass, so it rolls like a real head. -->
-<geom name="occiput" class="flesh" type="sphere" pos="0.02 0 0.04" size="0.11"/>""")
+<geom name="occiput" class="flesh" type="sphere" pos="0.02 0 0.04" size="0.11"/>
+<site name="forehead" pos="0.1 0 0.08" size="0.012"/>""")
     x.close()
 
 
@@ -310,7 +347,8 @@ def shoulder_and_arm(x, s, t2_pose):
 <geom class="bone" type="ellipsoid" pos="{v(-0.11, -s * 0.06, -0.07)}" size="0.006 0.05 0.08"/>
 <geom class="bone" type="capsule" fromto="{v(0, 0, 0, -0.10, -s * 0.09, -0.03)}" size="0.006"/>
 <geom class="mass" type="ellipsoid" pos="{v(-0.11, -s * 0.06, -0.07)}" size="0.03 0.06 0.08" mass="0.8"/>
-<geom name="scapula_{n}" class="flesh" material="flesh_{n.lower()}" type="ellipsoid" pos="{v(-0.14, -s * 0.065, -0.07)}" size="0.03 0.06 0.08"/>""")
+<geom name="scapula_{n}" class="flesh" material="flesh_{n.lower()}" type="ellipsoid" pos="{v(-0.14, -s * 0.065, -0.07)}" size="0.03 0.06 0.08"/>
+<site name="shoulder_{n}" size="0.012"/>""")
 
     gh = (0.0, s * 0.005, -0.045)
     x.open(f'<body name="humerus_{n}" pos="{v(gh)}">')
@@ -339,7 +377,8 @@ def shoulder_and_arm(x, s, t2_pose):
     x.add(f"""
 <geom class="bone" type="box" pos="0 0 -0.08" size="0.012 0.042 0.085"/>
 <geom class="mass" type="box" pos="0 0 -0.08" size="0.015 0.045 0.09" mass="0.45"/>
-<geom name="hand_{n}" class="flesh" material="flesh_{n.lower()}" type="ellipsoid" pos="-0.005 0 -0.08" size="0.018 0.045 0.08"/>""")
+<geom name="hand_{n}" class="flesh" material="flesh_{n.lower()}" type="ellipsoid" pos="-0.005 0 -0.08" size="0.018 0.045 0.08"/>
+<site name="palm_{n}" pos="0.01 0 -0.08" size="0.012"/>""")
     for _ in range(5):
         x.close()
 
@@ -380,7 +419,8 @@ def leg(x, s):
 <geom name="heel_{n}" class="sole" type="sphere" pos="-0.045 0 -0.045" size="0.03"/>
 <geom name="met1_{n}" class="sole" type="sphere" pos="{v(0.12, m * 0.03, -0.06)}" size="0.015"/>
 <geom name="met5_{n}" class="sole" type="sphere" pos="{v(0.10, s * 0.035, -0.06)}" size="0.015"/>
-<geom name="midfoot_{n}" class="sole" type="sphere" pos="{v(0.03, s * 0.035, -0.06)}" size="0.015"/>""")
+<geom name="midfoot_{n}" class="sole" type="sphere" pos="{v(0.03, s * 0.035, -0.06)}" size="0.015"/>
+<site name="ankle_{n}" size="0.012"/>""")
     x.open(f'<body name="toes_{n}" pos="0.12 0 -0.05">')
     hinge(x, f"toes_{n}", (0, 1, 0), -60, 30, cls="toes")
     x.add(f"""
@@ -484,15 +524,8 @@ PREAMBLE = """
     <geom name="floor" type="plane" size="3 3 0.05" material="floor" contype="0" conaffinity="1"
           condim="3" friction="0.9 0.01 0.001"/>
 
-    <!-- The guide's hands: mocap targets, each pulling one knee through a soft spring. -->
-    <body name="guide_L" mocap="true" pos="-0.2 -0.085 0.5">
-      <site name="guide_L" type="sphere" size="0.025" material="hand"/>
-      <geom type="sphere" size="0.03" material="hand" group="2"/>
-    </body>
-    <body name="guide_R" mocap="true" pos="-0.2 0.085 0.5">
-      <site name="guide_R" type="sphere" size="0.025" material="hand"/>
-      <geom type="sphere" size="0.03" material="hand" group="2"/>
-    </body>
+    <!-- The guide's hands: mocap targets, each tied to one point of the body by a soft spring. -->
+HANDLE_BODIES
 """
 
 PELVIS = """
@@ -511,19 +544,14 @@ PELVIS = """
   <geom name="sacrum" class="flesh" type="ellipsoid" pos="-0.06 0 -0.05" size="0.04 0.04 0.06"/>
   <geom name="glute_L" class="flesh" material="flesh_l" type="ellipsoid" pos="-0.04 0.07 -0.10" size="0.065 0.07 0.085"/>
   <geom name="glute_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.04 -0.07 -0.10" size="0.065 0.07 0.085"/>
+  <site name="asis_L" pos="0.07 0.11 -0.03" size="0.012"/>
+  <site name="asis_R" pos="0.07 -0.11 -0.03" size="0.012"/>
 """
 
 TENDONS = """
-  <!-- The guide's hands: a soft spring from each hand to the front of each knee. -->
+  <!-- The guide's hands: a soft spring from each hand to its point on the body. -->
   <tendon>
-    <spatial name="guide_L" stiffness="1000" damping="60" springlength="0" rgba="0.2 0.7 0.3 1" width="0.004">
-      <site site="guide_L"/>
-      <site site="knee_L"/>
-    </spatial>
-    <spatial name="guide_R" stiffness="1000" damping="60" springlength="0" rgba="0.2 0.7 0.3 1" width="0.004">
-      <site site="guide_R"/>
-      <site site="knee_R"/>
-    </spatial>
+HANDLE_TENDONS
   </tendon>
 
   <include file="hook_lying_key.xml"/>
@@ -566,7 +594,9 @@ def build(meshes=True):
     for _ in LEVELS:
         x.close()
     x.close()  # pelvis
-    xml = HEADER + PREAMBLE + x.text() + "\n  </worldbody>\n" + TENDONS
+    preamble = PREAMBLE.replace("HANDLE_BODIES", handle_bodies())
+    tendons = TENDONS.replace("HANDLE_TENDONS", handle_tendons())
+    xml = HEADER + preamble + x.text() + "\n  </worldbody>\n" + tendons
     return add_meshes(xml) if meshes else xml
 
 
@@ -574,7 +604,8 @@ def main():
     MODEL_PATH.write_text(build())
     KEY_PATH.write_text("<mujoco>\n  <keyframe/>\n</mujoco>\n")  # replaced by the settle below
     model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
-    print(f"Wrote {MODEL_PATH.name}: {model.nbody - 3} body segments, {model.njnt} joints, "
+    segments = sum(1 for b in range(1, model.nbody) if model.body_mocapid[b] < 0)
+    print(f"Wrote {MODEL_PATH.name}: {segments} body segments, {model.njnt} joints, "
           f"{model.body_subtreemass[model.body('pelvis').id]:.1f} kg.")
     from movesim import sim
     sim.main()

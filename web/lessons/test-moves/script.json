@@ -1,0 +1,158 @@
+{
+  "title": "Test of every move",
+  "steps": [
+    {
+      "say": "Let both knees go to the right, and come back.",
+      "moves": [
+        {
+          "move": "knees_tilt",
+          "side": "right",
+          "amount": 20
+        }
+      ],
+      "hold": [],
+      "seconds": 3.0,
+      "stay": 1.0,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 1.0,
+      "release": false
+    },
+    {
+      "say": "Roll the head to the left.",
+      "moves": [
+        {
+          "move": "head_roll",
+          "side": "left",
+          "amount": 30
+        }
+      ],
+      "hold": [],
+      "seconds": 3.0,
+      "stay": 1.0,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 1.0,
+      "release": false
+    },
+    {
+      "say": "Lift the right arm toward the ceiling.",
+      "moves": [
+        {
+          "move": "arm_lift",
+          "side": "right",
+          "amount": 90
+        }
+      ],
+      "hold": [],
+      "seconds": 3.0,
+      "stay": 1.0,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 1.0,
+      "release": false
+    },
+    {
+      "say": "Tilt the pelvis to flatten the lower back.",
+      "moves": [
+        {
+          "move": "pelvis_flatten",
+          "side": "none",
+          "amount": 8
+        }
+      ],
+      "hold": [],
+      "seconds": 3.0,
+      "stay": 1.0,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 1.0,
+      "release": false
+    },
+    {
+      "say": "Lift the pelvis a little.",
+      "moves": [
+        {
+          "move": "pelvis_lift",
+          "side": "none",
+          "amount": 5
+        }
+      ],
+      "hold": [],
+      "seconds": 3.0,
+      "stay": 1.0,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 1.0,
+      "release": false
+    },
+    {
+      "say": "Push through the right foot.",
+      "moves": [
+        {
+          "move": "foot_press",
+          "side": "right",
+          "amount": 3
+        }
+      ],
+      "hold": [],
+      "seconds": 3.0,
+      "stay": 1.0,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 1.0,
+      "release": false
+    },
+    {
+      "say": "Bring the left knee toward the chest.",
+      "moves": [
+        {
+          "move": "knee_to_chest",
+          "side": "left",
+          "amount": 30
+        }
+      ],
+      "hold": [],
+      "seconds": 3.0,
+      "stay": 1.0,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 1.0,
+      "release": false
+    },
+    {
+      "say": "Lift the head.",
+      "moves": [
+        {
+          "move": "head_lift",
+          "side": "none",
+          "amount": 20
+        }
+      ],
+      "hold": [],
+      "seconds": 3.0,
+      "stay": 1.0,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 1.0,
+      "release": false
+    },
+    {
+      "say": "Lift the left shoulder.",
+      "moves": [
+        {
+          "move": "shoulder_lift",
+          "side": "left",
+          "amount": 4
+        }
+      ],
+      "hold": [],
+      "seconds": 3.0,
+      "stay": 1.0,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 1.0,
+      "release": false
+    }
+  ]
+}

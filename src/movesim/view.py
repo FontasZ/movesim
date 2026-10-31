@@ -14,17 +14,19 @@ LET_GO_TIME = 0.3
 
 
 def hands_let_go(model, data):
-    """Each step, ease every guide hand toward its knee.
+    """Each step, ease every guide hand toward its point on the body.
 
     While you drag a hand, the viewer puts it back under the mouse before every step, so the
-    drift does not show. Once you let go, the hand settles onto the knee, the spring goes slack,
-    and the body sinks back under its own weight.
+    drift does not show. Once you let go, the hand settles onto its point, the spring goes
+    slack, and the body sinks back under its own weight.
     """
     alpha = model.opt.timestep / LET_GO_TIME
-    for side in "LR":
-        mocap = model.body(f"guide_{side}").mocapid[0]
-        knee = data.site(f"knee_{side}").xpos
-        data.mocap_pos[mocap] += alpha * (knee - data.mocap_pos[mocap])
+    for b in range(model.nbody):
+        name = model.body(b).name
+        if name.startswith("guide_"):
+            mocap = model.body_mocapid[b]
+            point = data.site(name[len("guide_"):]).xpos
+            data.mocap_pos[mocap] += alpha * (point - data.mocap_pos[mocap])
 
 
 def main():

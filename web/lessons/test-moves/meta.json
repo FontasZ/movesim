@@ -1,0 +1,113 @@
+{
+ "title": "Test of every move",
+ "fps": 30,
+ "frames": 2176,
+ "bodies": [
+  "pelvis",
+  "L5",
+  "L4",
+  "L3",
+  "L2",
+  "L1",
+  "T12",
+  "T11",
+  "T10",
+  "T9",
+  "T8",
+  "T7",
+  "T6",
+  "T5",
+  "T4",
+  "T3",
+  "T2",
+  "T1",
+  "C7",
+  "C6",
+  "C5",
+  "C4",
+  "C3",
+  "C2",
+  "C1",
+  "skull",
+  "thigh_L",
+  "shin_L",
+  "foot_L",
+  "toes_L",
+  "clavicle_L",
+  "scapula_L",
+  "humerus_L",
+  "forearm_L",
+  "hand_L",
+  "thigh_R",
+  "shin_R",
+  "foot_R",
+  "toes_R",
+  "clavicle_R",
+  "scapula_R",
+  "humerus_R",
+  "forearm_R",
+  "hand_R"
+ ],
+ "handles": [
+  "knee_L",
+  "knee_R",
+  "forehead",
+  "asis_L",
+  "asis_R",
+  "sternum",
+  "palm_L",
+  "palm_R",
+  "shoulder_L",
+  "shoulder_R",
+  "ankle_L",
+  "ankle_R"
+ ],
+ "captions": [
+  {
+   "start": 0.5,
+   "end": 8.5,
+   "text": "Let both knees go to the right, and come back."
+  },
+  {
+   "start": 8.5,
+   "end": 16.5,
+   "text": "Roll the head to the left."
+  },
+  {
+   "start": 16.5,
+   "end": 24.51,
+   "text": "Lift the right arm toward the ceiling."
+  },
+  {
+   "start": 24.51,
+   "end": 32.51,
+   "text": "Tilt the pelvis to flatten the lower back."
+  },
+  {
+   "start": 32.51,
+   "end": 40.51,
+   "text": "Lift the pelvis a little."
+  },
+  {
+   "start": 40.51,
+   "end": 48.51,
+   "text": "Push through the right foot."
+  },
+  {
+   "start": 48.51,
+   "end": 56.52,
+   "text": "Bring the left knee toward the chest."
+  },
+  {
+   "start": 56.52,
+   "end": 64.52,
+   "text": "Lift the head."
+  },
+  {
+   "start": 64.52,
+   "end": 72.52,
+   "text": "Lift the left shoulder."
+  }
+ ],
+ "seconds": 72.52
+}

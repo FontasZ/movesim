@@ -1,0 +1,113 @@
+{
+ "title": "Knees and head",
+ "fps": 30,
+ "frames": 3181,
+ "bodies": [
+  "pelvis",
+  "L5",
+  "L4",
+  "L3",
+  "L2",
+  "L1",
+  "T12",
+  "T11",
+  "T10",
+  "T9",
+  "T8",
+  "T7",
+  "T6",
+  "T5",
+  "T4",
+  "T3",
+  "T2",
+  "T1",
+  "C7",
+  "C6",
+  "C5",
+  "C4",
+  "C3",
+  "C2",
+  "C1",
+  "skull",
+  "thigh_L",
+  "shin_L",
+  "foot_L",
+  "toes_L",
+  "clavicle_L",
+  "scapula_L",
+  "humerus_L",
+  "forearm_L",
+  "hand_L",
+  "thigh_R",
+  "shin_R",
+  "foot_R",
+  "toes_R",
+  "clavicle_R",
+  "scapula_R",
+  "humerus_R",
+  "forearm_R",
+  "hand_R"
+ ],
+ "handles": [
+  "knee_L",
+  "knee_R",
+  "forehead",
+  "asis_L",
+  "asis_R",
+  "sternum",
+  "palm_L",
+  "palm_R",
+  "shoulder_L",
+  "shoulder_R",
+  "ankle_L",
+  "ankle_R"
+ ],
+ "captions": [
+  {
+   "start": 0.5,
+   "end": 4.5,
+   "text": "Lie on your back, knees bent, feet standing. Notice how your back meets the floor."
+  },
+  {
+   "start": 4.5,
+   "end": 26.01,
+   "text": "Slowly let both knees go a little to the right, and come back to the middle."
+  },
+  {
+   "start": 26.01,
+   "end": 31.01,
+   "text": "Rest. Let the legs stand without holding them."
+  },
+  {
+   "start": 31.01,
+   "end": 52.52,
+   "text": "Now let the knees go to the left and come back. Is it the same as to the right?"
+  },
+  {
+   "start": 52.52,
+   "end": 56.52,
+   "text": "Let the knees go to the right and leave them there."
+  },
+  {
+   "start": 56.52,
+   "end": 77.52,
+   "text": "Now roll your head to the left, and back to the middle."
+  },
+  {
+   "start": 77.52,
+   "end": 82.52,
+   "text": "Bring the knees back to the middle. Rest."
+  },
+  {
+   "start": 82.52,
+   "end": 101.02,
+   "text": "Press lightly through the right foot, so the right knee goes forward a little. Notice how the right side of the pelvis lifts."
+  },
+  {
+   "start": 101.02,
+   "end": 106.02,
+   "text": "Rest, and notice how your back lies on the floor now."
+  }
+ ],
+ "seconds": 106.02
+}

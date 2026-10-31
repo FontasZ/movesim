@@ -68,7 +68,7 @@ class Guide:
     """
 
     def __init__(self, model, data):
-        self.mocap = [model.body(f"guide_{s}").mocapid[0] for s in "LR"]
+        self.mocap = [model.body(f"guide_knee_{s}").mocapid[0] for s in "LR"]
         self.start = data.mocap_pos[self.mocap].copy()
         self.pivot = 0.5 * (data.body("foot_L").xpos + data.body("foot_R").xpos)
 
@@ -137,6 +137,7 @@ def run(render=True):
     sample_every, frame_every = 20, 33  # 50 Hz data, 30 fps video
     step = 0
     while data.time < T_END:
+        hands_to_knees(model, data)  # every other handle follows its point and pulls with no force
         guide.move(data, tilt_fraction(data.time))
         mujoco.mj_step(model, data)
         accumulate_slip(model, data, foot_geoms, slip)
@@ -156,7 +157,7 @@ def run(render=True):
             row["cop_back_y_mm"] = round(1000 * cop[1], 2)
             for p in FOOT_POINTS:
                 row[f"slip_{p}_mm"] = round(1000 * slip[p], 2)
-            row["guide_force_N"] = round(sum(abs(data.ten_length[i] * model.tendon_stiffness[i]) for i in range(2)), 2)
+            row["guide_force_N"] = round(sum(data.ten_length[model.tendon(f"guide_knee_{s}").id] * model.tendon_stiffness[model.tendon(f"guide_knee_{s}").id] for s in "LR"), 2)
             rows.append(row)
         if renderer and step % frame_every == 0:
             for view in frames:

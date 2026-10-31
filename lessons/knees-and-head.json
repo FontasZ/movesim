@@ -1,0 +1,30 @@
+{
+  "title": "Knees and head",
+  "start": "hook_lying",
+  "steps": [
+    {"say": "Lie on your back, knees bent, feet standing. Notice how your back meets the floor.",
+     "moves": [], "hold": [], "seconds": 0, "stay": 0, "return": true, "repeat": 1, "rest_after": 4, "release": false},
+    {"say": "Slowly let both knees go a little to the right, and come back to the middle.",
+     "moves": [{"move": "knees_tilt", "side": "right", "amount": 15}],
+     "hold": [], "seconds": 3, "stay": 0.5, "return": true, "repeat": 3, "rest_after": 1, "release": false},
+    {"say": "Rest. Let the legs stand without holding them.",
+     "moves": [], "hold": [], "seconds": 0, "stay": 0, "return": true, "repeat": 1, "rest_after": 5, "release": false},
+    {"say": "Now let the knees go to the left and come back. Is it the same as to the right?",
+     "moves": [{"move": "knees_tilt", "side": "left", "amount": 15}],
+     "hold": [], "seconds": 3, "stay": 0.5, "return": true, "repeat": 3, "rest_after": 1, "release": false},
+    {"say": "Let the knees go to the right and leave them there.",
+     "moves": [{"move": "knees_tilt", "side": "right", "amount": 20}],
+     "hold": [], "seconds": 3, "stay": 0.5, "return": false, "repeat": 1, "rest_after": 0.5, "release": false},
+    {"say": "Now roll your head to the left, and back to the middle.",
+     "moves": [{"move": "head_roll", "side": "left", "amount": 30}],
+     "hold": [], "seconds": 3, "stay": 0.5, "return": true, "repeat": 3, "rest_after": 0.5, "release": false},
+    {"say": "Bring the knees back to the middle. Rest.",
+     "moves": [], "hold": [], "seconds": 0, "stay": 0, "return": true, "repeat": 1, "rest_after": 5, "release": true},
+    {"say": "Press lightly through the right foot, so the right knee goes forward a little. Notice how the right side of the pelvis lifts.",
+     "moves": [{"move": "foot_press", "side": "right", "amount": 3}],
+     "hold": [], "seconds": 2.5, "stay": 0.5, "return": true, "repeat": 3, "rest_after": 1, "release": false},
+    {"say": "Rest, and notice how your back lies on the floor now.",
+     "moves": [], "hold": [], "seconds": 0, "stay": 0, "return": true, "repeat": 1, "rest_after": 5, "release": false}
+  ],
+  "not_shown": ["Noticing and sensing (attention only)"]
+}

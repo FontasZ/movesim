@@ -25,10 +25,11 @@ def load():
 
 
 def hands_to_knees(model, data):
-    """Put each guide hand exactly on its knee, so the springs pull with no force."""
-    for side in "LR":
-        mocap = model.body(f"guide_{side}").mocapid[0]
-        data.mocap_pos[mocap] = data.site(f"knee_{side}").xpos
+    """Put every guide hand exactly on its point of the body, so the springs pull with no force."""
+    for b in range(model.nbody):
+        name = model.body(b).name
+        if name.startswith("guide_"):
+            data.mocap_pos[model.body_mocapid[b]] = data.site(name[len("guide_"):]).xpos
 
 
 def set_hook_pose(model, data):

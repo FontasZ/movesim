@@ -133,14 +133,54 @@
     <geom name="floor" type="plane" size="3 3 0.05" material="floor" contype="0" conaffinity="1"
           condim="3" friction="0.9 0.01 0.001"/>
 
-    <!-- The guide's hands: mocap targets, each pulling one knee through a soft spring. -->
-    <body name="guide_L" mocap="true" pos="-0.2 -0.085 0.5">
-      <site name="guide_L" type="sphere" size="0.025" material="hand"/>
-      <geom type="sphere" size="0.03" material="hand" group="2"/>
+    <!-- The guide's hands: mocap targets, each tied to one point of the body by a soft spring. -->
+    <body name="guide_knee_L" mocap="true">
+      <site name="guide_knee_L" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
     </body>
-    <body name="guide_R" mocap="true" pos="-0.2 0.085 0.5">
-      <site name="guide_R" type="sphere" size="0.025" material="hand"/>
-      <geom type="sphere" size="0.03" material="hand" group="2"/>
+    <body name="guide_knee_R" mocap="true">
+      <site name="guide_knee_R" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
+    </body>
+    <body name="guide_forehead" mocap="true">
+      <site name="guide_forehead" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
+    </body>
+    <body name="guide_asis_L" mocap="true">
+      <site name="guide_asis_L" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
+    </body>
+    <body name="guide_asis_R" mocap="true">
+      <site name="guide_asis_R" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
+    </body>
+    <body name="guide_sternum" mocap="true">
+      <site name="guide_sternum" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
+    </body>
+    <body name="guide_palm_L" mocap="true">
+      <site name="guide_palm_L" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
+    </body>
+    <body name="guide_palm_R" mocap="true">
+      <site name="guide_palm_R" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
+    </body>
+    <body name="guide_shoulder_L" mocap="true">
+      <site name="guide_shoulder_L" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
+    </body>
+    <body name="guide_shoulder_R" mocap="true">
+      <site name="guide_shoulder_R" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
+    </body>
+    <body name="guide_ankle_L" mocap="true">
+      <site name="guide_ankle_L" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
+    </body>
+    <body name="guide_ankle_R" mocap="true">
+      <site name="guide_ankle_R" type="sphere" size="0.02" material="hand"/>
+      <geom type="sphere" size="0.025" material="hand" group="2"/>
     </body>
     <body name="pelvis" pos="0 0 0.12" quat="0 0.7071068 0 0.7071068">
       <geom class="bonemesh" mesh="pelvis"/>
@@ -158,6 +198,8 @@
     <geom name="sacrum" class="flesh" type="ellipsoid" pos="-0.06 0 -0.05" size="0.04 0.04 0.06"/>
     <geom name="glute_L" class="flesh" material="flesh_l" type="ellipsoid" pos="-0.04 0.07 -0.10" size="0.065 0.07 0.085"/>
     <geom name="glute_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.04 -0.07 -0.10" size="0.065 0.07 0.085"/>
+    <site name="asis_L" pos="0.07 0.11 -0.03" size="0.012"/>
+    <site name="asis_R" pos="0.07 -0.11 -0.03" size="0.012"/>
       <body name="thigh_L" pos="0.01 0.08 -0.1">
         <geom class="bonemesh" mesh="thigh_L"/>
         <joint name="hip_flex_L" class="hip" axis="0 -1 0" range="-20 125" springref="49.4"/>
@@ -186,6 +228,7 @@
             <geom name="met1_L" class="sole" type="sphere" pos="0.12 -0.03 -0.06" size="0.015"/>
             <geom name="met5_L" class="sole" type="sphere" pos="0.1 0.035 -0.06" size="0.015"/>
             <geom name="midfoot_L" class="sole" type="sphere" pos="0.03 0.035 -0.06" size="0.015"/>
+            <site name="ankle_L" size="0.012"/>
             <body name="toes_L" pos="0.12 0 -0.05">
               <geom class="bonemesh" mesh="toes_L"/>
               <joint name="toes_L" class="toes" axis="0 1 0" range="-60 30"/>
@@ -225,6 +268,7 @@
             <geom name="met1_R" class="sole" type="sphere" pos="0.12 0.03 -0.06" size="0.015"/>
             <geom name="met5_R" class="sole" type="sphere" pos="0.1 -0.035 -0.06" size="0.015"/>
             <geom name="midfoot_R" class="sole" type="sphere" pos="0.03 -0.035 -0.06" size="0.015"/>
+            <site name="ankle_R" size="0.012"/>
             <body name="toes_R" pos="0.12 0 -0.05">
               <geom class="bonemesh" mesh="toes_R"/>
               <joint name="toes_R" class="toes" axis="0 1 0" range="-60 30"/>
@@ -456,6 +500,7 @@
                                   <geom class="rib" fromto="0.0085 -0.11 0.0019 0.076 -0.066 -0.0206"/>
                                   <geom class="rib" fromto="0.076 -0.066 -0.0206 0.095 -0.02 -0.0356"/>
                                   <geom class="bone" type="box" pos="0.1 0 -0.0556" size="0.006 0.015 0.025"/>
+                                  <site name="sternum" pos="0.11 0 -0.0556" size="0.012"/>
                                   <body name="T3" pos="0 0 0.024" quat="0.99966 0 0.026177 0">
                                     <geom class="bonemesh" mesh="T3"/>
                                     <joint name="T3_T4_bend" axis="0 1 0" range="-1 3" stiffness="40" damping="2" user="8"/>
@@ -511,6 +556,7 @@
                                           <geom class="bone" type="capsule" fromto="0 0 0 -0.1 -0.09 -0.03" size="0.006"/>
                                           <geom class="mass" type="ellipsoid" pos="-0.11 -0.06 -0.07" size="0.03 0.06 0.08" mass="0.8"/>
                                           <geom name="scapula_L" class="flesh" material="flesh_l" type="ellipsoid" pos="-0.14 -0.065 -0.07" size="0.03 0.06 0.08"/>
+                                          <site name="shoulder_L" size="0.012"/>
                                           <body name="humerus_L" pos="0 0.005 -0.045">
                                             <geom class="bonemesh" mesh="humerus_L"/>
                                             <joint name="shoulder_flex_L" class="shoulder" axis="0 -1 0" range="-50 170"/>
@@ -536,6 +582,7 @@
                                                 <geom class="bone" type="box" pos="0 0 -0.08" size="0.012 0.042 0.085"/>
                                                 <geom class="mass" type="box" pos="0 0 -0.08" size="0.015 0.045 0.09" mass="0.45"/>
                                                 <geom name="hand_L" class="flesh" material="flesh_l" type="ellipsoid" pos="-0.005 0 -0.08" size="0.018 0.045 0.08"/>
+                                                <site name="palm_L" pos="0.01 0 -0.08" size="0.012"/>
                                               </body>
                                             </body>
                                           </body>
@@ -557,6 +604,7 @@
                                           <geom class="bone" type="capsule" fromto="0 0 0 -0.1 0.09 -0.03" size="0.006"/>
                                           <geom class="mass" type="ellipsoid" pos="-0.11 0.06 -0.07" size="0.03 0.06 0.08" mass="0.8"/>
                                           <geom name="scapula_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.14 0.065 -0.07" size="0.03 0.06 0.08"/>
+                                          <site name="shoulder_R" size="0.012"/>
                                           <body name="humerus_R" pos="0 -0.005 -0.045">
                                             <geom class="bonemesh" mesh="humerus_R"/>
                                             <joint name="shoulder_flex_R" class="shoulder" axis="0 -1 0" range="-50 170"/>
@@ -582,6 +630,7 @@
                                                 <geom class="bone" type="box" pos="0 0 -0.08" size="0.012 0.042 0.085"/>
                                                 <geom class="mass" type="box" pos="0 0 -0.08" size="0.015 0.045 0.09" mass="0.45"/>
                                                 <geom name="hand_R" class="flesh" material="flesh_r" type="ellipsoid" pos="-0.005 0 -0.08" size="0.018 0.045 0.08"/>
+                                                <site name="palm_R" pos="0.01 0 -0.08" size="0.012"/>
                                               </body>
                                             </body>
                                           </body>
@@ -688,6 +737,7 @@
                                                         <geom class="bone" type="sphere" pos="0.085 -0.03 0.04" size="0.012" rgba="0.2 0.2 0.2 1"/>
                                                         <!-- The back of the head as a sphere centred on the head's mass, so it rolls like a real head. -->
                                                         <geom name="occiput" class="flesh" type="sphere" pos="0.02 0 0.04" size="0.11"/>
+                                                        <site name="forehead" pos="0.1 0 0.08" size="0.012"/>
                                                       </body>
                                                     </body>
                                                   </body>
@@ -716,15 +766,55 @@
     </body>
   </worldbody>
 
-  <!-- The guide's hands: a soft spring from each hand to the front of each knee. -->
+  <!-- The guide's hands: a soft spring from each hand to its point on the body. -->
   <tendon>
-    <spatial name="guide_L" stiffness="1000" damping="60" springlength="0" rgba="0.2 0.7 0.3 1" width="0.004">
-      <site site="guide_L"/>
+    <spatial name="guide_knee_L" stiffness="2500" damping="120" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_knee_L"/>
       <site site="knee_L"/>
     </spatial>
-    <spatial name="guide_R" stiffness="1000" damping="60" springlength="0" rgba="0.2 0.7 0.3 1" width="0.004">
-      <site site="guide_R"/>
+    <spatial name="guide_knee_R" stiffness="2500" damping="120" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_knee_R"/>
       <site site="knee_R"/>
+    </spatial>
+    <spatial name="guide_forehead" stiffness="1500" damping="60" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_forehead"/>
+      <site site="forehead"/>
+    </spatial>
+    <spatial name="guide_asis_L" stiffness="15000" damping="500" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_asis_L"/>
+      <site site="asis_L"/>
+    </spatial>
+    <spatial name="guide_asis_R" stiffness="15000" damping="500" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_asis_R"/>
+      <site site="asis_R"/>
+    </spatial>
+    <spatial name="guide_sternum" stiffness="5000" damping="200" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_sternum"/>
+      <site site="sternum"/>
+    </spatial>
+    <spatial name="guide_palm_L" stiffness="800" damping="40" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_palm_L"/>
+      <site site="palm_L"/>
+    </spatial>
+    <spatial name="guide_palm_R" stiffness="800" damping="40" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_palm_R"/>
+      <site site="palm_R"/>
+    </spatial>
+    <spatial name="guide_shoulder_L" stiffness="2500" damping="100" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_shoulder_L"/>
+      <site site="shoulder_L"/>
+    </spatial>
+    <spatial name="guide_shoulder_R" stiffness="2500" damping="100" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_shoulder_R"/>
+      <site site="shoulder_R"/>
+    </spatial>
+    <spatial name="guide_ankle_L" stiffness="3000" damping="120" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_ankle_L"/>
+      <site site="ankle_L"/>
+    </spatial>
+    <spatial name="guide_ankle_R" stiffness="3000" damping="120" springlength="0" rgba="0.2 0.7 0.3 1" width="0.003">
+      <site site="guide_ankle_R"/>
+      <site site="ankle_R"/>
     </spatial>
   </tendon>
 
