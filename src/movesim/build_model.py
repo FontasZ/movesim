@@ -17,6 +17,7 @@ Sources (rounded, adult):
     kyphosis 32°, cervical lordosis 30°). Lying down, gravity and the floor reshape them.
 """
 
+import re
 from dataclasses import dataclass
 
 import mujoco
@@ -34,7 +35,7 @@ class Level:
     name: str      # the vertebra; its joint is with the one below
     below: str     # the vertebra (or sacrum) below
     region: str
-    height: float  # vertebral body plus the disc below it (m)
+    height: float  # vertebral body plus the disc below it (m), from BodyParts3D scaled to 1.76 m
     curve: float   # resting angle to the one below (deg, + = bent forward)
     flex: float    # range of motion (deg)
     ext: float
@@ -44,30 +45,30 @@ class Level:
 
 
 LEVELS = [
-    Level("L5", "S1", "lumbar", 0.040, -14, 10, 7, 3, 1, 0.65),
-    Level("L4", "L5", "lumbar", 0.040, -10, 10, 6, 6, 2, 0.65),
-    Level("L3", "L4", "lumbar", 0.038, -7, 9, 6, 8, 2, 1.4),
-    Level("L2", "L3", "lumbar", 0.036, -5, 9, 5, 6, 2, 1.4),
-    Level("L1", "L2", "lumbar", 0.034, -4, 8, 4, 6, 2, 1.4),
-    Level("T12", "L1", "thoracolumbar", 0.029, 0, 8, 4, 8, 2, 1.4),
-    Level("T11", "T12", "thoracolumbar", 0.028, 1, 8, 4, 9, 2, 1.4),
-    Level("T10", "T11", "thoracic", 0.027, 2, 5, 3, 7, 2, 1.4),
-    Level("T9", "T10", "thoracic", 0.026, 3, 4, 2, 6, 3, 1.4),
-    Level("T8", "T9", "thoracic", 0.025, 4, 4, 2, 6, 3.5, 1.4),
-    Level("T7", "T8", "thoracic", 0.024, 4, 4, 2, 6, 4, 1.7),
-    Level("T6", "T7", "thoracic", 0.023, 4, 3, 2, 6, 4, 1.6),
-    Level("T5", "T6", "thoracic", 0.022, 4, 3, 2, 6, 4.5, 1.5),
-    Level("T4", "T5", "thoracic", 0.021, 4, 3, 2, 6, 4.5, 1.35),
-    Level("T3", "T4", "thoracic", 0.021, 3, 3, 1, 5, 5, 1.2),
-    Level("T2", "T3", "thoracic", 0.020, 3, 3, 1, 5, 5, 1.0),
-    Level("T1", "T2", "thoracic", 0.020, 3, 3, 1, 5, 5, 0.85),
-    Level("C7", "T1", "cervical", 0.017, -2, 4, 3, 4, 3, 0.13),
+    Level("L5", "S1", "lumbar", 0.037, -14, 10, 7, 3, 1, 0.65),
+    Level("L4", "L5", "lumbar", 0.033, -10, 10, 6, 6, 2, 0.65),
+    Level("L3", "L4", "lumbar", 0.036, -7, 9, 6, 8, 2, 1.4),
+    Level("L2", "L3", "lumbar", 0.033, -5, 9, 5, 6, 2, 1.4),
+    Level("L1", "L2", "lumbar", 0.031, -4, 8, 4, 6, 2, 1.4),
+    Level("T12", "L1", "thoracolumbar", 0.033, 0, 8, 4, 8, 2, 1.4),
+    Level("T11", "T12", "thoracolumbar", 0.030, 1, 8, 4, 9, 2, 1.4),
+    Level("T10", "T11", "thoracic", 0.030, 2, 5, 3, 7, 2, 1.4),
+    Level("T9", "T10", "thoracic", 0.027, 3, 4, 2, 6, 3, 1.4),
+    Level("T8", "T9", "thoracic", 0.027, 4, 4, 2, 6, 3.5, 1.4),
+    Level("T7", "T8", "thoracic", 0.029, 4, 4, 2, 6, 4, 1.7),
+    Level("T6", "T7", "thoracic", 0.026, 4, 3, 2, 6, 4, 1.6),
+    Level("T5", "T6", "thoracic", 0.026, 4, 3, 2, 6, 4.5, 1.5),
+    Level("T4", "T5", "thoracic", 0.024, 4, 3, 2, 6, 4.5, 1.35),
+    Level("T3", "T4", "thoracic", 0.024, 3, 3, 1, 5, 5, 1.2),
+    Level("T2", "T3", "thoracic", 0.022, 3, 3, 1, 5, 5, 1.0),
+    Level("T1", "T2", "thoracic", 0.019, 3, 3, 1, 5, 5, 0.85),
+    Level("C7", "T1", "cervical", 0.018, -2, 4, 3, 4, 3, 0.13),
     Level("C6", "C7", "cervical", 0.016, -4, 4, 3, 7, 6, 0.13),
-    Level("C5", "C6", "cervical", 0.016, -5, 6, 5, 8, 7, 0.13),
-    Level("C4", "C5", "cervical", 0.016, -5, 6, 5, 11, 7, 0.13),
-    Level("C3", "C4", "cervical", 0.016, -5, 5, 4, 11, 7, 0.13),
-    Level("C2", "C3", "cervical", 0.030, -4, 4, 3, 10, 3, 0.13),
-    Level("C1", "C2", "cervical", 0.012, -3, 5, 5, 3, 40, 0.12),  # atlas on axis: most neck turning
+    Level("C5", "C6", "cervical", 0.017, -5, 6, 5, 8, 7, 0.13),
+    Level("C4", "C5", "cervical", 0.015, -5, 6, 5, 11, 7, 0.13),
+    Level("C3", "C4", "cervical", 0.018, -5, 5, 4, 11, 7, 0.13),
+    Level("C2", "C3", "cervical", 0.021, -4, 4, 3, 10, 3, 0.13),
+    Level("C1", "C2", "cervical", 0.014, -3, 5, 5, 3, 40, 0.12),  # atlas on axis: most neck turning
 ]
 SKULL = Level("skull", "C1", "cervical", 0.0, -2, 8, 15, 5, 3, 4.0)
 
@@ -318,21 +319,21 @@ def shoulder_and_arm(x, s, t2_pose):
     hinge(x, f"shoulder_inrot_{n}", mirror((0, 0, -1), s), -60, 70, cls="shoulder")
     x.add(f"""
 <geom class="bone" type="sphere" size="0.022"/>
-<geom class="bone" type="capsule" fromto="0 0 0  0 0 -0.30" size="0.011"/>
-<geom class="mass" type="capsule" fromto="0 0 -0.02  0 0 -0.28" size="0.045" mass="1.9"/>
+<geom class="bone" type="capsule" fromto="0 0 0  0 0 -0.29" size="0.011"/>
+<geom class="mass" type="capsule" fromto="0 0 -0.02  0 0 -0.27" size="0.045" mass="1.9"/>
 <geom name="arm_{n}" class="flesh" material="flesh_{n.lower()}" type="ellipsoid" pos="-0.01 0 -0.15" size="0.045 0.045 0.13"/>
-<geom name="elbow_{n}" class="flesh" type="sphere" pos="-0.02 0 -0.30" size="0.025"/>""")
+<geom name="elbow_{n}" class="flesh" type="sphere" pos="-0.02 0 -0.29" size="0.025"/>""")
 
-    x.open('<body name="forearm_{0}" pos="0 0 -0.30">'.format(n))
+    x.open('<body name="forearm_{0}" pos="0 0 -0.29">'.format(n))
     hinge(x, f"elbow_{n}", mirror((0, -1, 0), s), 0, 145, cls="elbow", springref=TONE_DEG["elbow"])
     hinge(x, f"pronation_{n}", mirror((0, 0, -1), s), -10, 150, cls="forearm")
     x.add(f"""
-<geom class="bone" type="capsule" fromto="0 {s * 0.012:.3g} 0  0 {s * 0.02:.3g} -0.26" size="0.008"/>
-<geom class="bone" type="capsule" fromto="0 {-s * 0.012:.3g} 0  0 {-s * 0.005:.3g} -0.26" size="0.008"/>
-<geom class="mass" type="capsule" fromto="0 0 -0.02  0 0 -0.24" size="0.035" mass="1.15"/>
+<geom class="bone" type="capsule" fromto="0 {s * 0.012:.3g} 0  0 {s * 0.02:.3g} -0.245" size="0.008"/>
+<geom class="bone" type="capsule" fromto="0 {-s * 0.012:.3g} 0  0 {-s * 0.005:.3g} -0.245" size="0.008"/>
+<geom class="mass" type="capsule" fromto="0 0 -0.02  0 0 -0.23" size="0.035" mass="1.15"/>
 <geom name="forearm_{n}" class="flesh" material="flesh_{n.lower()}" type="ellipsoid" pos="-0.005 0 -0.12" size="0.03 0.035 0.11"/>""")
 
-    x.open(f'<body name="hand_{n}" pos="0 0 -0.26">')
+    x.open(f'<body name="hand_{n}" pos="0 0 -0.245">')
     hinge(x, f"wrist_flex_{n}", mirror((0, -1, 0), s), -70, 80, cls="wrist")
     hinge(x, f"wrist_dev_{n}", mirror((1, 0, 0), s), -20, 30, cls="wrist")
     x.add(f"""
@@ -345,42 +346,42 @@ def shoulder_and_arm(x, s, t2_pose):
 
 def leg(x, s):
     n = side_name(s)
-    hip = (0.027, s * 0.085, -0.101)
+    hip = (0.01, s * 0.08, -0.10)
     x.open(f'<body name="thigh_{n}" pos="{v(hip)}">')
     hinge(x, f"hip_flex_{n}", mirror((0, -1, 0), s), -20, 125, cls="hip", springref=TONE_DEG["hip_flex"])
     hinge(x, f"hip_abd_{n}", mirror((1, 0, 0), s), -30, 45, cls="hip")
     hinge(x, f"hip_inrot_{n}", mirror((0, 0, -1), s), -45, 40, cls="hip")
     x.add(f"""
 <geom class="bone" type="sphere" size="0.024"/>
-<geom class="bone" type="capsule" fromto="0 0 0  0 0 -0.43" size="0.015"/>
-<geom class="bone" type="capsule" fromto="0 -0.025 -0.42  0 0.025 -0.42" size="0.02"/>
-<geom class="mass" type="capsule" fromto="0 0 -0.03  0 0 -0.40" size="0.07" mass="10"/>
-<site name="knee_{n}" pos="0.03 0 -0.43" size="0.015"/>""")
+<geom class="bone" type="capsule" fromto="0 0 0  0 0 -0.46" size="0.015"/>
+<geom class="bone" type="capsule" fromto="0 -0.025 -0.45  0 0.025 -0.45" size="0.02"/>
+<geom class="mass" type="capsule" fromto="0 0 -0.03  0 0 -0.43" size="0.07" mass="10"/>
+<site name="knee_{n}" pos="0.03 0 -0.46" size="0.015"/>""")
 
-    x.open(f'<body name="shin_{n}" pos="0 0 -0.43">')
+    x.open(f'<body name="shin_{n}" pos="0 0 -0.46">')
     hinge(x, f"knee_{n}", (0, 1, 0), 0, 150, cls="knee", springref=TONE_DEG["knee"])
     # With the knee bent, the shin can turn about its own length.
     hinge(x, f"tibia_rot_{n}", mirror((0, 0, 1), s), -25, 25, cls="tibia_rot")
     x.add(f"""
-<geom class="bone" type="capsule" fromto="0 0 0  0 0 -0.43" size="0.014"/>
-<geom class="bone" type="capsule" fromto="0 {s * 0.03:.3g} -0.02  0 {s * 0.03:.3g} -0.42" size="0.006"/>
+<geom class="bone" type="capsule" fromto="0 0 0  0 0 -0.40" size="0.014"/>
+<geom class="bone" type="capsule" fromto="0 {s * 0.03:.3g} -0.02  0 {s * 0.03:.3g} -0.39" size="0.006"/>
 <geom class="bone" type="sphere" pos="0.035 0 0.01" size="0.02"/>
-<geom class="mass" type="capsule" fromto="0 0 -0.03  0 0 -0.38" size="0.05" mass="3.0"/>""")
+<geom class="mass" type="capsule" fromto="0 0 -0.03  0 0 -0.36" size="0.05" mass="3.0"/>""")
 
-    x.open(f'<body name="foot_{n}" pos="0 0 -0.43">')
+    x.open(f'<body name="foot_{n}" pos="0 0 -0.40">')
     # Ankle (talocrural) axis runs slightly down and back toward the outer ankle bone;
     # the subtalar axis rises 42° forward and points 23° toward the inside of the foot.
     hinge(x, f"ankle_{n}", mirror((-0.10, 0.985, -0.14), s), -25, 50, cls="ankle", springref=TONE_DEG["ankle"])
     hinge(x, f"subtalar_{n}", mirror((0.684, -0.290, 0.669), s), -25, 15, cls="ankle", pos=(-0.01, 0, -0.03))
     m = -s  # toward the inside of the foot
     x.add(f"""
-<geom class="bone" type="box" pos="0.05 0 -0.045" size="0.10 0.035 0.02"/>
-<geom class="mass" type="box" pos="0.05 0 -0.04" size="0.10 0.04 0.03" mass="0.85"/>
+<geom class="bone" type="box" pos="0.035 0 -0.045" size="0.085 0.035 0.02"/>
+<geom class="mass" type="box" pos="0.035 0 -0.04" size="0.085 0.04 0.03" mass="0.85"/>
 <geom name="heel_{n}" class="sole" type="sphere" pos="-0.045 0 -0.045" size="0.03"/>
-<geom name="met1_{n}" class="sole" type="sphere" pos="{v(0.15, m * 0.03, -0.06)}" size="0.015"/>
-<geom name="met5_{n}" class="sole" type="sphere" pos="{v(0.12, s * 0.035, -0.06)}" size="0.015"/>
-<geom name="midfoot_{n}" class="sole" type="sphere" pos="{v(0.04, s * 0.035, -0.06)}" size="0.015"/>""")
-    x.open(f'<body name="toes_{n}" pos="0.15 0 -0.05">')
+<geom name="met1_{n}" class="sole" type="sphere" pos="{v(0.12, m * 0.03, -0.06)}" size="0.015"/>
+<geom name="met5_{n}" class="sole" type="sphere" pos="{v(0.10, s * 0.035, -0.06)}" size="0.015"/>
+<geom name="midfoot_{n}" class="sole" type="sphere" pos="{v(0.03, s * 0.035, -0.06)}" size="0.015"/>""")
+    x.open(f'<body name="toes_{n}" pos="0.12 0 -0.05">')
     hinge(x, f"toes_{n}", (0, 1, 0), -60, 30, cls="toes")
     x.add(f"""
 <geom class="bone" type="box" pos="0.025 0 -0.01" size="0.03 0.035 0.008"/>
@@ -409,6 +410,10 @@ HEADER = """<!--
     1  "flesh" contact surfaces: the only geoms that touch the floor
     2  the guide's hands
     3  mass/inertia carriers (hidden, no contact)
+    4  simple bone shapes, hidden when the real bone meshes are present
+
+  Bone meshes: BodyParts3D, (c) The Database Center for Life Science, CC BY 4.0; see
+  model/meshes/ATTRIBUTION.md.
 -->"""
 
 PREAMBLE = """
@@ -526,7 +531,26 @@ TENDONS = """
 """
 
 
-def build():
+MESH_DIR = MODEL_PATH.parent / "meshes"
+
+
+def add_meshes(xml):
+    """Show real bone shapes (model/meshes, made by movesim.bones) instead of the simple ones."""
+    names = sorted(p.stem for p in MESH_DIR.glob("*.stl"))
+    if not names:
+        return xml
+    assets = "".join(f'\n    <mesh name="{n}" file="meshes/{n}.stl" inertia="shell"/>' for n in names)
+    xml = xml.replace("\n  </asset>", assets + "\n  </asset>", 1)
+    xml = xml.replace('<geom material="bone" group="0"/>', '<geom material="bone" group="4"/>', 1)
+    xml = xml.replace('    <default class="mass">',
+                      '    <default class="bonemesh">\n      <geom type="mesh" material="bone" group="0"/>\n'
+                      '    </default>\n    <default class="mass">', 1)
+    for n in names:
+        xml = re.sub(rf'(\n(\s*)<body name="{n}"[^>]*>)', rf'\1\n\2  <geom class="bonemesh" mesh="{n}"/>', xml, count=1)
+    return xml
+
+
+def build(meshes=True):
     poses = spine_poses()
     x = Xml()
     x.depth = 2
@@ -542,7 +566,8 @@ def build():
     for _ in LEVELS:
         x.close()
     x.close()  # pelvis
-    return HEADER + PREAMBLE + x.text() + "\n  </worldbody>\n" + TENDONS
+    xml = HEADER + PREAMBLE + x.text() + "\n  </worldbody>\n" + TENDONS
+    return add_meshes(xml) if meshes else xml
 
 
 def main():

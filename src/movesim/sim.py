@@ -18,6 +18,7 @@ def load():
     """The model, with its ligaments switched on."""
     from movesim import ligaments
 
+    mujoco.set_mjcb_passive(None)  # a hook left from an earlier model must not run while compiling
     model = mujoco.MjModel.from_xml_path(str(MODEL_PATH))
     ligaments.install(model)
     return model, mujoco.MjData(model)
