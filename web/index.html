@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="site.css?v=2">
+<script src="forms.js?v=1"></script>
 <style>
   .hero { display: grid; grid-template-columns: 1fr 1.1fr; gap: 40px; align-items: center;
           max-width: 1120px; margin: 0 auto; padding: 56px 24px 40px; }
@@ -25,6 +26,8 @@
   .btn.primary { background: var(--accent); color: var(--on-accent); }
   .btn.secondary { color: var(--accent); }
   .btn:hover { filter: brightness(1.08); }
+  .btn.soon { opacity: .55; cursor: default; }
+  .btn.soon::after { content: " · coming soon"; font-weight: 400; }
   section.band { max-width: 1120px; margin: 0 auto; padding: 40px 24px; }
   section.band h2 { font-family: Fraunces, Georgia, serif; font-weight: 600; font-size: 30px; margin: 0 0 8px;
                     border: 0; padding: 0; }
@@ -146,9 +149,8 @@
       </ul>
     </div>
     <div class="buttons" style="justify-content:flex-start">
-      <!-- TODO: replace both links with the submission form and the feedback address. -->
-      <a class="btn primary" href="#share">Send a movement</a>
-      <a class="btn secondary" href="#share">Give feedback</a>
+      <a class="btn primary" href="#share" data-form="movement">Send a movement</a>
+      <a class="btn secondary" href="#share" data-form="feedback">Give feedback</a>
     </div>
   </div>
 </section>
