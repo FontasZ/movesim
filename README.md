@@ -94,7 +94,7 @@ Sample lessons in `lessons/`: the pelvic clock, knees and head, elbow to knee (l
   an instruction to jump to it; drag to turn the view. "How to use" explains it, and opens on the
   first visit. `player.html?lesson=<name>&embed=1&view=feet&from=4.5&to=26` shows only the moving
   body, looping, as on the landing page.
-- `web/model.html`: the model description, parameter sources, validation
+- `web/model.html`: the model in plain language; `web/researchers.html`: the full description, parameter sources, validation
   checks (from `web/validation.json`, written by `movesim validate`), and references.
 
 Lessons whose name starts with `test-` stay out of the public menu.

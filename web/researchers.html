@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>movesim · for researchers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css?v=2">
+<style>
+  main.page h1, main.page h2 { font-family: Fraunces, Georgia, serif; font-weight: 600; }
+  main.page h3 { font-size: 16px; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 16px 0 8px; }
+  .fact { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+  .fact b { display: block; font-size: 21px; color: var(--accent); }
+  .fact span { color: var(--muted); font-size: 14px; }
+  .eq { font-family: Georgia, serif; font-size: 17px; text-align: center; margin: 14px 0; }
+  .params td:first-child { white-space: nowrap; }
+</style>
+</head>
+<body>
+<nav class="site-nav">
+  <a class="brand" href="index.html">movesim</a>
+  <a href="player.html">Movements</a>
+  <a href="model.html">Model</a>
+  <a href="index.html#share">Send a movement</a>
+</nav>
+<main class="page">
+  <h1>For researchers</h1>
+  <p class="fine"><a href="model.html">← The plain-language version</a></p>
+  <p class="lede">A passive multibody model of the adult human skeleton for visualising how intentional
+    movement propagates through the body.</p>
+
+  <div class="facts">
+    <div class="fact"><b>44 segments</b><span>rigid bodies, CT-derived geometry</span></div>
+    <div class="fact"><b>118 joints</b><span>three rotational degrees of freedom per spinal level</span></div>
+    <div class="fact"><b id="score">15 / 15</b><span>validation checks within published ranges</span></div>
+  </div>
+
+  <div class="note">The model represents a single reference body and contains no muscles. It is intended for
+    visualisation and teaching; it does not describe any individual and is not a clinical or diagnostic tool.</div>
+
+  <h2>1. Overview</h2>
+  <p>The model is a rigid multibody system simulated in MuJoCo [1] with a 1 ms time step and implicit
+    integration of joint damping. It comprises 44 rigid segments: the pelvis (free-floating), 24
+    vertebrae and the skull, a pair of ribs attached to each thoracic vertebra, the shoulder girdle,
+    upper limbs, lower limbs and feet. Each intervertebral joint is represented by three orthogonal
+    hinges (flexion–extension, lateral bending, axial rotation). Muscles are not modelled; joint
+    behaviour arises from passive tissue properties, joint limits and a minimal postural tone.</p>
+
+  <h2>2. Model description</h2>
+  <h3>2.1 Geometry and inertial properties</h3>
+  <p>Bone geometry is taken from BodyParts3D [2], a CT-derived whole-body model of an adult male.
+    Segment lengths are derived from joint landmarks on that skeleton (intervertebral disc centroids,
+    femoral head, tibial plateau, talus, glenohumeral and elbow centres) and scaled to a stature of
+    1.76 m. Total mass is 70 kg, distributed across segments according to de Leva [3].</p>
+
+  <h3>2.2 Joint kinematics</h3>
+  <p>Intervertebral ranges of motion follow the representative values of White and Panjabi [4], with
+    thoracic axial rotation (±5° per level, T1–T9) after the in-vitro data of Wilke et al. [5] and
+    L5–S1 axial rotation (±2°) after the in-vivo MRI data of Fujii et al. [6]. The rest configuration
+    includes a sacral slope of 35°, lumbar lordosis of 40°, thoracic kyphosis of 32° and cervical
+    lordosis of 30°. The knee permits flexion and axial tibial rotation; the talocrural and subtalar
+    axes are inclined after Inman [11].</p>
+
+  <h3>2.3 Passive joint properties</h3>
+  <p>The passive moment resisting a displacement <i>d</i> from rest at each spinal joint is</p>
+  <p class="eq"><i>M</i>(<i>d</i>) = <i>c</i> · (e<sup><i>a d / r</i></sup> − 1),</p>
+  <p>where <i>r</i> is the range of that level on the side of displacement. The coefficient <i>c</i> is
+    shared by all levels of a region, so that levels in series yield in proportion to their range.
+    For the lumbar spine, <i>a</i> and the whole-region stiffness at rest were fitted to the
+    quartile stiffnesses of the in-vivo meta-analysis of Watt et al. [7]: flexion <i>a</i> = 2.60,
+    0.243 N·m/°; lateral bending <i>a</i> = 3.67, 0.198 N·m/°; axial rotation <i>a</i> = 2.33,
+    0.140 N·m/°. Thoracic levels are assumed to share the lumbar coefficients. Cervical coefficients
+    reproduce the mean axial rotation stiffness of 0.07 N·m/° reported by De Boe et al. [8]. Hip
+    rotational stiffness is 8 N·m/rad, within the range reported in vivo [9, 10]. Remaining limb joints
+    combine a linear stiffness with exponential stiffening over the second half of their range.</p>
+
+  <h3>2.4 Postural tone</h3>
+  <p>No starting position is maintained by passive tissue alone. Each position therefore adds a joint
+    stiffness toward its posture, set to the smallest value that maintains it (e.g. 8 N·m/rad of hip
+    tone in crook lying; 3000 N·m/rad per spinal level in upright sitting). During intentional
+    movement the reference of this tone follows the intended joint angle.</p>
+
+  <h3>2.5 Contact</h3>
+  <p>Soft tissue is represented by compliant ellipsoidal and spherical contact surfaces (compliance of
+    approximately 2 cm) over the posterior pelvis, the paravertebral regions, the lateral thorax, the
+    scapulae, the occiput, the limbs and the soles. Contact uses elliptic friction cones with a
+    friction coefficient of 0.9 (1.2 for the soles) and a no-slip solver. The environment comprises a
+    floor and, where required, a chair or a pillow.</p>
+
+  <h3>2.6 Movement generation</h3>
+  <p>Intentional movement is prescribed on a small number of points of the body, through virtual
+    springs attached to moving targets, or on joint angles, through proportional control. All other
+    degrees of freedom are unactuated, so the response of the rest of the body is determined by gravity,
+    contact and passive joint properties.</p>
+
+  <h2>3. Parameter sources</h2>
+  <div class="table-wrap"><table class="params">
+    <thead><tr><th>Parameter</th><th>Source</th><th>Basis</th></tr></thead>
+    <tbody>
+      <tr><td>Bone geometry, segment lengths</td><td>BodyParts3D [2]</td><td><span class="tag measured">measured</span></td></tr>
+      <tr><td>Segment masses</td><td>de Leva [3]</td><td><span class="tag measured">measured</span></td></tr>
+      <tr><td>Intervertebral ranges of motion</td><td>White &amp; Panjabi [4]; Wilke et al. [5]; Fujii et al. [6]</td><td><span class="tag measured">measured</span></td></tr>
+      <tr><td>Lumbar passive stiffness</td><td>Watt et al. [7]</td><td><span class="tag measured">measured</span></td></tr>
+      <tr><td>Cervical passive stiffness</td><td>De Boe et al. [8] (axial rotation)</td><td><span class="tag measured">measured</span></td></tr>
+      <tr><td>Hip passive stiffness</td><td>Leite et al. [9]; Manual Therapy study [10] (rotation)</td><td><span class="tag measured">measured</span></td></tr>
+      <tr><td>Ankle and subtalar axes</td><td>Inman [11]</td><td><span class="tag measured">measured</span></td></tr>
+      <tr><td>Thoracic passive stiffness</td><td>lumbar coefficients</td><td><span class="tag assumed">assumed</span></td></tr>
+      <tr><td>Knee, ankle, shoulder and upper-limb tissue</td><td>-</td><td><span class="tag assumed">assumed</span></td></tr>
+      <tr><td>Soft-tissue contact, friction, damping</td><td>-</td><td><span class="tag assumed">assumed</span></td></tr>
+      <tr><td>Postural tone</td><td>minimal value maintaining each posture</td><td><span class="tag assumed">assumed</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>4. Validation</h2>
+  <p>Model behaviour is compared with in-vivo measurements after every change to the model. Static
+    checks compute moment–angle relations of joint chains under uniform moment; the trunk-rotation
+    check computes the axial rotation of each lumbar level for a 45° rotation of the trunk relative to
+    a fixed pelvis. Because the reference studies differ in subjects, posture and method, agreement
+    indicates consistency of individual components with published data, not validation of the model
+    as a whole.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Quantity</th><th>Published</th><th>Model</th><th></th></tr></thead>
+    <tbody id="checks"><tr><td colspan="4">Loading…</td></tr></tbody>
+  </table></div>
+  <p class="fine" id="summary"></p>
+
+  <h2>5. Limitations</h2>
+  <ul>
+    <li>No muscles: active control, habitual patterns, co-contraction and effort are not represented;
+      postural tone is a single, position-specific stiffness.</li>
+    <li>A single reference body; inter-individual variation in anthropometry, mobility and stiffness is
+      not represented.</li>
+    <li>Thoracic, shoulder, knee and ankle tissue properties are assumed rather than fitted to data.</li>
+    <li>Intervertebral discs are incompressible, the rib cage does not move with respiration, and the
+      scapula is suspended from the clavicle rather than gliding on the thorax.</li>
+    <li>Self-contact is limited to the lower limbs and between upper and lower limbs.</li>
+    <li>Transitions between positions (rolling, sitting up) are not yet modelled.</li>
+  </ul>
+
+  <h2>References</h2>
+  <ol class="refs">
+    <li>Todorov E, Erez T, Tassa Y. MuJoCo: A physics engine for model-based control. IEEE/RSJ Int Conf
+      Intelligent Robots and Systems (IROS), 2012.</li>
+    <li>Mitsuhashi N, Fujieda K, Tamura T, Kawamoto S, Takagi T, Okubo K. BodyParts3D: 3D structure database
+      for anatomical concepts. <i>Nucleic Acids Res</i> 2009;37:D782–5.
+      <a href="https://pubmed.ncbi.nlm.nih.gov/18835852/">PubMed</a>. Meshes © DBCLS, CC BY 4.0.</li>
+    <li>de Leva P. Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. <i>J Biomech</i>
+      1996;29:1223–30.</li>
+    <li>White AA, Panjabi MM. <i>Clinical Biomechanics of the Spine</i>, 2nd ed. Philadelphia: Lippincott, 1990.</li>
+    <li>Wilke H-J, Herkommer A, Werner K, Liebsch C. In vitro analysis of the segmental flexibility of the
+      thoracic spine. <i>PLoS ONE</i> 2017;12:e0177823.
+      <a href="https://doi.org/10.1371/journal.pone.0177823">doi:10.1371/journal.pone.0177823</a></li>
+    <li>Fujii R, Sakaura H, Mukai Y, et al. Kinematics of the lumbar spine in trunk rotation: in vivo
+      three-dimensional analysis using magnetic resonance imaging. <i>Eur Spine J</i> 2007;16:1867–74.
+      <a href="https://pubmed.ncbi.nlm.nih.gov/17549527/">PubMed</a></li>
+    <li>Watt, Callaway, Williams. In vivo through-range passive stiffness of the lumbar spine: a meta-analysis
+      of measurements and methods. <i>Med Biol Eng Comput</i> 2022;60:2133–57.
+      <a href="https://doi.org/10.1007/s11517-022-02609-w">doi:10.1007/s11517-022-02609-w</a></li>
+    <li>De Boe et al. Passive axial rotation stiffness of the cervical spine in asymptomatic adults.
+      <i>Mains Libres</i> 2016.
+      <a href="https://files.medhyg.ch/images%20lison/Mains%20libres/article_De_Boe.pdf">PDF</a></li>
+    <li>Leite et al. Relationship between joint passive stiffness and hip lateral rotator concentric torque.
+      <i>Rev Bras Fisioter</i> 2012;16(5). <a href="https://pubmed.ncbi.nlm.nih.gov/22983213/">PubMed</a></li>
+    <li>Validity and reliability of clinical tests for assessing hip passive stiffness. <i>Manual Therapy</i>.
+      <a href="https://www.sciencedirect.com/science/article/abs/pii/S1356689X10001864">ScienceDirect</a></li>
+    <li>Inman VT. <i>The Joints of the Ankle</i>. Baltimore: Williams &amp; Wilkins, 1976.</li>
+  </ol>
+</main>
+<script>
+fetch("validation.json").then(r => r.json()).then(rows => {
+  const body = document.getElementById("checks");
+  body.innerHTML = "";
+  for (const r of rows) {
+    const tr = document.createElement("tr");
+    const mark = r.ok === true ? '<span class="ok">within</span>' : r.ok === false ? '<span class="off">outside</span>' : "";
+    tr.innerHTML = "<td></td><td class='num'></td><td class='num'></td><td>" + mark + "</td>";
+    tr.children[0].textContent = r.name.charAt(0).toUpperCase() + r.name.slice(1);
+    tr.children[1].textContent = r.measured;
+    tr.children[2].textContent = r.model;
+    tr.title = r.source;
+    body.append(tr);
+  }
+  const checked = rows.filter(r => r.ok !== null), passed = checked.filter(r => r.ok);
+  document.getElementById("score").textContent = `${passed.length} / ${checked.length}`;
+  document.getElementById("summary").textContent =
+    `${passed.length} of ${checked.length} quantities within the published range. The source of each row is shown on hover.`;
+}).catch(() => { document.getElementById("checks").innerHTML = "<tr><td colspan='4'>The validation results could not be loaded.</td></tr>"; });
+</script>
+</body>
+</html>
