@@ -70,7 +70,9 @@ joint is turned on purpose, its tone follows the intention instead of resisting 
   down, head, feet, front, back, left, right, inward, outward (the person's own).
 - *Shorthands* for lying on the back: `knees_tilt`, `knee_open`/`close`, `foot_press` (the pelvis
   lifts on that side), `knee_to_chest`, `head_roll`, `head_lift`, `pelvis_flatten`/`arch`,
-  `pelvis_lift`, `arm_lift`, `shoulder_lift`.
+  `pelvis_lift`, `arm_lift`, `shoulder_lift`, and the pelvic clock: `pelvis_clock` (tilt toward
+  an hour and back; 12 toward the head, 6 toward the feet, 3 at the left hip, 9 at the right,
+  half hours for the diagonals), `pelvis_circle` (around the clock, either way) and `pelvis_roll`.
 
 Holds: `head`, `pelvis`, `chest`, `knees`, `feet`, `left_arm`, `right_arm`, `shoulders`,
 `left_leg`, `right_leg`, `elbows`.
@@ -79,7 +81,7 @@ Points are guided by invisible hands on springs (the green dots in the player sh
 working); joint intentions by a pull toward the wanted angle. Everything else is passive. Moving
 from one position to another (rolling over, coming to sit) is not available yet.
 
-Sample lessons in `lessons/`: knees and head, elbow to knee (lying), turning to look behind
+Sample lessons in `lessons/`: the pelvic clock, knees and head, elbow to knee (lying), turning to look behind
 (sitting), the top arm slides (side-lying), and a test of the building blocks.
 
 ## The website

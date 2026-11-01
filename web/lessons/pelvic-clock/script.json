@@ -1,0 +1,282 @@
+{
+  "title": "The pelvic clock",
+  "start": "hook_lying",
+  "steps": [
+    {
+      "say": "Imagine the back of your pelvis on a clock face: 12 toward your head, 6 toward your feet, 3 at your left hip, 9 at your right hip.",
+      "moves": [],
+      "hold": [],
+      "seconds": 0,
+      "stay": 0,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 4,
+      "release": false
+    },
+    {
+      "say": "Gently press the pelvis toward 12, the lower back coming toward the floor, and let it return.",
+      "moves": [
+        {
+          "move": "pelvis_clock",
+          "side": "none",
+          "amount": 12,
+          "point": "none",
+          "toward": "none"
+        }
+      ],
+      "hold": [],
+      "seconds": 2.5,
+      "stay": 0.5,
+      "return": true,
+      "repeat": 3,
+      "rest_after": 1,
+      "release": false
+    },
+    {
+      "say": "Now toward 6: the tailbone presses and the lower back lifts away from the floor. Notice what the head does.",
+      "moves": [
+        {
+          "move": "pelvis_clock",
+          "side": "none",
+          "amount": 6,
+          "point": "none",
+          "toward": "none"
+        }
+      ],
+      "hold": [],
+      "seconds": 2.5,
+      "stay": 0.5,
+      "return": true,
+      "repeat": 3,
+      "rest_after": 1,
+      "release": false
+    },
+    {
+      "say": "Go between 12 and 6, slowly. Toward 12\u2026",
+      "moves": [
+        {
+          "move": "pelvis_clock",
+          "side": "none",
+          "amount": 12,
+          "point": "none",
+          "toward": "none"
+        }
+      ],
+      "hold": [],
+      "seconds": 2.5,
+      "stay": 0.3,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 0,
+      "release": false
+    },
+    {
+      "say": "\u2026and toward 6.",
+      "moves": [
+        {
+          "move": "pelvis_clock",
+          "side": "none",
+          "amount": 6,
+          "point": "none",
+          "toward": "none"
+        }
+      ],
+      "hold": [],
+      "seconds": 2.5,
+      "stay": 0.3,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 0,
+      "release": false
+    },
+    {
+      "say": "Toward 12 again\u2026",
+      "moves": [
+        {
+          "move": "pelvis_clock",
+          "side": "none",
+          "amount": 12,
+          "point": "none",
+          "toward": "none"
+        }
+      ],
+      "hold": [],
+      "seconds": 2.5,
+      "stay": 0.3,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 0,
+      "release": false
+    },
+    {
+      "say": "\u2026and 6.",
+      "moves": [
+        {
+          "move": "pelvis_clock",
+          "side": "none",
+          "amount": 6,
+          "point": "none",
+          "toward": "none"
+        }
+      ],
+      "hold": [],
+      "seconds": 2.5,
+      "stay": 0.3,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 1,
+      "release": false
+    },
+    {
+      "say": "Rest.",
+      "moves": [],
+      "hold": [],
+      "seconds": 0,
+      "stay": 0,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 5,
+      "release": false
+    },
+    {
+      "say": "Roll the pelvis toward 3, your left hip, and back.",
+      "moves": [
+        {
+          "move": "pelvis_clock",
+          "side": "none",
+          "amount": 3,
+          "point": "none",
+          "toward": "none"
+        }
+      ],
+      "hold": [],
+      "seconds": 2.5,
+      "stay": 0.5,
+      "return": true,
+      "repeat": 2,
+      "rest_after": 1,
+      "release": false
+    },
+    {
+      "say": "Then toward 9, your right hip, and back.",
+      "moves": [
+        {
+          "move": "pelvis_clock",
+          "side": "none",
+          "amount": 9,
+          "point": "none",
+          "toward": "none"
+        }
+      ],
+      "hold": [],
+      "seconds": 2.5,
+      "stay": 0.5,
+      "return": true,
+      "repeat": 2,
+      "rest_after": 1,
+      "release": false
+    },
+    {
+      "say": "The diagonals: toward half past one, between 12 and 3, and back.",
+      "moves": [
+        {
+          "move": "pelvis_clock",
+          "side": "none",
+          "amount": 1.5,
+          "point": "none",
+          "toward": "none"
+        }
+      ],
+      "hold": [],
+      "seconds": 2.5,
+      "stay": 0.5,
+      "return": true,
+      "repeat": 2,
+      "rest_after": 1,
+      "release": false
+    },
+    {
+      "say": "Then toward half past seven, between 6 and 9, and back.",
+      "moves": [
+        {
+          "move": "pelvis_clock",
+          "side": "none",
+          "amount": 7.5,
+          "point": "none",
+          "toward": "none"
+        }
+      ],
+      "hold": [],
+      "seconds": 2.5,
+      "stay": 0.5,
+      "return": true,
+      "repeat": 2,
+      "rest_after": 1,
+      "release": false
+    },
+    {
+      "say": "Rest.",
+      "moves": [],
+      "hold": [],
+      "seconds": 0,
+      "stay": 0,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 5,
+      "release": false
+    },
+    {
+      "say": "Now go around the clock: 12, 3, 6, 9, and back to 12, slowly, touching each hour.",
+      "moves": [
+        {
+          "move": "pelvis_circle",
+          "side": "left",
+          "amount": 10,
+          "point": "none",
+          "toward": "none"
+        }
+      ],
+      "hold": [],
+      "seconds": 8,
+      "stay": 0,
+      "return": false,
+      "repeat": 2,
+      "rest_after": 1,
+      "release": false
+    },
+    {
+      "say": "Then the other way around: 12, 9, 6, 3.",
+      "moves": [
+        {
+          "move": "pelvis_circle",
+          "side": "right",
+          "amount": 10,
+          "point": "none",
+          "toward": "none"
+        }
+      ],
+      "hold": [],
+      "seconds": 8,
+      "stay": 0,
+      "return": false,
+      "repeat": 2,
+      "rest_after": 1,
+      "release": true
+    },
+    {
+      "say": "Rest, and notice how the back of your pelvis and your lower back lie on the floor now.",
+      "moves": [],
+      "hold": [],
+      "seconds": 0,
+      "stay": 0,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 5,
+      "release": true
+    }
+  ],
+  "not_shown": [
+    "Resting with the legs long (the lesson stays in hook lying)",
+    "Noticing and sensing (attention only)"
+  ]
+}

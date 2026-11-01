@@ -62,6 +62,17 @@ MOVES = {
     "pelvis_flatten": Move("The pelvis tilts so the lower back comes toward the floor.", "deg", 8, ("none",), HOOK),
     "pelvis_arch": Move("The pelvis tilts so the lower back arches away from the floor.", "deg", 8, ("none",), HOOK),
     "pelvis_lift": Move("The pelvis lifts from the floor, as in a small bridge.", "cm", 5, ("none",), HOOK),
+    # The pelvic clock: a clock face on the back of the pelvis, 12 toward the head, 6 toward the feet,
+    # 3 at the left hip, 9 at the right hip.
+    "pelvis_clock": Move("The pelvis tilts toward an hour of the pelvic clock and back (amount = the hour, "
+                         "e.g. 12 = lower back toward the floor, 6 = tailbone presses and the lower back "
+                         "arches, 3 = toward the left hip, 9 = toward the right hip, 1.5 = between 12 and 3).",
+                         "hour", 12, ("none",), ON_BACK),
+    "pelvis_circle": Move("The pelvis goes around the pelvic clock once, starting at 12 (side = which way: "
+                          "left = 12, 3, 6, 9; right = 12, 9, 6, 3); amount = how far it tilts.",
+                          "deg", 10, ("left", "right"), ON_BACK),
+    "pelvis_roll": Move("The pelvis rolls to one side (left = toward 3, right = toward 9).", "deg", 12,
+                        ("left", "right"), ON_BACK),
     "arm_lift": Move("A straight arm lifts from the floor toward the ceiling (90 = hand above the shoulder).",
                      "deg", 90, SIDES, ON_BACK),
     "shoulder_lift": Move("A shoulder lifts from the floor toward the ceiling, the arm following.",
@@ -158,8 +169,10 @@ def check(script):
                 if m.get("side") not in (None, "none") and m["side"] not in spec.sides:
                     raise ValueError(f"step {i}: {m['move']} takes side {spec.sides}, not {m['side']!r}")
                 m["side"] = spec.sides[0]
-            if not m.get("amount"):
-                m["amount"] = 0 if m["move"] == "reach" else spec.default
+            if m["move"] == "reach":
+                m.setdefault("amount", 0)  # 0 = all the way to the other point
+            elif not m.get("amount"):
+                m["amount"] = spec.default
             if m["move"] == "reach":
                 if m.get("point") not in REACH_POINTS:
                     raise ValueError(f"step {i}: reach needs a point from {sorted(REACH_POINTS)}")
@@ -266,6 +279,37 @@ def paths(model, data, move):
         toward = b.head if name == "pelvis_flatten" else -b.head
         for s in "LR":
             out[f"asis_{s}"] = arc(site(f"asis_{s}"), b.right, pivot, amount, toward)
+    elif name in ("pelvis_clock", "pelvis_circle", "pelvis_roll"):
+        # Tilting toward an hour: the front hip bones turn toward that direction on the floor,
+        # about a horizontal axis through the middle of the hip joints.
+        pivot = 0.5 * (body("thigh_L") + body("thigh_R"))
+        starts = {f"asis_{s}": site(f"asis_{s}") for s in "LR"}
+
+        def toward_hour(hour):
+            angle = np.radians(30 * hour)
+            return np.cos(angle) * b.head + np.sin(angle) * b.left  # 12 = head, 3 = left
+
+        def tilt(p, hour, deg):
+            d = toward_hour(hour)
+            return arc(p, np.cross(UP, d), pivot, deg, d)(1.0)
+
+        if name == "pelvis_clock":
+            for h, p in starts.items():
+                out[h] = (lambda p: lambda f: tilt(p, amount, 12 * f))(p)
+        elif name == "pelvis_roll":
+            hour = 3 if side == "left" else 9
+            for h, p in starts.items():
+                out[h] = (lambda p: lambda f: tilt(p, hour, amount * f))(p)
+        else:
+            turn = 1 if side == "left" else -1  # left: 12, 3, 6, 9
+
+            def around(p):
+                def at(f):
+                    lean = min(1.0, f / 0.12, (1 - f) / 0.12)  # tilt up toward 12, around, and down
+                    return tilt(p, (12 + turn * 12 * f) % 12, amount * max(lean, 0))
+                return at
+            for h, p in starts.items():
+                out[h] = around(p)
     elif name == "pelvis_lift":
         for s in "LR":
             out[f"asis_{s}"] = line(site(f"asis_{s}"), UP, amount)
