@@ -66,17 +66,6 @@
       "release": false
     },
     {
-      "say": "Rest on your side.",
-      "moves": [],
-      "hold": [],
-      "seconds": 0,
-      "stay": 0,
-      "return": true,
-      "repeat": 1,
-      "rest_after": 5,
-      "release": false
-    },
-    {
       "say": "Slide the right hand forward again, and notice whether it goes further now.",
       "moves": [
         {

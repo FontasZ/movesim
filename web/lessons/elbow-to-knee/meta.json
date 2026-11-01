@@ -2,7 +2,7 @@
  "title": "Elbow to knee",
  "start": "hook_lying",
  "fps": 30,
- "frames": 2266,
+ "frames": 1966,
  "bodies": [
   "pelvis",
   "L5",
@@ -88,25 +88,15 @@
   },
   {
    "start": 39.01,
-   "end": 44.01,
-   "text": "Rest."
-  },
-  {
-   "start": 44.01,
-   "end": 59.52,
+   "end": 54.52,
    "text": "The same, but leave the head on the floor: only the elbow and the knee come toward each other."
   },
   {
-   "start": 59.52,
-   "end": 64.52,
-   "text": "Rest."
-  },
-  {
-   "start": 64.52,
-   "end": 75.52,
+   "start": 54.52,
+   "end": 65.52,
    "text": "The whole diagonal once more, with the head. Notice how far the elbow and the knee come now."
   }
  ],
  "props": [],
- "seconds": 75.52
+ "seconds": 65.52
 }

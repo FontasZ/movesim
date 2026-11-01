@@ -2,26 +2,145 @@
   "title": "Turning to look behind",
   "start": "sitting_chair",
   "steps": [
-    {"say": "Sit on the front half of the chair, feet standing on the floor.", "moves": [], "hold": [], "seconds": 0, "stay": 0, "return": true, "repeat": 1, "rest_after": 2, "release": false},
-    {"say": "Turn the head to the right, as if to look behind you, and come back.",
-     "moves": [{"move": "head_turn", "side": "right", "amount": 50, "point": "none", "toward": "none"}],
-     "hold": [], "seconds": 3, "stay": 1, "return": true, "repeat": 1, "rest_after": 1, "release": false},
-    {"say": "Turn the chest to the right as well, the head going with it. Come back.",
-     "moves": [{"move": "spine_twist", "side": "right", "amount": 25, "point": "none", "toward": "none"},
-               {"move": "head_turn", "side": "right", "amount": 40, "point": "none", "toward": "none"}],
-     "hold": ["feet"], "seconds": 3, "stay": 1, "return": true, "repeat": 2, "rest_after": 1, "release": false},
-    {"say": "Turn the chest to the right and the head to the left, at the same time. Small.",
-     "moves": [{"move": "spine_twist", "side": "right", "amount": 15, "point": "none", "toward": "none"},
-               {"move": "head_turn", "side": "left", "amount": 20, "point": "none", "toward": "none"}],
-     "hold": ["feet"], "seconds": 3, "stay": 1, "return": true, "repeat": 2, "rest_after": 1, "release": false},
-    {"say": "Leave the head facing forward and turn only the chest to the right, and back.",
-     "moves": [{"move": "spine_twist", "side": "right", "amount": 20, "point": "none", "toward": "none"}],
-     "hold": ["head", "feet"], "seconds": 3, "stay": 1, "return": true, "repeat": 2, "rest_after": 1, "release": false},
-    {"say": "Rest.", "moves": [], "hold": [], "seconds": 0, "stay": 0, "return": true, "repeat": 1, "rest_after": 4, "release": false},
-    {"say": "Turn head and chest together to the right once more, and notice how far you see now.",
-     "moves": [{"move": "spine_twist", "side": "right", "amount": 25, "point": "none", "toward": "none"},
-               {"move": "head_turn", "side": "right", "amount": 50, "point": "none", "toward": "none"}],
-     "hold": ["feet"], "seconds": 3.5, "stay": 1.5, "return": true, "repeat": 1, "rest_after": 3, "release": false}
+    {
+      "say": "Sit on the front half of the chair, feet standing on the floor.",
+      "moves": [],
+      "hold": [],
+      "seconds": 0,
+      "stay": 0,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 2,
+      "release": false
+    },
+    {
+      "say": "Turn the head to the right, as if to look behind you, and come back.",
+      "moves": [
+        {
+          "move": "head_turn",
+          "side": "right",
+          "amount": 50,
+          "point": "none",
+          "toward": "none"
+        }
+      ],
+      "hold": [],
+      "seconds": 3,
+      "stay": 1,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 1,
+      "release": false
+    },
+    {
+      "say": "Turn the chest to the right as well, the head going with it. Come back.",
+      "moves": [
+        {
+          "move": "spine_twist",
+          "side": "right",
+          "amount": 25,
+          "point": "none",
+          "toward": "none"
+        },
+        {
+          "move": "head_turn",
+          "side": "right",
+          "amount": 40,
+          "point": "none",
+          "toward": "none"
+        }
+      ],
+      "hold": [
+        "feet"
+      ],
+      "seconds": 3,
+      "stay": 1,
+      "return": true,
+      "repeat": 2,
+      "rest_after": 1,
+      "release": false
+    },
+    {
+      "say": "Turn the chest to the right and the head to the left, at the same time. Small.",
+      "moves": [
+        {
+          "move": "spine_twist",
+          "side": "right",
+          "amount": 15,
+          "point": "none",
+          "toward": "none"
+        },
+        {
+          "move": "head_turn",
+          "side": "left",
+          "amount": 20,
+          "point": "none",
+          "toward": "none"
+        }
+      ],
+      "hold": [
+        "feet"
+      ],
+      "seconds": 3,
+      "stay": 1,
+      "return": true,
+      "repeat": 2,
+      "rest_after": 1,
+      "release": false
+    },
+    {
+      "say": "Leave the head facing forward and turn only the chest to the right, and back.",
+      "moves": [
+        {
+          "move": "spine_twist",
+          "side": "right",
+          "amount": 20,
+          "point": "none",
+          "toward": "none"
+        }
+      ],
+      "hold": [
+        "head",
+        "feet"
+      ],
+      "seconds": 3,
+      "stay": 1,
+      "return": true,
+      "repeat": 2,
+      "rest_after": 1,
+      "release": false
+    },
+    {
+      "say": "Turn head and chest together to the right once more, and notice how far you see now.",
+      "moves": [
+        {
+          "move": "spine_twist",
+          "side": "right",
+          "amount": 25,
+          "point": "none",
+          "toward": "none"
+        },
+        {
+          "move": "head_turn",
+          "side": "right",
+          "amount": 50,
+          "point": "none",
+          "toward": "none"
+        }
+      ],
+      "hold": [
+        "feet"
+      ],
+      "seconds": 3.5,
+      "stay": 1.5,
+      "return": true,
+      "repeat": 1,
+      "rest_after": 3,
+      "release": false
+    }
   ],
-  "not_shown": ["Looking with the eyes", "Noticing how far you see"]
+  "not_shown": [
+    "Looking with the eyes",
+    "Noticing how far you see"
+  ]
 }

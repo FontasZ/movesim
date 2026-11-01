@@ -31,17 +31,6 @@
       "release": false
     },
     {
-      "say": "Rest. Let the legs stand without holding them.",
-      "moves": [],
-      "hold": [],
-      "seconds": 0,
-      "stay": 0,
-      "return": true,
-      "repeat": 1,
-      "rest_after": 5,
-      "release": false
-    },
-    {
       "say": "Now let the knees go to the left and come back. Is it the same as to the right?",
       "moves": [
         {
@@ -93,14 +82,14 @@
       "release": false
     },
     {
-      "say": "Bring the knees back to the middle. Rest.",
+      "say": "Bring the knees back to the middle.",
       "moves": [],
       "hold": [],
       "seconds": 0,
       "stay": 0,
       "return": true,
       "repeat": 1,
-      "rest_after": 5,
+      "rest_after": 2,
       "release": true
     },
     {
@@ -118,17 +107,6 @@
       "return": true,
       "repeat": 3,
       "rest_after": 1,
-      "release": false
-    },
-    {
-      "say": "Rest, and notice how your back lies on the floor now.",
-      "moves": [],
-      "hold": [],
-      "seconds": 0,
-      "stay": 0,
-      "return": true,
-      "repeat": 1,
-      "rest_after": 5,
       "release": false
     }
   ],

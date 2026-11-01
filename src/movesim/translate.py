@@ -76,10 +76,10 @@ Parts that can be asked to stay still ("hold"): {", ".join(HOLDS)}. Use hold onl
 
 Each step:
 - say: the teacher's words for this step, short (one or two sentences, close to the text).
-- moves: the movements done together in this step; empty for rests and for instructions about attention, sensing or breathing.
-- seconds: time to go there (Feldenkrais pace: slow, usually 2-4 s); stay: time to remain there; return: whether to come back to where it started (false leaves the part there for the next steps, as in "let the knees stay to the right"); repeat: how many times (show at most 3 even if the text says more, and say so in "say"); rest_after: pause after the step (rests: 5-10 s); release: true to let go of everything left in place by earlier steps.
+- moves: the movements done together in this step; empty for instructions about attention, sensing or breathing.
+- seconds: time to go there (Feldenkrais pace: slow, usually 2-4 s); stay: time to remain there; return: whether to come back to where it started (false leaves the part there for the next steps, as in "let the knees stay to the right"); repeat: how many times (show at most 3 even if the text says more, and say so in "say"); rest_after: a short pause after the step (about 1 s); release: true to let go of everything left in place by earlier steps.
 
-Keep the order of the lesson. The script has one starting position: if the lesson changes position (rolls to the side, sits up), script the part in the starting position and list the rest in "not_shown". Also list there what no movement here can show (eyes, tongue, breathing, imagined movement), keeping its words as a step with no moves when it belongs in the flow. Title: a short name for the lesson."""
+Keep the order of the lesson. Leave out rests: show only the movements. The script has one starting position: if the lesson changes position (rolls to the side, sits up), script the part in the starting position and list the rest in "not_shown". Also list there what no movement here can show (eyes, tongue, breathing, imagined movement), keeping its words as a step with no moves when it belongs in the flow. Title: a short name for the lesson."""
 
 
 def translate(text, model=MODEL):

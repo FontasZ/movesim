@@ -2,7 +2,7 @@
  "title": "The top arm slides",
  "start": "side_lying_left",
  "fps": 30,
- "frames": 1741,
+ "frames": 1591,
  "bodies": [
   "pelvis",
   "L5",
@@ -88,12 +88,7 @@
   },
   {
    "start": 43.01,
-   "end": 48.01,
-   "text": "Rest on your side."
-  },
-  {
-   "start": 48.01,
-   "end": 58.02,
+   "end": 53.01,
    "text": "Slide the right hand forward again, and notice whether it goes further now."
   }
  ],
@@ -116,5 +111,5 @@
    ]
   }
  ],
- "seconds": 58.02
+ "seconds": 53.01
 }

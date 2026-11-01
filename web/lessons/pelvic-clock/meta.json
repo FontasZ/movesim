@@ -2,7 +2,7 @@
  "title": "The pelvic clock",
  "start": "hook_lying",
  "fps": 30,
- "frames": 4882,
+ "frames": 4432,
  "bodies": [
   "pelvis",
   "L5",
@@ -108,50 +108,35 @@
   },
   {
    "start": 63.72,
-   "end": 68.72,
-   "text": "Rest."
-  },
-  {
-   "start": 68.72,
-   "end": 81.23,
+   "end": 76.22,
    "text": "Roll the pelvis toward 3, your left hip, and back."
   },
   {
-   "start": 81.23,
-   "end": 93.73,
+   "start": 76.22,
+   "end": 88.73,
    "text": "Then toward 9, your right hip, and back."
   },
   {
-   "start": 93.73,
-   "end": 106.23,
+   "start": 88.73,
+   "end": 101.23,
    "text": "The diagonals: toward half past one, between 12 and 3, and back."
   },
   {
-   "start": 106.23,
-   "end": 118.73,
+   "start": 101.23,
+   "end": 113.73,
    "text": "Then toward half past seven, between 6 and 9, and back."
   },
   {
-   "start": 118.73,
-   "end": 123.73,
-   "text": "Rest."
-  },
-  {
-   "start": 123.73,
-   "end": 140.73,
+   "start": 113.73,
+   "end": 130.73,
    "text": "Now go around the clock: 12, 3, 6, 9, and back to 12, slowly, touching each hour."
   },
   {
-   "start": 140.73,
-   "end": 157.73,
+   "start": 130.73,
+   "end": 147.73,
    "text": "Then the other way around: 12, 9, 6, 3."
-  },
-  {
-   "start": 157.73,
-   "end": 162.73,
-   "text": "Rest, and notice how the back of your pelvis and your lower back lie on the floor now."
   }
  ],
  "props": [],
- "seconds": 162.73
+ "seconds": 147.73
 }

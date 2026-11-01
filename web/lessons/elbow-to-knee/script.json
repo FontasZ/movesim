@@ -66,17 +66,6 @@
       "release": false
     },
     {
-      "say": "Rest.",
-      "moves": [],
-      "hold": [],
-      "seconds": 0,
-      "stay": 0,
-      "return": true,
-      "repeat": 1,
-      "rest_after": 5,
-      "release": false
-    },
-    {
       "say": "The same, but leave the head on the floor: only the elbow and the knee come toward each other.",
       "moves": [
         {
@@ -102,17 +91,6 @@
       "return": true,
       "repeat": 2,
       "rest_after": 1,
-      "release": false
-    },
-    {
-      "say": "Rest.",
-      "moves": [],
-      "hold": [],
-      "seconds": 0,
-      "stay": 0,
-      "return": true,
-      "repeat": 1,
-      "rest_after": 5,
       "release": false
     },
     {

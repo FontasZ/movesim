@@ -128,17 +128,6 @@
       "release": false
     },
     {
-      "say": "Rest.",
-      "moves": [],
-      "hold": [],
-      "seconds": 0,
-      "stay": 0,
-      "return": true,
-      "repeat": 1,
-      "rest_after": 5,
-      "release": false
-    },
-    {
       "say": "Roll the pelvis toward 3, your left hip, and back.",
       "moves": [
         {
@@ -215,17 +204,6 @@
       "release": false
     },
     {
-      "say": "Rest.",
-      "moves": [],
-      "hold": [],
-      "seconds": 0,
-      "stay": 0,
-      "return": true,
-      "repeat": 1,
-      "rest_after": 5,
-      "release": false
-    },
-    {
       "say": "Now go around the clock: 12, 3, 6, 9, and back to 12, slowly, touching each hour.",
       "moves": [
         {
@@ -261,17 +239,6 @@
       "return": false,
       "repeat": 2,
       "rest_after": 1,
-      "release": true
-    },
-    {
-      "say": "Rest, and notice how the back of your pelvis and your lower back lie on the floor now.",
-      "moves": [],
-      "hold": [],
-      "seconds": 0,
-      "stay": 0,
-      "return": true,
-      "repeat": 1,
-      "rest_after": 5,
       "release": true
     }
   ],
