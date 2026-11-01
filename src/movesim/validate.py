@@ -169,7 +169,7 @@ def main():
     results = run()
     text = report(results)
     (ROOT / "docs" / "validation.md").write_text(text)
-    # The science page in the web player shows these.
+    # The Model page of the website shows these.
     (ROOT / "web" / "validation.json").write_text(json.dumps([asdict(r) for r in results], indent=1))
     print(text)
 
