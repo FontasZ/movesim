@@ -35,6 +35,7 @@
   #help ul { margin: 0 0 16px; padding-left: 20px; }
   #help li { margin-bottom: 8px; }
   #help .dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; background: #3f9d62; vertical-align: middle; }
+  #help .dot.warm { background: #d2541e; }
   #help .close { font: inherit; background: var(--accent); color: var(--bg); border: 0; border-radius: 8px; padding: 7px 16px; cursor: pointer; }
   body.embed { display: block; }
   body.embed header, body.embed aside, body.embed #bar, body.embed #views { display: none; }
@@ -51,10 +52,14 @@
              background: rgba(20, 20, 20, 0.72); color: #fff; font-size: 19px; line-height: 1.4;
              text-align: center; pointer-events: none; transition: opacity .3s; }
   #caption:empty { opacity: 0; }
-  #views { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; }
+  #views { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; flex-wrap: wrap; gap: 6px;
+           pointer-events: none; }
+  #views button { pointer-events: auto; }
   #views button, #bar button { font: inherit; border: 1px solid var(--line); background: var(--panel);
                                color: var(--ink); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
   #views button:hover, #bar button:hover { border-color: var(--accent); }
+  #views #moving { margin-left: 8px; }
+  #views #moving[aria-pressed="true"] { border-color: #c8642f; box-shadow: inset 0 -3px 0 #e0884f; }
   aside { grid-row: 2 / 4; grid-column: 2; border-left: 1px solid var(--line); background: var(--panel);
           overflow-y: auto; padding: 8px 0; }
   aside h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
@@ -100,6 +105,7 @@
     <button data-view="above">Above</button>
     <button data-view="feet">From the feet</button>
     <button data-view="head">From the head</button>
+    <button id="moving" aria-pressed="true">Highlight movement</button>
   </div>
   <div id="caption"></div>
   <div id="msg">Loading…</div>
@@ -120,6 +126,9 @@
         move. The buttons give a view from the side, above, the feet or the head.</li>
       <li><span class="dot"></span> <b>Green dots</b> show where the movement is led from (a knee,
         the forehead, a hand). Everything else follows passively.</li>
+      <li><span class="dot warm"></span> <b>Warm-coloured bones</b> have moved in the last few
+        seconds; the deeper the colour, the further they went. Turn it off with
+        <i>Highlight movement</i>.</li>
     </ul>
     <button class="close" id="help-close">Start</button>
   </div>
@@ -205,7 +214,13 @@ function resize() {
 new ResizeObserver(resize).observe(stage);
 
 // ---- the body
-const boneMat = new THREE.MeshStandardMaterial({ color: 0xece4d2, roughness: 0.75, metalness: 0 });
+const BONE = new THREE.Color(0xece4d2), WARM = new THREE.Color(0xd2541e);
+// Mix in sRGB, so a half-way amount looks half-way.
+const BONE_S = BONE.getRGB({}, THREE.SRGBColorSpace), WARM_S = WARM.getRGB({}, THREE.SRGBColorSpace);
+function tint(color, a) {
+  color.setRGB(BONE_S.r + (WARM_S.r - BONE_S.r) * a, BONE_S.g + (WARM_S.g - BONE_S.g) * a,
+               BONE_S.b + (WARM_S.b - BONE_S.b) * a, THREE.SRGBColorSpace);
+}
 const handMat = new THREE.MeshStandardMaterial({ color: 0x3f9d62, transparent: true, opacity: 0.85 });
 const loader = new STLLoader();
 const segments = {};
@@ -213,13 +228,67 @@ async function loadBody(names) {
   await Promise.all(names.filter(n => !segments[n]).map(async n => {
     const geom = await loader.loadAsync(MESHES + n + ".stl");
     geom.computeVertexNormals();
-    const mesh = new THREE.Mesh(geom, boneMat);
+    geom.computeBoundingBox();
+    // Each bone has its own material so it can be tinted on its own.
+    const mat = new THREE.MeshStandardMaterial({ color: BONE, roughness: 0.75, metalness: 0 });
+    const mesh = new THREE.Mesh(geom, mat);
     mesh.castShadow = true;
     const g = new THREE.Group();
     g.add(mesh);
     scene.add(g);
+    const box = geom.boundingBox;
+    g.userData = { mat, mid: box.getCenter(new THREE.Vector3()), radius: box.getSize(new THREE.Vector3()).length() / 2 };
     segments[n] = g;
   }));
+}
+
+// ---- how much each bone has moved
+// For every frame and bone: the furthest a point of the bone got from where it is now, over the last
+// few seconds (the bone's middle moving, plus its turning times its half-size). Looking back over a
+// window keeps the colour through the pauses and turning points of a slow movement, where the speed
+// is zero. A log scale lets 1 cm at the pelvis show next to 60 cm at the hand.
+const MOVE_WINDOW = 3;            // seconds looked back
+const MOVE_MIN = 0.003;           // m: below this, no colour (the recordings jitter about 0.3 mm)
+const MOVE_FULL = 0.10;           // m: full colour from here on
+function movement(meta, frames) {
+  const nb = meta.bodies.length, nf = meta.frames;
+  const w = Math.round(MOVE_WINDOW * meta.fps), step = 2;
+  const mid = new Float32Array(nf * nb * 3), rad = meta.bodies.map(n => segments[n].userData.radius);
+  const v = new THREE.Vector3(), q = new THREE.Quaternion();
+  meta.bodies.forEach((n, i) => {
+    const m = segments[n].userData.mid;
+    for (let f = 0; f < nf; f++) {
+      const o = (f * nb + i) * 7;
+      q.set(frames[o + 4], frames[o + 5], frames[o + 6], frames[o + 3]);
+      v.copy(m).applyQuaternion(q);
+      mid.set([frames[o] + v.x, frames[o + 1] + v.y, frames[o + 2] + v.z], (f * nb + i) * 3);
+    }
+  });
+  const out = new Float32Array(nf * nb), span = Math.log(MOVE_FULL / MOVE_MIN);
+  for (let f = 0; f < nf; f++) {
+    for (let i = 0; i < nb; i++) {
+      const a = (f * nb + i) * 3, qa = (f * nb + i) * 7;
+      let far = 0;
+      for (let k = step; k <= w && k <= f; k += step) {
+        const b = ((f - k) * nb + i) * 3, qb = ((f - k) * nb + i) * 7;
+        const dx = mid[a] - mid[b], dy = mid[a + 1] - mid[b + 1], dz = mid[a + 2] - mid[b + 2];
+        const dot = Math.min(1, Math.abs(frames[qa + 3] * frames[qb + 3] + frames[qa + 4] * frames[qb + 4] +
+                                         frames[qa + 5] * frames[qb + 5] + frames[qa + 6] * frames[qb + 6]));
+        const d = Math.hypot(dx, dy, dz) + 2 * rad[i] * Math.sqrt(1 - dot * dot);  // 2 sin(angle/2) * size
+        if (d > far) far = d;
+      }
+      out[f * nb + i] = far <= MOVE_MIN ? 0 : Math.min(1, Math.log(far / MOVE_MIN) / span);
+    }
+  }
+  return out;
+}
+let highlight = params.get("highlight") !== "0";
+try { if (!params.get("highlight") && localStorage.getItem("movesim-highlight") === "0") highlight = false; } catch (e) {}
+function setHighlight(on) {
+  highlight = on;
+  $("moving").setAttribute("aria-pressed", on);
+  try { localStorage.setItem("movesim-highlight", on ? "1" : "0"); } catch (e) {}
+  show();
 }
 let handleDots = [], propMeshes = [];
 const propMat = c => new THREE.MeshStandardMaterial({ color: new THREE.Color(...c), roughness: 0.9 });
@@ -238,6 +307,7 @@ async function openLesson(slug) {
   lesson = { meta, slug,
     frames: new Float32Array(buf, 0, nf * nb * 7),
     handles: new Float32Array(buf, nf * nb * 7 * 4, nf * nh * 4) };
+  lesson.moved = movement(meta, lesson.frames);
   propMeshes.forEach(p => scene.remove(p));
   propMeshes = (meta.props || []).map(p => {
     const box = new THREE.Mesh(new THREE.BoxGeometry(2 * p.size[0], 2 * p.size[1], 2 * p.size[2]), propMat(p.color));
@@ -278,6 +348,7 @@ function show() {
     const o = (f * nb + i) * 7, g = segments[n];
     g.position.set(frames[o], frames[o + 1], frames[o + 2]);
     g.quaternion.set(frames[o + 4], frames[o + 5], frames[o + 6], frames[o + 3]);  // MuJoCo: w x y z
+    tint(g.userData.mat.color, highlight ? lesson.moved[f * nb + i] : 0);
   });
   const nh = meta.handles.length;
   handleDots.forEach((d, i) => {
@@ -302,6 +373,8 @@ $("play").onclick = () => {
 };
 $("scrub").oninput = e => { if (lesson) { t = e.target.value / lesson.meta.fps; show(); } };
 $("speed").onchange = e => { speed = parseFloat(e.target.value); };
+$("moving").setAttribute("aria-pressed", highlight);
+$("moving").onclick = () => setHighlight(!highlight);
 $("lesson").onchange = e => openLesson(e.target.value);
 addEventListener("keydown", e => {
   if (e.code === "Escape") help.classList.remove("open");
