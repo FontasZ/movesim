@@ -43,6 +43,34 @@
           "toward": "none"
         },
         {
+          "move": "shoulder_lift",
+          "side": "right",
+          "amount": 14,
+          "point": "none",
+          "toward": "none"
+        },
+        {
+          "move": "spine_twist",
+          "side": "left",
+          "amount": 35,
+          "point": "none",
+          "toward": "none"
+        },
+        {
+          "move": "spine_round",
+          "side": "none",
+          "amount": 20,
+          "point": "none",
+          "toward": "none"
+        },
+        {
+          "move": "arm_raise",
+          "side": "right",
+          "amount": 60,
+          "point": "none",
+          "toward": "none"
+        },
+        {
           "move": "reach",
           "side": "none",
           "amount": 0,
@@ -76,6 +104,34 @@
           "toward": "none"
         },
         {
+          "move": "shoulder_lift",
+          "side": "right",
+          "amount": 14,
+          "point": "none",
+          "toward": "none"
+        },
+        {
+          "move": "spine_twist",
+          "side": "left",
+          "amount": 35,
+          "point": "none",
+          "toward": "none"
+        },
+        {
+          "move": "spine_round",
+          "side": "none",
+          "amount": 20,
+          "point": "none",
+          "toward": "none"
+        },
+        {
+          "move": "arm_raise",
+          "side": "right",
+          "amount": 60,
+          "point": "none",
+          "toward": "none"
+        },
+        {
           "move": "reach",
           "side": "none",
           "amount": 0,
@@ -100,6 +156,34 @@
           "move": "knee_to_chest",
           "side": "left",
           "amount": 35,
+          "point": "none",
+          "toward": "none"
+        },
+        {
+          "move": "shoulder_lift",
+          "side": "right",
+          "amount": 14,
+          "point": "none",
+          "toward": "none"
+        },
+        {
+          "move": "spine_twist",
+          "side": "left",
+          "amount": 35,
+          "point": "none",
+          "toward": "none"
+        },
+        {
+          "move": "spine_round",
+          "side": "none",
+          "amount": 20,
+          "point": "none",
+          "toward": "none"
+        },
+        {
+          "move": "arm_raise",
+          "side": "right",
+          "amount": 60,
           "point": "none",
           "toward": "none"
         },
