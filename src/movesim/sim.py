@@ -74,7 +74,9 @@ def set_start_pose(model, data, position):
         mujoco.mj_forward(model, data)
         seat = lowest_point(model, data, flesh(model, "glute", "thigh")) - 0.003
         hips = 0.5 * (data.body("thigh_L").xpos + data.body("thigh_R").xpos)
-        data.mocap_pos[model.body("chair").mocapid[0]] = [hips[0] - 0.02, hips[1], seat]
+        # Sitting on the front half: the sitting bones (under the glutes, ~5 cm behind the hip
+        # joints) rest about halfway between the seat's centre and its front edge.
+        data.mocap_pos[model.body("chair").mocapid[0]] = [hips[0] - 0.15, hips[1], seat]
     else:
         data.qpos[2] -= lowest_point(model, data, flesh(model)) - 0.002
         mujoco.mj_forward(model, data)
