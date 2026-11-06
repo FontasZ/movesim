@@ -23,8 +23,8 @@ The README describes how to run everything. `docs/knee-tilt-tuning.md` tells wha
 - Audience is practitioners, not academics. `index.html` and `model.html` stay in plain language and
   short; the academic text belongs in `researchers.html`.
 - The site is about movesim only; don't mention the author's other projects.
-- The "who is behind it" text on the landing page was agreed with the author. Don't add to his
-  credentials or change it without asking.
+- The landing page has no "who is behind it" or "built on research" section, by the author's
+  choice (they read as sales). Don't add them back, or name the author on the site, without asking.
 - Don't transcribe published Feldenkrais lessons; lessons here are written from scratch. Say
   "Feldenkrais-style" and keep the trademark notice.
 - Bone meshes are CC BY-SA 4.0 with credit to BodyParts3D; the code is MIT.
