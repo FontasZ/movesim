@@ -34,7 +34,7 @@ def region(geom):
         return "lower ribs (T8-T12)" if int(base[1:].split("_")[0]) >= 8 else "upper back (T1-T7)"
     if base == "scapula":
         return "shoulder blades"
-    if base.startswith("C") or base == "occiput":
+    if base.startswith("C") or base in ("occiput", "head_side"):
         return "head and neck"
     if base in ("arm", "elbow", "forearm", "hand"):
         return "arms"

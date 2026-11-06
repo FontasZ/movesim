@@ -40,5 +40,5 @@ The README describes how to run everything. `docs/knee-tilt-tuning.md` tells wha
 - At the pelvic clock's 12 and 6 the model's chin direction hasn't been checked against a source or a
   practitioner.
 - Model gaps: arms pass through the trunk and each other; opening the top arm in side-lying turns the
-  chest only 3°; a held head still turns somewhat; no transitions between positions.
+  chest only about 4°; a held head still turns somewhat; no transitions between positions.
 - Maybe a gentler public name and a domain of its own.

@@ -81,7 +81,7 @@ def set_start_pose(model, data, position):
         data.qpos[2] -= lowest_point(model, data, flesh(model)) - 0.002
         mujoco.mj_forward(model, data)
     if pos.pillow:
-        top = lowest_point(model, data, flesh(model, "occiput")) - 0.002
+        top = lowest_point(model, data, flesh(model, "head_side")) - 0.002
         g = model.body("pillow").geomadr[0]
         model.geom_size[g][2] = top / 2  # a pillow just thick enough for the head
         head = data.geom("occiput").xpos

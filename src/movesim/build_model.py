@@ -376,8 +376,13 @@ def skull(x):
 <geom class="bone" type="ellipsoid" pos="0.065 0 -0.01" size="0.045 0.05 0.055"/>
 <geom class="bone" type="sphere" pos="0.085 0.03 0.04" size="0.012" rgba="0.2 0.2 0.2 1"/>
 <geom class="bone" type="sphere" pos="0.085 -0.03 0.04" size="0.012" rgba="0.2 0.2 0.2 1"/>
-<!-- The back of the head as a sphere centred on the head's mass, so it rolls like a real head. -->
-<geom name="occiput" class="flesh" type="sphere" pos="0.02 0 0.04" size="0.11"/>
+<!-- The back of the head as a sphere centred on the head's mass, so it rolls like a real head
+     on the floor. It is too wide at the sides (skull 7 cm, sphere 11 cm), so on a pillow the
+     head rests on its true outline instead: 11 cm to the back and top, 8 cm to the sides. A
+     narrower outline on the floor would let a face-up head roll to one side and stay there.
+     Contact bits: 4 = floor and chair only, 2 = pillow only (other flesh, 1, touches all). -->
+<geom name="occiput" class="flesh" type="sphere" pos="0.02 0 0.04" size="0.11" contype="4"/>
+<geom name="head_side" class="flesh" type="ellipsoid" pos="0.02 0 0.04" size="0.11 0.08 0.11" contype="2"/>
 <site name="forehead" pos="0.1 0 0.08" size="0.012"/>
 <site name="chin" pos="0.085 0 -0.05" size="0.012"/>
 <site name="temple" pos="0.06 0.07 0.07" size="0.012"/>""")
@@ -591,17 +596,17 @@ PREAMBLE = """
   <worldbody>
     <light name="key" pos="0.6 -1.2 2.5" dir="-0.2 0.5 -1" diffuse="0.45 0.45 0.45" specular="0.1 0.1 0.1"
            castshadow="true"/>
-    <geom name="floor" type="plane" size="3 3 0.05" material="floor" contype="0" conaffinity="1"
+    <geom name="floor" type="plane" size="3 3 0.05" material="floor" contype="0" conaffinity="5"
           condim="3" friction="0.9 0.01 0.001"/>
 
     <!-- Props, parked under the floor until a starting position places them. -->
     <body name="pillow" mocap="true" pos="0 0 -2">
-      <geom type="box" size="0.2 0.13 0.05" contype="0" conaffinity="1" condim="3" friction="0.9 0.01 0.001"
+      <geom type="box" size="0.2 0.13 0.05" contype="0" conaffinity="3" condim="3" friction="0.9 0.01 0.001"
             rgba="0.78 0.74 0.66 1"/>
     </body>
     <body name="chair" mocap="true" pos="0 0 -2">
       <!-- body origin at the middle of the seat's top surface -->
-      <geom type="box" pos="0 0 -0.02" size="0.22 0.22 0.02" contype="0" conaffinity="1" condim="3"
+      <geom type="box" pos="0 0 -0.02" size="0.22 0.22 0.02" contype="0" conaffinity="5" condim="3"
             friction="0.9 0.01 0.001" rgba="0.55 0.42 0.3 1"/>
       <geom type="box" pos="0.19 0.19 -0.24" size="0.02 0.02 0.22" rgba="0.55 0.42 0.3 1"/>
       <geom type="box" pos="0.19 -0.19 -0.24" size="0.02 0.02 0.22" rgba="0.55 0.42 0.3 1"/>
