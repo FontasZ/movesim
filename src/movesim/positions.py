@@ -49,7 +49,7 @@ POSITIONS = {
         quat_from_axes(-Y, -Z, X),
         {"hip_flex_L": 60, "hip_flex_R": 60, "knee_L": 85, "knee_R": 85, "ankle_L": 20, "ankle_R": 20,
          "shoulder_flex_L": 80, "elbow_L": 20, "shoulder_flex_R": 40, "elbow_R": 30,
-         "shoulder_abd_L": 0, "shoulder_abd_R": 0},
+         "shoulder_abd_L": 0, "shoulder_abd_R": 0, "pronation_R": 120},  # top palm on the floor
         {"hip_flex": 40},
         pillow=True),
     "side_lying_right": Position(
@@ -58,7 +58,7 @@ POSITIONS = {
         quat_from_axes(Y, Z, X),
         {"hip_flex_L": 60, "hip_flex_R": 60, "knee_L": 85, "knee_R": 85, "ankle_L": 20, "ankle_R": 20,
          "shoulder_flex_R": 80, "elbow_R": 20, "shoulder_flex_L": 40, "elbow_L": 30,
-         "shoulder_abd_L": 0, "shoulder_abd_R": 0},
+         "shoulder_abd_L": 0, "shoulder_abd_R": 0, "pronation_L": 120},  # top palm on the floor
         {"hip_flex": 40},
         pillow=True),
     "sitting_chair": Position(
