@@ -4,6 +4,10 @@
   "title": "The top arm slides"
  },
  {
+  "slug": "elbow-to-knee",
+  "title": "Elbow to knee"
+ },
+ {
   "slug": "pelvic-clock",
   "title": "The pelvic clock"
  },
@@ -14,9 +18,5 @@
  {
   "slug": "knees-and-head",
   "title": "Knees and head"
- },
- {
-  "slug": "elbow-to-knee",
-  "title": "Elbow to knee"
  }
 ]

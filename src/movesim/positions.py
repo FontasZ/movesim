@@ -49,7 +49,9 @@ POSITIONS = {
         quat_from_axes(-Y, -Z, X),
         {"hip_flex_L": 60, "hip_flex_R": 60, "knee_L": 85, "knee_R": 85, "ankle_L": 20, "ankle_R": 20,
          "shoulder_flex_L": 80, "elbow_L": 20, "shoulder_flex_R": 40, "elbow_R": 30,
-         "shoulder_abd_L": 0, "shoulder_abd_R": 0, "pronation_R": 120},  # top palm on the floor
+         "shoulder_abd_L": 0, "shoulder_abd_R": 0,
+         "pronation_R": 120,       # top palm on the floor
+         "shoulder_inrot_L": -45},  # bottom palm on the floor: the arm turns out
         {"hip_flex": 40, "T": 300, "L": 300},  # keeps the chest from rolling over onto the floor
         pillow=True),
     "side_lying_right": Position(
@@ -58,7 +60,9 @@ POSITIONS = {
         quat_from_axes(Y, Z, X),
         {"hip_flex_L": 60, "hip_flex_R": 60, "knee_L": 85, "knee_R": 85, "ankle_L": 20, "ankle_R": 20,
          "shoulder_flex_R": 80, "elbow_R": 20, "shoulder_flex_L": 40, "elbow_L": 30,
-         "shoulder_abd_L": 0, "shoulder_abd_R": 0, "pronation_L": 120},  # top palm on the floor
+         "shoulder_abd_L": 0, "shoulder_abd_R": 0,
+         "pronation_L": 120,       # top palm on the floor
+         "shoulder_inrot_R": -45},  # bottom palm on the floor: the arm turns out
         {"hip_flex": 40, "T": 300, "L": 300},  # keeps the chest from rolling over onto the floor
         pillow=True),
     "sitting_chair": Position(
@@ -70,6 +74,16 @@ POSITIONS = {
         # from folding forward (17 levels in series share the work of balancing the upper body).
         {"L": 3000, "T": 3000, "C": 150, "hip_flex": 600, "knee": 60},
         on="chair"),
+    "hands_knees": Position(
+        "On hands and knees: hands under the shoulders, knees under the hips, the tops of the "
+        "feet on the floor, the back long, looking at the floor.",
+        quat_from_axes(-Z, Y, X),  # face down, head toward +x
+        {"hip_flex_L": 90, "hip_flex_R": 90, "knee_L": 90, "knee_R": 90, "ankle_L": 50, "ankle_R": 50,
+         "shoulder_flex_L": 82, "shoulder_flex_R": 82, "shoulder_abd_L": -5, "shoulder_abd_R": -5,
+         "elbow_L": 0, "elbow_R": 0, "wrist_flex_L": -70, "wrist_flex_R": -70,
+         "pronation_L": 90, "pronation_R": 90},
+        {"L": 3000, "T": 3000, "C": 150, "hip": 300, "knee": 100, "shoulder": 300, "elbow": 300,
+         "sc_": 300, "ac_": 300, "wrist": 30}),
 }
 
 
